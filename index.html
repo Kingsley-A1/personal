@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King Daily | The Ruler's Journal</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons (Phosphor) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Toastify -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        royal: {
+                            gold: '#D4AF37',
+                            dark: '#0B0F19',
+                            surface: '#151B2B',
+                            light: '#E2E8F0',
+                            accent: '#C5A028'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0B0F19; color: #E2E8F0; }
+        .glass-card {
+            background: rgba(21, 27, 43, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .gold-glow:focus {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            border-color: #D4AF37;
+        }
+        .royal-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #AA8C2C 100%);
+        }
+        /* Chart container fix */
+        .chart-container {
+            position: relative; 
+            height: 250px; 
+            width: 100%;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0B0F19; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden selection:bg-royal-gold selection:text-royal-dark">
+
+    <!-- Header -->
+    <header class="h-16 border-b border-royal-gold/20 flex items-center justify-between px-6 bg-royal-dark z-20 shrink-0">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('dashboard')">
+            <i class="ph-fill ph-crown text-3xl text-royal-gold"></i>
+            <div>
+                <h1 class="font-serif font-bold text-xl tracking-wide text-white">KING DAILY</h1>
+                <p class="text-[10px] text-royal-gold/80 uppercase tracking-widest hidden md:block">Rule Your Day</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-right hidden md:block">
+                <p class="text-xs text-slate-400" id="current-date">Today</p>
+                <p class="text-sm font-bold text-white" id="current-time">00:00</p>
+            </div>
+            <!-- Backup / Settings Menu -->
+            <div class="flex items-center gap-2">
+                <button onclick="app.exportData()" class="p-2 text-slate-400 hover:text-royal-gold transition-colors" title="Export Backup"><i class="ph-bold ph-download-simple"></i></button>
+                <label class="p-2 text-slate-400 hover:text-royal-gold transition-colors cursor-pointer" title="Import Backup">
+                    <i class="ph-bold ph-upload-simple"></i>
+                    <input type="file" class="hidden" onchange="app.importData(this)">
+                </label>
+                <button onclick="app.resetData()" class="p-2 text-slate-600 hover:text-red-500 transition-colors" title="Reset All Data"><i class="ph-bold ph-trash"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex-1 flex overflow-hidden relative">
+        
+        <!-- Sidebar (Desktop) -->
+        <aside class="hidden md:flex w-64 flex-col border-r border-royal-gold/10 bg-royal-surface z-10 shrink-0">
+            <nav class="flex-1 p-6 space-y-4">
+                <button onclick="app.navigate('dashboard')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:bg-royal-gold/10 hover:text-royal-gold transition-all active-nav" data-target="dashboard">
+                    <i class="ph-duotone ph-throne text-xl"></i>
+                    <span class="font-medium tracking-wide">The Throne</span>
+                </button>
+                <button onclick="app.navigate('morning')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:bg-royal-gold/10 hover:text-royal-gold transition-all" data-target="morning">
+                    <i class="ph-duotone ph-sun-horizon text-xl"></i>
+                    <span class="font-medium tracking-wide">Morning Protocol</span>
+                </button>
+                <button onclick="app.navigate('evening')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:bg-royal-gold/10 hover:text-royal-gold transition-all" data-target="evening">
+                    <i class="ph-duotone ph-moon-stars text-xl"></i>
+                    <span class="font-medium tracking-wide">Evening Report</span>
+                </button>
+                <button onclick="app.navigate('archive')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:bg-royal-gold/10 hover:text-royal-gold transition-all" data-target="archive">
+                    <i class="ph-duotone ph-book-bookmark text-xl"></i>
+                    <span class="font-medium tracking-wide">Journal Archive</span>
+                </button>
+                <button onclick="app.navigate('events')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-slate-400 hover:bg-royal-gold/10 hover:text-royal-gold transition-all" data-target="events">
+                    <i class="ph-duotone ph-calendar-check text-xl"></i>
+                    <span class="font-medium tracking-wide">Royal Calendar</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto relative bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] p-4 md:p-8 pb-24 md:pb-8" id="main-view">
+            <!-- Dynamic Content -->
+        </main>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-royal-dark/95 backdrop-blur-xl border-t border-royal-gold/20 flex justify-around items-center px-2 z-40 pb-safe">
+        <button onclick="app.navigate('dashboard')" class="nav-btn-mobile flex flex-col items-center gap-1 p-2 text-royal-gold transition-colors" data-target="dashboard">
+            <i class="ph-duotone ph-throne text-2xl"></i>
+            <span class="text-[10px] uppercase font-bold tracking-widest">Home</span>
+        </button>
+        <button onclick="app.navigate('morning')" class="nav-btn-mobile flex flex-col items-center gap-1 p-2 text-slate-500 transition-colors" data-target="morning">
+            <i class="ph-duotone ph-sun text-2xl"></i>
+            <span class="text-[10px] uppercase font-bold tracking-widest">Dawn</span>
+        </button>
+        <button onclick="app.navigate('evening')" class="nav-btn-mobile flex flex-col items-center gap-1 p-2 text-slate-500 transition-colors" data-target="evening">
+            <i class="ph-duotone ph-moon text-2xl"></i>
+            <span class="text-[10px] uppercase font-bold tracking-widest">Dusk</span>
+        </button>
+        <button onclick="app.navigate('archive')" class="nav-btn-mobile flex flex-col items-center gap-1 p-2 text-slate-500 transition-colors" data-target="archive">
+            <i class="ph-duotone ph-book-open text-2xl"></i>
+            <span class="text-[10px] uppercase font-bold tracking-widest">Logs</span>
+        </button>
+    </nav>
+
+    <!-- Modal: Add Event -->
+    <div id="event-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-xl p-6 border-l-4 border-l-royal-gold">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-serif font-bold text-royal-gold" id="event-modal-title">Declare Event</h2>
+                <button onclick="app.toggleModal('event-modal')" class="text-slate-400 hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+            </div>
+            <form onsubmit="app.saveEvent(event)" class="space-y-4">
+                <input type="hidden" name="index" id="event-index" value="-1">
+                <div>
+                    <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-1">Title</label>
+                    <input type="text" name="title" id="event-title" required placeholder="Meeting with Investors..." class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none gold-glow transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-1">Date</label>
+                        <input type="date" name="date" id="event-date" required class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none gold-glow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-1">Type</label>
+                        <select name="type" id="event-type" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none gold-glow">
+                            <option value="Meeting">Meeting</option>
+                            <option value="Birthday">Birthday</option>
+                            <option value="Deadline">Deadline</option>
+                            <option value="Social">Social</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 royal-gradient text-royal-dark font-bold uppercase tracking-wider rounded-lg hover:brightness-110 transition-all shadow-lg shadow-yellow-500/10">Record Decree</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        const QUOTES = [
+            "We suffer more often in imagination than in reality. – Seneca",
+            "Waste no more time arguing about what a good man should be. Be one. – Marcus Aurelius",
+            "Discipline is the bridge between goals and accomplishment. – Jim Rohn",
+            "The key is not to prioritize what's on your schedule, but to schedule your priorities. – Stephen Covey",
+            "He who has a why to live can bear almost any how. – Nietzsche"
+        ];
+
+        const app = {
+            data: {
+                logs: {}, // Format: "YYYY-MM-DD": { morning: {}, evening: {} }
+                events: []
+            },
+            charts: {},
+
+            // --- INIT ---
+            init() {
+                this.loadData();
+                this.updateTime();
+                setInterval(() => this.updateTime(), 60000);
+                this.navigate('dashboard');
+                
+                // Chart.js global defaults
+                Chart.defaults.color = '#94a3b8';
+                Chart.defaults.borderColor = '#334155';
+                Chart.defaults.font.family = "'Manrope', sans-serif";
+            },
+
+            loadData() {
+                try {
+                    const stored = localStorage.getItem('kingDailyData');
+                    if (stored) this.data = JSON.parse(stored);
+                } catch(e) {
+                    console.error("Data load error", e);
+                    this.showToast("Error loading data. Reset recommended.", "red");
+                }
+            },
+
+            saveData() {
+                try {
+                    localStorage.setItem('kingDailyData', JSON.stringify(this.data));
+                } catch(e) {
+                    this.showToast("Storage full! Export data then clear.", "red");
+                }
+            },
+
+            resetData() {
+                if(confirm("Abdicate the throne? This clears all records irrecoverably.")) {
+                    localStorage.removeItem('kingDailyData');
+                    location.reload();
+                }
+            },
+            
+            // --- XSS Protection ---
+            sanitize(str) {
+                if (!str) return '';
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            },
+
+            // --- NAVIGATION ---
+            navigate(view) {
+                // UI Updates
+                document.querySelectorAll('.nav-btn, .nav-btn-mobile').forEach(btn => {
+                    const isTarget = btn.dataset.target === view;
+                    const isDesktop = window.innerWidth >= 768;
+                    
+                    if(isDesktop) {
+                        btn.classList.toggle('text-royal-gold', isTarget);
+                        btn.classList.toggle('bg-royal-gold/10', isTarget);
+                        btn.classList.toggle('text-slate-400', !isTarget);
+                    } else {
+                        btn.classList.toggle('text-royal-gold', isTarget);
+                        btn.classList.toggle('text-slate-500', !isTarget);
+                    }
+                });
+
+                const container = document.getElementById('main-view');
+                // Clean up charts before switching view to prevent memory leaks
+                if (this.charts.focus) { this.charts.focus.destroy(); this.charts.focus = null; }
+                if (this.charts.discipline) { this.charts.discipline.destroy(); this.charts.discipline = null; }
+                if (this.charts.activity) { this.charts.activity.destroy(); this.charts.activity = null; }
+
+                container.classList.remove('fade-in');
+                void container.offsetWidth; // Force Reflow
+                container.classList.add('fade-in');
+
+                // Routing
+                if (view === 'dashboard') this.renderDashboard(container);
+                else if (view === 'morning') this.renderMorning(container);
+                else if (view === 'evening') this.renderEvening(container);
+                else if (view === 'archive') this.renderArchive(container);
+                else if (view === 'events') this.renderEvents(container);
+            },
+
+            // --- RENDERERS ---
+
+            renderDashboard(container) {
+                const today = new Date().toISOString().split('T')[0];
+                const todayLog = this.data.logs[today] || { morning: null, evening: null };
+                const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+                
+                // Analytics Calc
+                const logEntries = Object.entries(this.data.logs);
+                const totalLogs = logEntries.length;
+                const morningCount = logEntries.filter(([k,v]) => v.morning).length;
+                const eveningCount = logEntries.filter(([k,v]) => v.evening).length;
+
+                container.innerHTML = `
+                    <div class="mb-8 text-center md:text-left">
+                        <h2 class="text-3xl font-serif font-bold text-white mb-2">The Kingdom at a Glance</h2>
+                        <p class="text-royal-gold italic text-sm border-l-2 border-royal-gold pl-3 inline-block">"${quote}"</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Status Cards -->
+                        <div class="glass-card p-6 rounded-xl relative overflow-hidden group hover:border-royal-gold/40 transition-colors">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="ph-fill ph-sun text-6xl text-royal-gold"></i>
+                            </div>
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Morning Protocol</h3>
+                            ${todayLog.morning 
+                                ? `<p class="text-emerald-400 font-bold flex items-center gap-2"><i class="ph-bold ph-check"></i> Executed</p>` 
+                                : `<button onclick="app.navigate('morning')" class="mt-2 text-sm text-royal-gold hover:underline">Begin Protocol &rarr;</button>`
+                            }
+                        </div>
+
+                        <div class="glass-card p-6 rounded-xl relative overflow-hidden group hover:border-royal-gold/40 transition-colors">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="ph-fill ph-moon text-6xl text-royal-gold"></i>
+                            </div>
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Evening Report</h3>
+                            ${todayLog.evening 
+                                ? `<p class="text-emerald-400 font-bold flex items-center gap-2"><i class="ph-bold ph-check"></i> Submitted</p>` 
+                                : `<button onclick="app.navigate('evening')" class="mt-2 text-sm text-royal-gold hover:underline">Submit Report &rarr;</button>`
+                            }
+                        </div>
+
+                        <div class="glass-card p-6 rounded-xl relative overflow-hidden">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Entries</h3>
+                            <div class="flex items-end gap-2">
+                                <span class="text-3xl font-serif font-bold text-white">${totalLogs}</span>
+                                <span class="text-xs text-slate-500 mb-1">Days Logged</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Analytics -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="glass-card p-6 rounded-xl">
+                            <h3 class="font-serif font-bold text-white mb-4">Focus Intensity (Hrs)</h3>
+                            <div class="chart-container">
+                                <canvas id="focusChart"></canvas>
+                            </div>
+                        </div>
+                         <div class="glass-card p-6 rounded-xl">
+                            <h3 class="font-serif font-bold text-white mb-4">Discipline Ratio</h3>
+                            <div class="chart-container">
+                                <canvas id="disciplineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Allocation Analytics -->
+                    <div class="glass-card p-6 rounded-xl mb-8">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                            <h3 class="font-serif font-bold text-white">Time Allocation by Protocol</h3>
+                             <p class="text-xs text-slate-400 mt-2 md:mt-0" id="avg-duration-display">Avg Session: Calculating...</p>
+                        </div>
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events Preview -->
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-serif font-bold text-white">Impending Decrees</h3>
+                            <button onclick="app.navigate('events')" class="text-xs text-royal-gold hover:text-white transition-colors">View All</button>
+                        </div>
+                        <div class="space-y-3">
+                            ${this.renderUpcomingEventsPreview()}
+                        </div>
+                    </div>
+                `;
+
+                // Initialize Charts
+                setTimeout(() => this.initDashboardCharts(logEntries, morningCount, eveningCount), 0);
+            },
+
+            initDashboardCharts(logEntries, morningCount, eveningCount) {
+                // Prepare Data for Last 7 Days (Focus)
+                const last7Days = [];
+                const labels = [];
+                const today = new Date();
+                
+                // Aggregation for Activity Type (All Time)
+                const activityStats = {
+                    'Deep Work': 0,
+                    'Strategy': 0,
+                    'Meeting': 0,
+                    'Learning': 0,
+                    'Health': 0,
+                    'Admin': 0,
+                    'Uncategorized': 0
+                };
+                let totalDuration = 0;
+                let durationCount = 0;
+                
+                // 1. Process Timeline Data
+                for (let i=6; i>=0; i--) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() - i);
+                    const iso = d.toISOString().split('T')[0];
+                    labels.push(d.toLocaleDateString('en-US', {weekday:'short'}));
+                    
+                    const entry = this.data.logs[iso];
+                    let hours = 0;
+                    if (entry && entry.morning && entry.morning.duration) {
+                        const match = entry.morning.duration.toString().match(/(\d+(\.\d+)?)/);
+                        if (match) hours = parseFloat(match[0]);
+                    }
+                    last7Days.push(hours);
+                }
+
+                // 2. Process Aggregation Data (All Time)
+                logEntries.forEach(([date, entry]) => {
+                     if (entry.morning && entry.morning.duration) {
+                        let hours = 0;
+                        const match = entry.morning.duration.toString().match(/(\d+(\.\d+)?)/);
+                        if (match) hours = parseFloat(match[0]);
+                        
+                        // Count for Average
+                        if(hours > 0) {
+                            totalDuration += hours;
+                            durationCount++;
+                        }
+
+                        // Categorize
+                        const type = entry.morning.type || 'Uncategorized';
+                        if (activityStats[type] !== undefined) {
+                            activityStats[type] += hours;
+                        } else {
+                            activityStats['Uncategorized'] += hours;
+                        }
+                     }
+                });
+
+                // Update Avg Text
+                const avg = durationCount > 0 ? (totalDuration / durationCount).toFixed(1) : 0;
+                const avgEl = document.getElementById('avg-duration-display');
+                if(avgEl) avgEl.innerText = `Avg Protocol Duration: ${avg} hrs`;
+
+                // Focus Chart
+                this.charts.focus = new Chart(document.getElementById('focusChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Deep Work Hours',
+                            data: last7Days,
+                            borderColor: '#D4AF37',
+                            backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                // Discipline Chart
+                this.charts.discipline = new Chart(document.getElementById('disciplineChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Morning', 'Evening', 'Missed'],
+                        datasets: [{
+                            data: [morningCount, eveningCount, (logEntries.length * 2) - (morningCount + eveningCount)],
+                            backgroundColor: ['#D4AF37', '#4f46e5', '#1e293b'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } }
+                    }
+                });
+
+                // Activity Allocation Chart (New)
+                const activityLabels = Object.keys(activityStats).filter(k => activityStats[k] > 0);
+                const activityData = activityLabels.map(k => activityStats[k]);
+                
+                this.charts.activity = new Chart(document.getElementById('activityChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: activityLabels,
+                        datasets: [{
+                            label: 'Total Hours',
+                            data: activityData,
+                            backgroundColor: [
+                                '#D4AF37', // Gold (Deep Work)
+                                '#10b981', // Emerald (Strategy)
+                                '#3b82f6', // Blue (Meeting)
+                                '#8b5cf6', // Violet (Learning)
+                                '#f43f5e', // Rose (Health)
+                                '#64748b', // Slate (Admin)
+                                '#94a3b8'  // Gray (Uncat)
+                            ],
+                            borderRadius: 6,
+                            borderWidth: 0,
+                            barThickness: 20
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Horizontal Bar
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { 
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.x + ' Hrs Total';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.05)' }, title: {display: true, text: 'Total Hours Invested'} },
+                            y: { grid: { display: false }, ticks: { color: '#e2e8f0', font: {weight: 'bold'} } }
+                        }
+                    }
+                });
+            },
+
+            renderUpcomingEventsPreview() {
+                const upcoming = this.data.events
+                    .filter(e => new Date(e.date) >= new Date().setHours(0,0,0,0))
+                    .sort((a,b) => new Date(a.date) - new Date(b.date))
+                    .slice(0, 3);
+                
+                if(upcoming.length === 0) return '<p class="text-slate-500 text-sm italic">The schedule is clear, my King.</p>';
+
+                return upcoming.map(e => `
+                    <div class="flex items-center gap-4 p-3 bg-royal-dark/30 rounded-lg border border-white/5">
+                        <div class="text-center bg-royal-gold/10 px-3 py-1 rounded border border-royal-gold/20">
+                            <span class="block text-xs font-bold text-royal-gold">${new Date(e.date).getDate()}</span>
+                            <span class="block text-[10px] text-slate-400 uppercase">${new Date(e.date).toLocaleDateString(undefined, {month:'short'})}</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-white">${this.sanitize(e.title)}</p>
+                            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">${this.sanitize(e.type)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            renderMorning(container) {
+                const today = new Date().toISOString().split('T')[0];
+                const log = (this.data.logs[today] && this.data.logs[today].morning) || {};
+
+                container.innerHTML = `
+                    <div class="max-w-2xl mx-auto">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-serif font-bold text-white mb-2">Morning Protocol</h2>
+                            <p class="text-slate-400">Set the coordinates for conquest.</p>
+                        </div>
+
+                        <form onsubmit="app.saveMorning(event)" class="glass-card p-6 md:p-8 rounded-2xl border-t-4 border-t-royal-gold space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-2">Where (Location)</label>
+                                    <div class="relative">
+                                        <i class="ph-bold ph-map-pin absolute left-3 top-3.5 text-slate-500"></i>
+                                        <input type="text" name="location" value="${this.sanitize(log.location)}" required placeholder="Home Office, Cafe..." class="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none gold-glow transition-all">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-2">With Whom</label>
+                                    <div class="relative">
+                                        <i class="ph-bold ph-users absolute left-3 top-3.5 text-slate-500"></i>
+                                        <input type="text" name="withWho" value="${this.sanitize(log.withWho)}" required placeholder="Self, Team, Family..." class="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none gold-glow transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-2">Activity Type</label>
+                                    <div class="relative">
+                                        <i class="ph-bold ph-tag absolute left-3 top-3.5 text-slate-500"></i>
+                                        <select name="type" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none gold-glow transition-all appearance-none">
+                                            <option value="Deep Work" ${log.type === 'Deep Work' ? 'selected' : ''}>Deep Work</option>
+                                            <option value="Strategy" ${log.type === 'Strategy' ? 'selected' : ''}>Strategy & Planning</option>
+                                            <option value="Meeting" ${log.type === 'Meeting' ? 'selected' : ''}>Meeting / Alliance</option>
+                                            <option value="Learning" ${log.type === 'Learning' ? 'selected' : ''}>Learning / Research</option>
+                                            <option value="Health" ${log.type === 'Health' ? 'selected' : ''}>Health / Fitness</option>
+                                            <option value="Admin" ${log.type === 'Admin' ? 'selected' : ''}>Admin / Maintenance</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-2">Duration (Hours)</label>
+                                    <div class="relative">
+                                        <i class="ph-bold ph-clock absolute left-3 top-3.5 text-slate-500"></i>
+                                        <input type="number" step="0.5" name="duration" value="${this.sanitize(log.duration)}" required placeholder="e.g. 4" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none gold-glow transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-royal-gold uppercase tracking-wider mb-2">Prime Objective (The One Thing)</label>
+                                <textarea name="objective" rows="3" required placeholder="What must be achieved today?" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-4 text-white focus:outline-none gold-glow transition-all">${this.sanitize(log.objective)}</textarea>
+                            </div>
+
+                            <button type="submit" class="w-full py-4 royal-gradient text-royal-dark font-bold font-serif uppercase tracking-widest text-lg rounded-xl hover:brightness-110 transition-all shadow-lg shadow-yellow-500/20 transform active:scale-95">
+                                <i class="ph-bold ph-seal-check mr-2"></i> Commit to Record
+                            </button>
+                        </form>
+                    </div>
+                `;
+            },
+
+            renderEvening(container) {
+                const today = new Date().toISOString().split('T')[0];
+                const log = (this.data.logs[today] && this.data.logs[today].evening) || {};
+
+                container.innerHTML = `
+                     <div class="max-w-2xl mx-auto">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-serif font-bold text-white mb-2">Evening Report</h2>
+                            <p class="text-slate-400">Review the battlefield.</p>
+                        </div>
+
+                        <form onsubmit="app.saveEvening(event)" class="glass-card p-6 md:p-8 rounded-2xl border-t-4 border-t-indigo-500 space-y-6">
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
+                                        <i class="ph-fill ph-trophy"></i> Major Successes
+                                    </label>
+                                    <textarea name="success" rows="3" required placeholder="What went well?" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all">${this.sanitize(log.success)}</textarea>
+                                </div>
+
+                                <div>
+                                    <label class="flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wider mb-2">
+                                        <i class="ph-fill ph-warning-octagon"></i> Challenges / Blockers
+                                    </label>
+                                    <textarea name="challenges" rows="3" required placeholder="What stood in the way?" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-4 text-white focus:outline-none focus:border-red-500 transition-all">${this.sanitize(log.challenges)}</textarea>
+                                </div>
+
+                                <div>
+                                    <label class="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">
+                                        <i class="ph-fill ph-strategy"></i> Strategy for Tomorrow
+                                    </label>
+                                    <textarea name="strategy" rows="3" required placeholder="How do we improve?" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-4 text-white focus:outline-none focus:border-blue-500 transition-all">${this.sanitize(log.strategy)}</textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white font-bold font-serif uppercase tracking-widest text-lg rounded-xl hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20 transform active:scale-95">
+                                <i class="ph-bold ph-paper-plane-right mr-2"></i> Submit Report
+                            </button>
+                        </form>
+                    </div>
+                `;
+            },
+            
+            renderArchive(container) {
+                const logs = Object.entries(this.data.logs).sort((a,b) => new Date(b[0]) - new Date(a[0])); // Newest first
+
+                container.innerHTML = `
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-3xl font-serif font-bold text-white">Journal Archive</h2>
+                            <p class="text-slate-400">The history of your reign.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        ${logs.length === 0 ? '<p class="text-slate-500 italic">No history recorded yet.</p>' : logs.map(([date, log]) => `
+                            <div class="glass-card p-6 rounded-xl">
+                                <h3 class="font-bold text-royal-gold mb-4 border-b border-white/5 pb-2 flex justify-between items-center">
+                                    <span>${new Date(date).toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</span>
+                                    ${log.morning && log.morning.type ? `<span class="text-[10px] bg-royal-gold/10 px-2 py-0.5 rounded border border-royal-gold/20 uppercase tracking-widest">${log.morning.type}</span>` : ''}
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    ${log.morning ? `
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-500 uppercase">Morning Objective</p>
+                                            <p class="text-sm text-white mb-2">${this.sanitize(log.morning.objective)}</p>
+                                            <div class="flex gap-4 text-xs text-slate-400">
+                                                <span><i class="ph-bold ph-map-pin"></i> ${this.sanitize(log.morning.location)}</span>
+                                                <span><i class="ph-bold ph-clock"></i> ${this.sanitize(log.morning.duration)}h</span>
+                                            </div>
+                                        </div>
+                                    ` : '<p class="text-xs text-slate-600 italic">No Morning Protocol</p>'}
+                                    
+                                    ${log.evening ? `
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-500 uppercase">Evening Strategy</p>
+                                            <p class="text-sm text-white mb-2">${this.sanitize(log.evening.strategy)}</p>
+                                            <p class="text-xs font-bold text-slate-500 uppercase mt-2">Win</p>
+                                            <p class="text-sm text-emerald-400">${this.sanitize(log.evening.success)}</p>
+                                        </div>
+                                    ` : '<p class="text-xs text-slate-600 italic">No Evening Report</p>'}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            renderEvents(container) {
+                // Sort events by date
+                const sortedEvents = this.data.events.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+                container.innerHTML = `
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-3xl font-serif font-bold text-white">Royal Calendar</h2>
+                            <p class="text-slate-400">Events, Birthdays, and Alliances.</p>
+                        </div>
+                        <button onclick="app.openEventModal()" class="bg-royal-gold text-royal-dark px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wide hover:brightness-110 flex items-center gap-2">
+                            <i class="ph-bold ph-plus"></i> Add Event
+                        </button>
+                    </div>
+
+                    ${sortedEvents.length === 0 ? `
+                        <div class="glass-card p-12 rounded-xl text-center border-dashed border-slate-700">
+                            <p class="text-slate-500">The royal agenda is empty.</p>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${sortedEvents.map((evt, index) => {
+                                const isPast = new Date(evt.date) < new Date().setHours(0,0,0,0);
+                                return `
+                                <div class="glass-card p-5 rounded-xl border-l-4 ${this.getEventColor(evt.type)} relative group ${isPast ? 'opacity-50' : ''}">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 block">${new Date(evt.date).toDateString()}</span>
+                                            <h3 class="text-lg font-bold text-white mb-1">${this.sanitize(evt.title)}</h3>
+                                            <span class="text-xs bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">${this.sanitize(evt.type)}</span>
+                                        </div>
+                                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onclick="app.editEvent(${index})" class="text-slate-400 hover:text-royal-gold"><i class="ph-bold ph-pencil"></i></button>
+                                            <button onclick="app.deleteEvent(${index})" class="text-slate-400 hover:text-red-500"><i class="ph-bold ph-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `}).join('')}
+                        </div>
+                    `}
+                `;
+            },
+
+            // --- ACTIONS ---
+
+            saveMorning(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const today = new Date().toISOString().split('T')[0];
+
+                if (!this.data.logs[today]) this.data.logs[today] = { morning: null, evening: null };
+
+                this.data.logs[today].morning = {
+                    type: formData.get('type'),
+                    location: formData.get('location'),
+                    withWho: formData.get('withWho'),
+                    duration: formData.get('duration'),
+                    objective: formData.get('objective')
+                };
+
+                this.saveData();
+                this.showToast("Morning protocol recorded.", "gold");
+                this.navigate('dashboard');
+            },
+
+            saveEvening(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const today = new Date().toISOString().split('T')[0];
+
+                if (!this.data.logs[today]) this.data.logs[today] = { morning: null, evening: null };
+
+                this.data.logs[today].evening = {
+                    success: formData.get('success'),
+                    challenges: formData.get('challenges'),
+                    strategy: formData.get('strategy')
+                };
+
+                this.saveData();
+                this.showToast("Evening report filed. Rest well.", "indigo");
+                this.navigate('dashboard');
+            },
+            
+            // --- Event Management ---
+            openEventModal(index = -1) {
+                document.getElementById('event-index').value = index;
+                if(index > -1) {
+                    const evt = this.data.events[index];
+                    document.getElementById('event-modal-title').innerText = "Edit Decree";
+                    document.getElementById('event-title').value = evt.title;
+                    document.getElementById('event-date').value = evt.date;
+                    document.getElementById('event-type').value = evt.type;
+                } else {
+                    document.getElementById('event-modal-title').innerText = "Declare Event";
+                    document.querySelector('form').reset();
+                    document.getElementById('event-index').value = -1;
+                }
+                this.toggleModal('event-modal');
+            },
+
+            editEvent(index) {
+                this.openEventModal(index);
+            },
+
+            saveEvent(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const index = parseInt(formData.get('index'));
+                
+                const eventData = {
+                    title: formData.get('title'),
+                    date: formData.get('date'),
+                    type: formData.get('type')
+                };
+
+                if(index > -1) {
+                    this.data.events[index] = eventData;
+                } else {
+                    this.data.events.push(eventData);
+                }
+
+                this.saveData();
+                this.toggleModal('event-modal');
+                this.renderEvents(document.getElementById('main-view'));
+                this.showToast(index > -1 ? "Decree updated." : "Decree declared.", "gold");
+                e.target.reset();
+            },
+
+            deleteEvent(index) {
+                if(confirm("Revoke this decree?")) {
+                    this.data.events.splice(index, 1);
+                    this.saveData();
+                    this.renderEvents(document.getElementById('main-view'));
+                }
+            },
+            
+            // --- Utils ---
+
+            updateTime() {
+                const now = new Date();
+                const timeEl = document.getElementById('current-time');
+                if(timeEl) timeEl.innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const dateEl = document.getElementById('current-date');
+                if(dateEl) dateEl.innerText = now.toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'});
+            },
+
+            toggleModal(id) {
+                const el = document.getElementById(id);
+                el.classList.toggle('hidden');
+            },
+
+            getEventColor(type) {
+                switch(type) {
+                    case 'Meeting': return 'border-blue-500';
+                    case 'Birthday': return 'border-pink-500';
+                    case 'Deadline': return 'border-red-500';
+                    default: return 'border-royal-gold';
+                }
+            },
+
+            showToast(msg, color) {
+                Toastify({
+                    text: msg,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "center",
+                    style: {
+                        background: color === 'gold' ? "linear-gradient(to right, #D4AF37, #C5A028)" : "#4f46e5",
+                        color: color === 'gold' ? "#0B0F19" : "#fff",
+                        fontWeight: "bold",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 15px rgba(0,0,0,0.5)"
+                    }
+                }).showToast();
+            },
+
+            exportData() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "king_daily_backup_" + new Date().toISOString().split('T')[0] + ".json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            },
+
+            importData(input) {
+                const file = input.files[0];
+                if(!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if(imported.logs && imported.events) {
+                            this.data = imported;
+                            this.saveData();
+                            location.reload();
+                        } else {
+                            throw new Error("Invalid format");
+                        }
+                    } catch(err) {
+                        this.showToast("Invalid backup file.", "red");
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
