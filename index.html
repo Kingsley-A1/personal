@@ -162,6 +162,35 @@
             </div>
 
             <div class="header-actions">
+                <!-- Streak Badge (visible when learning streak > 0) -->
+                <div id="streak-badge" class="streak-badge hidden" onclick="app.navigate('learning')"
+                    title="Learning Streak">
+                    <i class="ph-fill ph-fire"></i>
+                    <span id="streak-count">0</span>
+                </div>
+
+                <!-- Notifications (shown when logged in) -->
+                <button id="notifications-btn" class="icon-btn notification-btn hidden"
+                    onclick="app.navigate('notifications')" title="Notifications">
+                    <i class="ph-bold ph-bell"></i>
+                    <span id="notification-badge" class="notification-dot hidden"></span>
+                </button>
+
+                <!-- User Profile (shown when logged in) -->
+                <div id="user-profile" class="user-profile hidden">
+                    <div class="user-avatar" onclick="app.openSettings()" title="Settings">
+                        <span id="user-initials">KD</span>
+                        <img id="user-avatar-img" src="" alt="" style="display: none;">
+                    </div>
+                    <span id="sync-status" class="sync-status" title="Sync Status"></span>
+                </div>
+
+                <!-- Guest Prompt (shown when not logged in) -->
+                <a href="auth.html" id="guest-prompt" class="guest-prompt hidden-mobile">
+                    <i class="ph-bold ph-cloud-arrow-up"></i>
+                    <span>Sync Data</span>
+                </a>
+
                 <div class="header-time hidden-mobile">
                     <p class="date" id="current-date">Today</p>
                     <p class="time" id="current-time">00:00</p>
@@ -207,6 +236,21 @@
                         <i class="ph-duotone ph-calendar-check"></i>
                         <span>Royal Calendar</span>
                     </button>
+                    <button onclick="app.navigate('learning')" class="nav-btn" data-target="learning">
+                        <i class="ph-duotone ph-graduation-cap"></i>
+                        <span>Learning Forge</span>
+                    </button>
+
+                    <div class="nav-divider"></div>
+
+                    <button onclick="app.navigate('notifications')" class="nav-btn" data-target="notifications">
+                        <i class="ph-duotone ph-bell"></i>
+                        <span>Notifications</span>
+                    </button>
+                    <button onclick="app.navigate('settings')" class="nav-btn" data-target="settings">
+                        <i class="ph-duotone ph-gear-six"></i>
+                        <span>Settings</span>
+                    </button>
                 </nav>
             </aside>
 
@@ -234,9 +278,9 @@
                 <i class="ph-duotone ph-book-open"></i>
                 <span>Logs</span>
             </button>
-            <button onclick="app.navigate('events')" class="mobile-nav-btn" data-target="events">
-                <i class="ph-duotone ph-calendar"></i>
-                <span>Events</span>
+            <button onclick="app.navigate('learning')" class="mobile-nav-btn" data-target="learning">
+                <i class="ph-duotone ph-graduation-cap"></i>
+                <span>Learn</span>
             </button>
         </nav>
 
@@ -280,12 +324,56 @@
     </div>
 
     <!-- Application Scripts -->
+    <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sync.js"></script>
     <script src="js/router.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/views.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Auth & Sync Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize sync module
+            Sync.init();
+
+            // Update UI based on auth status
+            const updateAuthUI = () => {
+                const user = Auth.getUser();
+                const profileEl = document.getElementById('user-profile');
+                const guestEl = document.getElementById('guest-prompt');
+                const initialsEl = document.getElementById('user-initials');
+                const avatarImg = document.getElementById('user-avatar-img');
+
+                if (user) {
+                    profileEl.classList.remove('hidden');
+                    guestEl.classList.add('hidden');
+                    initialsEl.textContent = user.initials || 'U';
+
+                    if (user.avatar) {
+                        if (user.avatar.startsWith('data:')) {
+                            avatarImg.src = user.avatar;
+                        } else {
+                            avatarImg.src = `${Config.API_URL.replace('/api', '')}/avatars/${user.avatar}`;
+                        }
+                        avatarImg.style.display = 'block';
+                        initialsEl.style.display = 'none';
+                    } else {
+                        avatarImg.style.display = 'none';
+                        initialsEl.style.display = 'block';
+                    }
+                } else {
+                    profileEl.classList.add('hidden');
+                    guestEl.classList.remove('hidden');
+                }
+            };
+
+            updateAuthUI();
+        });
+    </script>
 </body>
 
 </html>

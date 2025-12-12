@@ -13,12 +13,19 @@ const app = {
         // Load stored data
         this.data = Storage.load();
 
+        // Apply saved settings (theme, etc.)
+        this.applySettings();
+
         // Initialize time display
         Utils.updateHeaderTime();
         setInterval(() => Utils.updateHeaderTime(), 60000);
 
         // Initialize Chart.js defaults
         Charts.init();
+
+        // Update streak badge
+        this.updateStreakBadge();
+        Storage.updateNotificationBadge();
 
         // Navigate to dashboard
         this.navigate('dashboard');
@@ -53,8 +60,29 @@ const app = {
                 case 'events':
                     Views.renderEvents(container, this.data);
                     break;
+                case 'learning':
+                    Views.renderLearning(container, this.data);
+                    break;
+                case 'notifications':
+                    Views.renderNotifications(container);
+                    break;
+                case 'settings':
+                    Views.renderSettings(container);
+                    // Apply current theme toggle state
+                    const settings = Storage.getSettings();
+                    const themeToggle = document.getElementById('theme-toggle');
+                    if (themeToggle) {
+                        themeToggle.checked = settings.theme === 'light';
+                    }
+                    break;
                 default:
-                    Views.renderDashboard(container, this.data);
+                    // Check if it's a course detail view
+                    if (view.startsWith('course-')) {
+                        const courseId = parseInt(view.split('-')[1]);
+                        Views.renderCourseDetail(container, this.data, courseId);
+                    } else {
+                        Views.renderDashboard(container, this.data);
+                    }
             }
         });
     },
@@ -322,6 +350,635 @@ const app = {
             Storage.clear();
             location.reload();
         }
+    },
+
+    // ==========================================
+    // LEARNING MODULE
+    // ==========================================
+
+    /**
+     * Navigate to course detail
+     * @param {number} courseId - Course ID
+     */
+    navigateToCourse(courseId) {
+        Charts.destroyAll();
+        Router.currentView = `course-${courseId}`;
+        Router.animateTransition(() => {
+            const container = document.getElementById('main-view');
+            Views.renderCourseDetail(container, this.data, courseId);
+        });
+    },
+
+    /**
+     * Open course modal for adding new course
+     */
+    openCourseModal() {
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = Views.getAddCourseModalHTML();
+        modal.classList.add('active');
+    },
+
+    /**
+     * Save course from modal form
+     * @param {Event} e - Form submit event
+     */
+    saveCourse(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const courseData = {
+            title: formData.get('title'),
+            platform: formData.get('platform') || 'Self-Study',
+            duration: formData.get('duration'),
+            dailyGoal: formData.get('dailyGoal'),
+            endDate: formData.get('endDate'),
+            pledge: formData.get('pledge')
+        };
+
+        Storage.addCourse(this.data, courseData);
+        Utils.showToast('New learning journey begins!', 'gold');
+        this.closeModal();
+        this.navigate('learning');
+    },
+
+    /**
+     * Open edit course modal
+     * @param {number} courseId - Course ID
+     */
+    openEditCourseModal(courseId) {
+        const course = Storage.getCourse(this.data, courseId);
+        if (!course) return;
+
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="ph-duotone ph-pencil-simple" style="color: var(--royal-gold);"></i>
+                    Edit Course
+                </h2>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x" style="font-size: 1.25rem;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="app.updateCourse(event, ${course.id})">
+                    <div class="form-group">
+                        <label class="form-label">Course Title *</label>
+                        <input type="text" name="title" class="form-input" value="${Utils.sanitize(course.title)}" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Platform</label>
+                            <input type="text" name="platform" class="form-input" value="${Utils.sanitize(course.platform || '')}" placeholder="Coursera, Udemy...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Duration</label>
+                            <input type="text" name="duration" class="form-input" value="${Utils.sanitize(course.duration || '')}" placeholder="40 hours">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Daily Goal (min)</label>
+                            <input type="number" name="dailyGoal" class="form-input" value="${course.dailyGoal || 60}" min="15" max="480">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date</label>
+                            <input type="date" name="endDate" class="form-input" value="${course.endDate ? course.endDate.split('T')[0] : ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pledge / Commitment</label>
+                        <textarea name="pledge" class="form-input" rows="2" placeholder="Why are you learning this?">${Utils.sanitize(course.pledge || '')}</textarea>
+                    </div>
+                    <div class="btn-row" style="margin-top: 1.5rem;">
+                        <button type="button" class="btn btn-outline" onclick="app.deleteCourse(${course.id})" style="color: var(--danger); border-color: var(--danger);">
+                            <i class="ph-bold ph-trash"></i> Delete
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ph-bold ph-check"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        modal.classList.add('active');
+    },
+
+    /**
+     * Update existing course
+     * @param {Event} e - Form submit event
+     * @param {number} courseId - Course ID
+     */
+    updateCourse(e, courseId) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const updates = {
+            title: formData.get('title'),
+            platform: formData.get('platform') || 'Self-Study',
+            duration: formData.get('duration'),
+            dailyGoal: parseInt(formData.get('dailyGoal')) || 60,
+            endDate: formData.get('endDate') || null,
+            pledge: formData.get('pledge')
+        };
+
+        Storage.updateCourse(this.data, courseId, updates);
+        Utils.showToast('Course updated!', 'gold');
+        this.closeModal();
+        this.navigateToCourse(courseId);
+    },
+
+    /**
+     * Open log modal for course
+     * @param {number} courseId - Course ID
+     */
+    openLogModal(courseId) {
+        const course = Storage.getCourse(this.data, courseId);
+        if (!course) return;
+
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = Views.getLogModalHTML(course);
+        modal.classList.add('active');
+    },
+
+    /**
+     * Save learning log
+     * @param {Event} e - Form submit event
+     */
+    saveLog(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const courseId = parseInt(formData.get('courseId'));
+
+        const logData = {
+            learned: formData.get('learned'),
+            challenge: formData.get('challenge'),
+            solution: formData.get('solution'),
+            timeSpent: parseInt(formData.get('timeSpent')) || 60,
+            milestone: formData.get('milestone') === 'on'
+        };
+
+        Storage.addLearningLog(this.data, courseId, logData);
+
+        // Update streak
+        const streak = Storage.updateStreak(this.data);
+        this.updateStreakBadge();
+
+        Utils.showToast(`Learning logged! Streak: ${streak.current} day${streak.current !== 1 ? 's' : ''} 🔥`, 'gold');
+        this.closeModal();
+        this.navigateToCourse(courseId);
+    },
+
+    /**
+     * Adjust log time by increment
+     * @param {number} increment - Minutes to add/remove
+     */
+    adjustLogTime(increment) {
+        const input = document.getElementById('log-time-input');
+        if (input) {
+            let value = parseInt(input.value) || 60;
+            value = Math.max(5, value + increment);
+            input.value = value;
+        }
+    },
+
+    /**
+     * Complete a course
+     * @param {number} courseId - Course ID
+     */
+    completeCourse(courseId) {
+        if (!confirm('Mark this course as completed? This is a great achievement!')) return;
+
+        Storage.completeCourse(this.data, courseId);
+        Utils.showToast('Course Completed! 👑 Upload your certificate to seal the victory.', 'gold');
+
+        // Open certificate upload modal
+        this.openCertModal(courseId);
+    },
+
+    /**
+     * Delete a course
+     * @param {number} courseId - Course ID
+     */
+    deleteCourse(courseId) {
+        if (!confirm('Delete this course and all its logs? This cannot be undone.')) return;
+
+        Storage.deleteCourse(this.data, courseId);
+        Utils.showToast('Course deleted.', 'indigo');
+        this.navigate('learning');
+    },
+
+    /**
+     * Open certificate upload modal
+     * @param {number} courseId - Course ID
+     */
+    openCertModal(courseId) {
+        const course = Storage.getCourse(this.data, courseId);
+        if (!course) return;
+
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = Views.getCertModalHTML(course);
+        modal.classList.add('active');
+    },
+
+    /**
+     * Upload certificate from form
+     * @param {Event} e - Form submit event
+     */
+    uploadCertificate(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const courseId = parseInt(formData.get('courseId'));
+        const fileInput = document.getElementById('cert-file-input');
+        const errorEl = document.getElementById('cert-error');
+        const file = fileInput?.files[0];
+
+        if (!file) {
+            errorEl.textContent = 'Please select a file.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        // Validate size (500KB)
+        if (file.size > 500 * 1024) {
+            errorEl.textContent = 'File too large! Max 500KB. Please compress it.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                Storage.saveCertificate(this.data, courseId, evt.target.result);
+                Utils.showToast('Certificate uploaded successfully!', 'gold');
+                this.closeModal();
+                this.navigateToCourse(courseId);
+            } catch (err) {
+                errorEl.textContent = 'Storage full. Cannot save image.';
+                errorEl.style.display = 'block';
+            }
+        };
+        reader.readAsDataURL(file);
+    },
+
+    /**
+     * Remove certificate from course
+     * @param {number} courseId - Course ID
+     */
+    removeCertificate(courseId) {
+        if (!confirm('Remove this certificate?')) return;
+        Storage.removeCertificate(this.data, courseId);
+        Utils.showToast('Certificate removed.', 'indigo');
+        this.navigateToCourse(courseId);
+    },
+
+    /**
+     * Show image in new window
+     * @param {string} src - Image source
+     */
+    showImage(src) {
+        const w = window.open('');
+        w.document.write(`<html><head><title>Certificate</title><style>body{margin:0;background:#0a0a0a;display:flex;justify-content:center;align-items:center;min-height:100vh;}</style></head><body><img src="${src}" style="max-width:100%;max-height:100vh;object-fit:contain;"></body></html>`);
+    },
+
+    // ==========================================
+    // SETTINGS & AUTH
+    // ==========================================
+
+    /**
+     * Open settings view
+     */
+    openSettings() {
+        this.navigate('settings');
+    },
+
+    /**
+     * Logout user
+     */
+    logout() {
+        if (!confirm('Sign out of your account?')) return;
+        Auth.logout();
+    },
+
+    /**
+     * Handle avatar upload
+     * @param {HTMLInputElement} input - File input element
+     */
+    async handleAvatarUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Validate size
+        if (file.size > 500 * 1024) {
+            Utils.showToast('Image too large! Max 500KB.', 'danger');
+            return;
+        }
+
+        try {
+            Utils.showToast('Uploading avatar...', 'indigo');
+            await Auth.uploadAvatar(file);
+            Utils.showToast('Avatar updated!', 'gold');
+            this.navigate('settings');
+
+            // Update header avatar
+            const user = Auth.getUser();
+            if (user && user.avatar) {
+                const avatarImg = document.getElementById('user-avatar-img');
+                const initials = document.getElementById('user-initials');
+                if (avatarImg && user.avatar.startsWith('data:')) {
+                    avatarImg.src = user.avatar;
+                    avatarImg.style.display = 'block';
+                    if (initials) initials.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            Utils.showToast('Failed to upload avatar: ' + error.message, 'danger');
+        }
+    },
+
+    /**
+     * Open edit name modal
+     */
+    openEditNameModal() {
+        const user = Auth.getUser();
+        if (!user) return;
+
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="ph-duotone ph-pencil-simple" style="color: var(--royal-gold);"></i>
+                    Edit Name
+                </h2>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x" style="font-size: 1.25rem;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="app.updateName(event)">
+                    <div class="form-group">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" name="name" class="form-input" value="${Utils.sanitize(user.name)}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                        <i class="ph-bold ph-check"></i> Save
+                    </button>
+                </form>
+            </div>
+        `;
+
+        modal.classList.add('active');
+    },
+
+    /**
+     * Update user name
+     * @param {Event} e - Form submit event
+     */
+    async updateName(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const name = formData.get('name');
+
+        try {
+            await Auth.updateProfile({ name });
+            Utils.showToast('Name updated!', 'gold');
+            this.closeModal();
+            this.navigate('settings');
+
+            // Update header
+            const initialsEl = document.getElementById('user-initials');
+            if (initialsEl) {
+                const user = Auth.getUser();
+                initialsEl.textContent = user.initials || 'U';
+            }
+        } catch (error) {
+            Utils.showToast('Failed to update name: ' + error.message, 'danger');
+        }
+    },
+
+    /**
+     * Open change password modal
+     */
+    openChangePasswordModal() {
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="ph-duotone ph-lock-key" style="color: var(--indigo);"></i>
+                    Change Password
+                </h2>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x" style="font-size: 1.25rem;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="app.changePassword(event)">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="currentPassword" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="newPassword" class="form-input" placeholder="Minimum 6 characters" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                        <i class="ph-bold ph-check"></i> Update Password
+                    </button>
+                </form>
+            </div>
+        `;
+
+        modal.classList.add('active');
+    },
+
+    /**
+     * Change password
+     * @param {Event} e - Form submit event
+     */
+    async changePassword(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const currentPassword = formData.get('currentPassword');
+        const newPassword = formData.get('newPassword');
+        const confirmPassword = formData.get('confirmPassword');
+
+        if (newPassword !== confirmPassword) {
+            Utils.showToast('New passwords do not match!', 'danger');
+            return;
+        }
+
+        try {
+            // Call API to change password
+            const response = await fetch(`${Config.API_URL}/auth/password`, {
+                method: 'PUT',
+                headers: Auth.getHeaders(),
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to change password');
+            }
+
+            Utils.showToast('Password updated successfully!', 'gold');
+            this.closeModal();
+        } catch (error) {
+            Utils.showToast(error.message, 'danger');
+        }
+    },
+
+    /**
+     * Confirm delete account
+     */
+    confirmDeleteAccount() {
+        if (!confirm('⚠️ This will permanently delete your account and all cloud data. This action cannot be undone. Are you sure?')) {
+            return;
+        }
+
+        // Double confirmation
+        const email = Auth.getUser()?.email;
+        const confirmation = prompt(`Type your email "${email}" to confirm deletion:`);
+
+        if (confirmation !== email) {
+            Utils.showToast('Email did not match. Account not deleted.', 'danger');
+            return;
+        }
+
+        this.deleteAccount();
+    },
+
+    /**
+     * Delete account
+     */
+    async deleteAccount() {
+        try {
+            const response = await fetch(`${Config.API_URL}/auth/account`, {
+                method: 'DELETE',
+                headers: Auth.getHeaders()
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to delete account');
+            }
+
+            Utils.showToast('Account deleted. Goodbye!', 'gold');
+            Auth.logout();
+        } catch (error) {
+            Utils.showToast(error.message, 'danger');
+        }
+    },
+
+    /**
+     * Export data as JSON backup
+     */
+    exportData() {
+        const data = {
+            exportDate: new Date().toISOString(),
+            appData: this.data,
+            user: Auth.getUser()
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `king-daily-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        Utils.showToast('Data exported successfully!', 'gold');
+    },
+
+    // ==========================================
+    // THEME AND SETTINGS
+    // ==========================================
+
+    /**
+     * Toggle between light and dark theme
+     * @param {boolean} isLight - Whether to use light theme
+     */
+    toggleTheme(isLight) {
+        document.body.classList.toggle('light-theme', isLight);
+        Storage.updateSetting('theme', isLight ? 'light' : 'dark');
+        Utils.showToast(isLight ? 'Light theme activated' : 'Dark theme activated', 'gold');
+    },
+
+    /**
+     * Update notification setting
+     * @param {string} key - Setting key
+     * @param {boolean} value - Setting value
+     */
+    updateNotificationSetting(key, value) {
+        Storage.updateSetting(`notifications.${key}`, value);
+    },
+
+    /**
+     * Apply saved settings on init
+     */
+    applySettings() {
+        const settings = Storage.getSettings();
+
+        // Apply theme
+        if (settings.theme === 'light') {
+            document.body.classList.add('light-theme');
+        }
+    },
+
+    // ==========================================
+    // STREAK AND NOTIFICATIONS
+    // ==========================================
+
+    /**
+     * Update streak badge in header
+     */
+    updateStreakBadge() {
+        const streak = Storage.getStreak();
+        const badge = document.getElementById('streak-badge');
+        const count = document.getElementById('streak-count');
+
+        if (badge && count) {
+            if (streak.current > 0) {
+                badge.classList.remove('hidden');
+                count.textContent = streak.current;
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+    },
+
+    /**
+     * Mark notification as read
+     * @param {string} id - Notification ID
+     */
+    markNotificationRead(id) {
+        Storage.markNotificationRead(id);
+        this.navigate('notifications');
+    },
+
+    /**
+     * Clear all notifications
+     */
+    clearNotifications() {
+        Storage.clearNotifications();
+        this.navigate('notifications');
+        Utils.showToast('All notifications marked as read', 'gold');
     }
 };
 

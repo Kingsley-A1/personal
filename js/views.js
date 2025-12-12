@@ -729,10 +729,893 @@ const Views = {
 
                     <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 0.5rem;">
                         <i class="ph-bold ph-seal-check"></i> ${isEdit ? 'Update Decree' : 'Record Decree'}
-                    </button>
-                </form>
+        </form>
             </div>
         `;
+    },
+
+    // ==========================================
+    // LEARNING MODULE VIEWS
+    // ==========================================
+
+    /**
+     * Render Learning Dashboard View
+     * @param {HTMLElement} container - Container element
+     * @param {Object} data - App data
+     */
+    renderLearning(container, data) {
+        Storage.ensureLearningData(data);
+        Storage.checkLearningStreakIntegrity(data);
+
+        const quote = Storage.getRandomQuote();
+        const analytics = Storage.getLearningAnalytics(data);
+        const heatmapData = Storage.getActivityHeatmap(data);
+        const activeCourses = data.learning.courses.filter(c => c.status === 'active');
+        const completedCourses = data.learning.courses.filter(c => c.status === 'completed');
+
+        container.innerHTML = `
+            <div class="page-header mb-6">
+                <h2 class="page-title">
+                    <i class="ph-duotone ph-graduation-cap text-gold" style="margin-right: 0.5rem;"></i>
+                    The Learning Forge
+                </h2>
+                <div class="quote-block" style="margin-top: 0.5rem;">
+                    "${quote.text}"
+                    <span class="text-muted" style="display: block; font-size: 0.75rem; margin-top: 0.25rem;">— ${quote.author}</span>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-1 grid-3 mb-6">
+                <div class="glass-card stat-card" style="border-left: 4px solid var(--royal-gold);">
+                    <div class="stat-icon" style="position: absolute; right: 1rem; top: 1rem; opacity: 0.1;">
+                        <i class="ph-fill ph-fire text-gold" style="font-size: 3rem;"></i>
+                    </div>
+                    <p class="stat-label">Learning Streak</p>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                        <span class="stat-value" style="color: var(--royal-gold);">${analytics.streak}</span>
+                        <span class="stat-sublabel">Days</span>
+                    </div>
+                </div>
+                <div class="glass-card stat-card" style="border-left: 4px solid var(--success);">
+                    <p class="stat-label">Active Courses</p>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                        <span class="stat-value">${analytics.activeCourses}</span>
+                        <span class="stat-sublabel" style="color: var(--success);">+${analytics.completedCourses} Completed</span>
+                    </div>
+                </div>
+                <div class="glass-card stat-card" style="border-left: 4px solid var(--indigo);">
+                    <p class="stat-label">Hours Invested</p>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                        <span class="stat-value" style="color: var(--indigo);">${analytics.totalHours}</span>
+                        <span class="stat-sublabel">${analytics.totalLogs} Log Entries</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Heatmap -->
+            <div class="glass-card p-6 mb-6">
+                <h3 style="font-family: var(--font-serif); font-weight: 700; color: white; margin-bottom: 1rem;">
+                    <i class="ph-duotone ph-calendar-dots" style="color: var(--royal-gold);"></i>
+                    Activity Heatmap (12 Weeks)
+                </h3>
+                <div class="heatmap-container">
+                    <div class="heatmap-grid" id="activity-heatmap">
+                        ${this.renderHeatmap(heatmapData)}
+                    </div>
+                    <div class="heatmap-legend">
+                        <span class="text-muted" style="font-size: 0.625rem;">Less</span>
+                        <div class="heatmap-cell level-0"></div>
+                        <div class="heatmap-cell level-1"></div>
+                        <div class="heatmap-cell level-2"></div>
+                        <div class="heatmap-cell level-3"></div>
+                        <div class="heatmap-cell level-4"></div>
+                        <span class="text-muted" style="font-size: 0.625rem;">More</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Courses -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-family: var(--font-serif); font-weight: 700; color: white;">
+                    <i class="ph-duotone ph-books" style="color: var(--success);"></i>
+                    Active Campaigns
+                </h3>
+                <button onclick="app.openCourseModal()" class="btn btn-primary btn-sm">
+                    <i class="ph-bold ph-plus"></i> New Course
+                </button>
+            </div>
+
+            ${activeCourses.length === 0 ? `
+                <div class="glass-card empty-state" style="border-style: dashed; margin-bottom: 2rem;">
+                    <i class="ph-duotone ph-student"></i>
+                    <h3>No active courses</h3>
+                    <p>Start your learning journey by adding a course.</p>
+                    <button onclick="app.openCourseModal()" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="ph-bold ph-plus"></i> Add Course
+                    </button>
+                </div>
+            ` : `
+                <div class="grid grid-1 grid-2 mb-6">
+                    ${activeCourses.map(course => this.renderCourseCard(course)).join('')}
+                </div>
+            `}
+
+            <!-- Completed Courses -->
+            ${completedCourses.length > 0 ? `
+                <h3 style="font-family: var(--font-serif); font-weight: 700; color: white; margin-bottom: 1rem; margin-top: 2rem;">
+                    <i class="ph-fill ph-medal" style="color: var(--royal-gold);"></i>
+                    Conquered Territories
+                </h3>
+                <div class="grid grid-1 grid-2 mb-6">
+                    ${completedCourses.map(course => this.renderCourseCard(course)).join('')}
+                </div>
+            ` : ''}
+
+            <!-- Analytics Preview -->
+            <div class="glass-card p-6 mb-6">
+                <h3 style="font-family: var(--font-serif); font-weight: 700; color: white; margin-bottom: 1rem;">
+                    <i class="ph-duotone ph-chart-line-up" style="color: var(--indigo);"></i>
+                    Weekly Momentum
+                </h3>
+                <div class="chart-container">
+                    <canvas id="learningMomentumChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Platform Distribution -->
+            ${Object.keys(analytics.platformMinutes).length > 0 ? `
+                <div class="glass-card p-6">
+                    <h3 style="font-family: var(--font-serif); font-weight: 700; color: white; margin-bottom: 1rem;">
+                        <i class="ph-duotone ph-pie-chart" style="color: var(--royal-gold);"></i>
+                        Time by Platform
+                    </h3>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="platformChart"></canvas>
+                    </div>
+                </div>
+            ` : ''}
+
+            <!-- FAB -->
+            <button class="fab" onclick="app.openCourseModal()">
+                <i class="ph-bold ph-plus"></i>
+            </button>
+        `;
+
+        // Initialize charts
+        setTimeout(() => {
+            this.initLearningCharts(analytics);
+        }, 100);
+    },
+
+    /**
+     * Render Activity Heatmap Grid
+     * @param {Array} heatmapData - Heatmap data from Storage
+     * @returns {string} HTML string
+     */
+    renderHeatmap(heatmapData) {
+        // Group by week (7 columns)
+        let html = '';
+        const weeks = {};
+
+        heatmapData.forEach((day, index) => {
+            const weekIndex = Math.floor(index / 7);
+            if (!weeks[weekIndex]) weeks[weekIndex] = [];
+            weeks[weekIndex].push(day);
+        });
+
+        Object.values(weeks).forEach(week => {
+            html += '<div class="heatmap-week">';
+            week.forEach(day => {
+                html += `<div class="heatmap-cell level-${day.level}" 
+                             title="${day.date}: ${day.minutes}m spent learning"></div>`;
+            });
+            html += '</div>';
+        });
+
+        return html;
+    },
+
+    /**
+     * Render Course Card with Progress
+     * @param {Object} course - Course object
+     * @returns {string} HTML string
+     */
+    renderCourseCard(course) {
+        const progress = Storage.getCourseProgress(course);
+        const logsCount = (course.logs || []).length;
+        const isCompleted = course.status === 'completed';
+        const lastLog = course.logs && course.logs.length > 0 ? course.logs[0] : null;
+
+        // Progress bar color based on status
+        let progressClass = 'indigo';
+        if (isCompleted) progressClass = 'success';
+        else if (!progress.isOnTrack && progress.percentage > 0) progressClass = '';
+
+        return `
+            <div class="glass-card course-card hover-lift ${isCompleted ? 'completed' : ''}" onclick="app.navigateToCourse(${course.id})">
+                <div class="course-card-indicator" style="background: ${isCompleted ? 'var(--success)' : 'var(--indigo)'};"></div>
+                <div class="course-card-header">
+                    <span class="course-platform">${Utils.sanitize(course.platform)}</span>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        ${progress.daysLeft !== null && !isCompleted ? `
+                            <span class="badge ${progress.daysLeft <= 3 ? 'badge-danger' : 'badge-muted'}" style="font-size: 0.625rem;">
+                                ${progress.daysLeft > 0 ? progress.daysLeft + 'd left' : 'Due!'}
+                            </span>
+                        ` : ''}
+                        ${isCompleted ? '<i class="ph-fill ph-check-circle" style="color: var(--success); font-size: 1.25rem;"></i>' : ''}
+                        <button class="icon-btn sm" onclick="event.stopPropagation(); app.openEditCourseModal(${course.id})" title="Edit">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </button>
+                    </div>
+                </div>
+                <h4 class="course-title">${Utils.sanitize(course.title)}</h4>
+                
+                <!-- Progress Bar -->
+                <div class="progress-bar" style="margin: 0.75rem 0;">
+                    <div class="progress-bar-fill ${progressClass}" style="width: ${progress.percentage}%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; color: #64748b; margin-bottom: 0.5rem;">
+                    <span>${progress.percentage}% complete</span>
+                    <span>${progress.hoursSpent}h invested</span>
+                </div>
+                
+                ${course.pledge ? `<p class="course-pledge">"${Utils.sanitize(course.pledge).substring(0, 80)}${course.pledge.length > 80 ? '...' : ''}"</p>` : ''}
+                <div class="course-stats">
+                    <span><i class="ph-bold ph-notebook"></i> ${logsCount} Logs</span>
+                    ${!progress.isOnTrack && !isCompleted ? '<span style="color: #f59e0b;"><i class="ph-bold ph-warning"></i> Behind</span>' : ''}
+                </div>
+                ${lastLog ? `
+                    <div class="course-last-log">
+                        <span class="text-muted" style="font-size: 0.625rem;">Last:</span>
+                        <span>${Utils.sanitize(lastLog.learned).substring(0, 50)}${lastLog.learned.length > 50 ? '...' : ''}</span>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    },
+
+    /**
+     * Render Course Detail View
+     * @param {HTMLElement} container - Container element
+     * @param {Object} data - App data
+     * @param {number} courseId - Course ID
+     */
+    renderCourseDetail(container, data, courseId) {
+        const course = Storage.getCourse(data, courseId);
+        if (!course) {
+            app.navigate('learning');
+            return;
+        }
+
+        const totalMinutes = (course.logs || []).reduce((sum, log) => sum + log.timeSpent, 0);
+        const hoursSpent = (totalMinutes / 60).toFixed(1);
+        const isCompleted = course.status === 'completed';
+
+        container.innerHTML = `
+            < div class="course-detail-header" >
+                <button onclick="app.navigate('learning')" class="btn-back">
+                    <i class="ph-bold ph-arrow-left"></i> Back
+                </button>
+                <div class="course-detail-title">
+                    <h1>${Utils.sanitize(course.title)}</h1>
+                    <p class="course-detail-meta">
+                        <span class="course-platform">${Utils.sanitize(course.platform)}</span>
+                        <span>•</span>
+                        <span>${hoursSpent} Hours Logged</span>
+                    </p>
+                </div>
+                <div class="course-detail-actions">
+                    ${!isCompleted ? `
+                        <button onclick="app.openLogModal(${course.id})" class="btn btn-primary">
+                            <i class="ph-bold ph-pencil-simple"></i> Log
+                        </button>
+                        <button onclick="app.completeCourse(${course.id})" class="btn btn-outline">
+                            <i class="ph-bold ph-check"></i> Finish
+                        </button>
+                    ` : `
+                        <div class="status-badge status-completed" style="padding: 0.75rem 1rem;">
+                            <i class="ph-fill ph-medal"></i> Completed
+                        </div>
+                    `}
+                    <button onclick="app.deleteCourse(${course.id})" class="btn-icon-danger">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                </div>
+            </div >
+
+    <div class="course-detail-layout">
+        <!-- Main: Logs -->
+        <div class="course-logs-section">
+            <h3>
+                <i class="ph-duotone ph-notebook" style="color: var(--royal-gold);"></i>
+                Learning Log
+            </h3>
+
+            ${(!course.logs || course.logs.length === 0) ? `
+                        <div class="glass-card empty-state" style="border-style: dashed;">
+                            <i class="ph-duotone ph-note-pencil"></i>
+                            <h3>No logs yet</h3>
+                            <p>Start your streak today by logging what you learned.</p>
+                        </div>
+                    ` : `
+                        <div class="logs-list">
+                            ${course.logs.map(log => `
+                                <div class="glass-card log-entry ${log.milestone ? 'milestone' : ''}">
+                                    <div class="log-header">
+                                        <div class="log-date">
+                                            <span>${new Date(log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                            ${log.milestone ? '<span class="milestone-badge"><i class="ph-fill ph-star"></i> Milestone</span>' : ''}
+                                        </div>
+                                        <span class="log-time">${log.timeSpent}m</span>
+                                    </div>
+                                    <div class="log-content">
+                                        <div class="log-learned">
+                                            <h4><i class="ph-bold ph-lightbulb" style="color: var(--indigo);"></i> Learned</h4>
+                                            <p>${Utils.sanitize(log.learned)}</p>
+                                        </div>
+                                        ${log.challenge || log.solution ? `
+                                            <div class="log-challenge-solution">
+                                                ${log.challenge ? `
+                                                    <div class="log-challenge">
+                                                        <h5><i class="ph-bold ph-warning" style="color: var(--danger);"></i> Challenge</h5>
+                                                        <p>${Utils.sanitize(log.challenge)}</p>
+                                                    </div>
+                                                ` : ''}
+                                                ${log.solution ? `
+                                                    <div class="log-solution">
+                                                        <h5><i class="ph-bold ph-check-circle" style="color: var(--success);"></i> Solution</h5>
+                                                        <p>${Utils.sanitize(log.solution)}</p>
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="course-sidebar">
+            <!-- Pledge Card -->
+            <div class="glass-card pledge-card">
+                <h3><i class="ph-fill ph-target" style="color: var(--royal-gold);"></i> The Pledge</h3>
+                <p class="pledge-text">"${Utils.sanitize(course.pledge) || 'No pledge set.'}"</p>
+                <div class="pledge-details">
+                    <div class="pledge-item">
+                        <span>Daily Goal</span>
+                        <span class="pledge-value">${course.dailyGoal}m</span>
+                    </div>
+                    <div class="pledge-item">
+                        <span>Target End</span>
+                        <span class="pledge-value">${course.endDate || 'N/A'}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Card -->
+            <div class="glass-card cert-card">
+                <h3><i class="ph-fill ph-certificate" style="color: var(--royal-gold);"></i> Certificate</h3>
+                ${course.certificate ? `
+                            <div class="cert-preview">
+                                <img src="${course.certificate}" alt="Certificate" onclick="app.showImage('${course.certificate}')">
+                                <div class="cert-overlay">
+                                    <i class="ph-bold ph-magnifying-glass-plus"></i>
+                                </div>
+                            </div>
+                            <p class="cert-status earned"><i class="ph-bold ph-check-circle"></i> Earned</p>
+                            <button onclick="app.removeCertificate(${course.id})" class="btn-text-danger">Remove Certificate</button>
+                        ` : `
+                            <div class="cert-placeholder">
+                                <i class="ph-duotone ph-lock-key"></i>
+                                <p>${isCompleted ? 'Click to upload your certificate' : 'Complete the course to upload'}</p>
+                                ${isCompleted ? `
+                                    <button onclick="app.openCertModal(${course.id})" class="btn btn-outline btn-sm" style="margin-top: 0.5rem;">
+                                        <i class="ph-bold ph-upload-simple"></i> Upload
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `}
+            </div>
+        </div>
+    </div>
+
+            ${!isCompleted ? `
+                <button class="fab" onclick="app.openLogModal(${course.id})">
+                    <i class="ph-bold ph-pencil-simple"></i>
+                </button>
+            ` : ''
+            }
+`;
+    },
+
+    /**
+     * Initialize Learning Charts
+     * @param {Object} analytics - Analytics data
+     */
+    initLearningCharts(analytics) {
+        // Momentum Chart
+        const momentumCtx = document.getElementById('learningMomentumChart');
+        if (momentumCtx) {
+            new Chart(momentumCtx, {
+                type: 'bar',
+                data: {
+                    labels: analytics.last7DaysLabels,
+                    datasets: [{
+                        label: 'Minutes',
+                        data: analytics.last7Days,
+                        backgroundColor: '#6366f1',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        // Platform Chart
+        const platformCtx = document.getElementById('platformChart');
+        if (platformCtx && Object.keys(analytics.platformMinutes).length > 0) {
+            new Chart(platformCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(analytics.platformMinutes),
+                    datasets: [{
+                        data: Object.values(analytics.platformMinutes),
+                        backgroundColor: ['#D4AF37', '#6366f1', '#10b981', '#f97316', '#ef4444', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+        }
+    },
+
+    /**
+     * Get Add Course Modal HTML
+     * @returns {string} HTML string
+     */
+    getAddCourseModalHTML() {
+        return `
+    < div class="modal-header" >
+                <h2 class="modal-title">
+                    <i class="ph-duotone ph-books" style="color: var(--royal-gold);"></i>
+                    Register New Course
+                </h2>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x" style="font-size: 1.25rem;"></i>
+                </button>
+            </div >
+    <div class="modal-body">
+        <form onsubmit="app.saveCourse(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Course Title</label>
+                <input type="text" name="title" class="form-input" required
+                    placeholder="e.g., Google Cloud ML Engineer">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Platform/Source</label>
+                    <input type="text" name="platform" class="form-input"
+                        placeholder="Coursera, Udemy...">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Duration (Hours)</label>
+                    <input type="number" name="duration" class="form-input"
+                        placeholder="e.g., 40">
+                </div>
+            </div>
+
+            <div class="glass-card" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 1rem; border-radius: 0.75rem;">
+                <h3 style="color: var(--indigo); font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph-fill ph-target"></i> Your Commitment
+                </h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.6875rem;">Daily Goal (Mins)</label>
+                        <input type="number" name="dailyGoal" class="form-input" value="60" style="font-size: 0.875rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.6875rem;">End Date Goal</label>
+                        <input type="date" name="endDate" class="form-input" style="font-size: 0.875rem;">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0; margin-top: 0.75rem;">
+                    <label class="form-label" style="font-size: 0.6875rem;">Why are you learning this?</label>
+                    <textarea name="pledge" class="form-textarea" rows="2"
+                        placeholder="I commit to finish this because..." style="font-size: 0.875rem;"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 0.5rem;">
+                <i class="ph-bold ph-rocket-launch"></i> Start Journey
+            </button>
+        </form>
+    </div>
+`;
+    },
+
+    /**
+     * Get Learning Log Modal HTML
+     * @param {Object} course - Course object
+     * @returns {string} HTML string
+     */
+    getLogModalHTML(course) {
+        return `
+    < div class="modal-header" >
+                <div>
+                    <h2 class="modal-title">Daily Learning Log</h2>
+                    <p class="text-muted" style="font-size: 0.75rem;">${Utils.sanitize(course.title)}</p>
+                </div>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x" style="font-size: 1.25rem;"></i>
+                </button>
+            </div >
+    <div class="modal-body">
+        <form onsubmit="app.saveLog(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="hidden" name="courseId" value="${course.id}">
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">What did you learn today?</label>
+                    <textarea name="learned" class="form-textarea" rows="3" required
+                        placeholder="Key concepts, new syntax, architectural patterns..."></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: var(--danger);">The Challenge</label>
+                        <textarea name="challenge" class="form-textarea" rows="3"
+                            placeholder="What blocked you?..." style="background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.3);"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: var(--success);">The Solution</label>
+                        <textarea name="solution" class="form-textarea" rows="3"
+                            placeholder="How did you fix it?..." style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3);"></textarea>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem; background: rgba(15, 23, 42, 0.5); padding: 1rem; border-radius: 0.75rem;">
+                    <label class="form-label" style="margin: 0;">Time Spent:</label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <button type="button" onclick="app.adjustLogTime(-15)" class="btn-time-adjust">-</button>
+                        <input type="number" name="timeSpent" id="log-time-input" value="${course.dailyGoal || 60}"
+                            class="time-input" style="width: 60px; text-align: center;">
+                            <span class="text-muted">mins</span>
+                            <button type="button" onclick="app.adjustLogTime(15)" class="btn-time-adjust">+</button>
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="milestone" style="width: 1.25rem; height: 1.25rem;">
+                            <span class="text-gold" style="font-size: 0.875rem; font-weight: 600;">Milestone?</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-lg btn-block" style="background: var(--success); color: white;">
+                    <i class="ph-bold ph-floppy-disk"></i> Save Log Entry
+                </button>
+        </form>
+    </div>
+`;
+    },
+
+    /**
+     * Get Certificate Upload Modal HTML
+     * @param {Object} course - Course object
+     * @returns {string} HTML string
+     */
+    getCertModalHTML(course) {
+        return `
+    < div class="modal-header" style = "text-align: center; display: block;" >
+                <div style="width: 64px; height: 64px; background: rgba(245, 158, 11, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="ph-fill ph-medal" style="font-size: 2rem; color: #f59e0b;"></i>
+                </div>
+                <h2 class="modal-title">Congratulations!</h2>
+                <p class="text-muted">Attach your certificate for <span style="color: white; font-weight: 600;">${Utils.sanitize(course.title)}</span></p>
+            </div >
+    <div class="modal-body">
+        <form onsubmit="app.uploadCertificate(event)">
+            <input type="hidden" name="courseId" value="${course.id}">
+                <div class="cert-upload-zone" onclick="document.getElementById('cert-file-input').click()">
+                    <input type="file" id="cert-file-input" name="certificate" accept="image/jpeg,image/png,image/webp" style="display: none;" required>
+                        <i class="ph-duotone ph-file-arrow-up" style="font-size: 3rem; color: #64748b;"></i>
+                        <p class="text-muted" style="font-size: 0.875rem;">Click to upload image (Max 500KB)</p>
+                </div>
+                <p id="cert-error" class="text-danger" style="display: none; font-size: 0.75rem; margin-top: 0.5rem;"></p>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+                    <i class="ph-bold ph-upload-simple"></i> Save Certificate
+                </button>
+        </form>
+    </div>
+`;
+    },
+
+    /**
+     * Render Settings View
+     * @param {HTMLElement} container - Container element
+     */
+    renderSettings(container) {
+        const user = Auth.getUser();
+        const lastSync = Sync.getLastSync();
+
+        if (!user) {
+            // Not logged in - show login prompt
+            container.innerHTML = `
+    < div class="page-header mb-6" >
+        <h2 class="page-title">
+            <i class="ph-duotone ph-gear text-gold" style="margin-right: 0.5rem;"></i>
+            Settings
+        </h2>
+                </div >
+    <div class="glass-card empty-state" style="border-style: dashed;">
+        <i class="ph-duotone ph-user-circle"></i>
+        <h3>Not Signed In</h3>
+        <p>Sign in to sync your data across devices and access your profile.</p>
+        <a href="auth.html" class="btn btn-primary" style="margin-top: 1rem;">
+            <i class="ph-bold ph-sign-in"></i> Sign In
+        </a>
+    </div>
+`;
+            return;
+        }
+
+        container.innerHTML = `
+    < div class="page-header mb-6" >
+        <h2 class="page-title">
+            <i class="ph-duotone ph-gear text-gold" style="margin-right: 0.5rem;"></i>
+            Settings
+        </h2>
+            </div >
+
+            < !--User Profile Header-- >
+            <div class="glass-card settings-header">
+                <div class="settings-avatar">
+                    <div class="settings-avatar-img">
+                        ${user.avatar
+                ? `<img src="${user.avatar.startsWith('data:') ? user.avatar : ''}" alt="${user.name}">`
+                : `<span>${user.initials || 'U'}</span>`
+            }
+                    </div>
+                    <label class="settings-avatar-upload">
+                        <i class="ph-bold ph-camera"></i>
+                        <input type="file" accept="image/jpeg,image/png,image/webp" onchange="app.handleAvatarUpload(this)">
+                    </label>
+                </div>
+                <div class="settings-user-info">
+                    <h3 class="settings-user-name">${Utils.sanitize(user.name)}</h3>
+                    <p class="settings-user-email">${Utils.sanitize(user.email)}</p>
+                </div>
+            </div>
+
+            <!--Cloud Sync Section-- >
+            <div class="settings-section">
+                <h4 class="settings-section-title">Cloud Sync</h4>
+                <div class="settings-list">
+                    <div class="settings-item" onclick="Sync.manualSync()">
+                        <div class="settings-item-icon sync">
+                            <i class="ph-bold ph-cloud-arrow-up"></i>
+                        </div>
+                        <div class="settings-item-content">
+                            <p class="settings-item-title">Sync Now</p>
+                            <p class="settings-item-desc">
+                                ${lastSync ? 'Last synced: ' + new Date(lastSync).toLocaleString() : 'Never synced'}
+                            </p>
+                        </div>
+                        <i class="ph-bold ph-arrow-right settings-item-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Section -->
+            <div class="settings-section">
+                <h4 class="settings-section-title">Account</h4>
+                <div class="settings-list">
+                    <div class="settings-item" onclick="app.openEditNameModal()">
+                        <div class="settings-item-icon name">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </div>
+                        <div class="settings-item-content">
+                            <p class="settings-item-title">Edit Name</p>
+                            <p class="settings-item-desc">Change your display name</p>
+                        </div>
+                        <i class="ph-bold ph-arrow-right settings-item-arrow"></i>
+                    </div>
+                    <div class="settings-item" onclick="app.openChangePasswordModal()">
+                        <div class="settings-item-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--indigo);">
+                            <i class="ph-bold ph-lock-key"></i>
+                        </div>
+                        <div class="settings-item-content">
+                            <p class="settings-item-title">Change Password</p>
+                            <p class="settings-item-desc">Update your account password</p>
+                        </div>
+                        <i class="ph-bold ph-arrow-right settings-item-arrow"></i>
+                    </div>
+                    <div class="settings-item" onclick="app.logout()">
+                        <div class="settings-item-icon logout">
+                            <i class="ph-bold ph-sign-out"></i>
+                        </div>
+                        <div class="settings-item-content">
+                            <p class="settings-item-title">Sign Out</p>
+                            <p class="settings-item-desc">Log out of your account</p>
+                        </div>
+                        <i class="ph-bold ph-arrow-right settings-item-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Section -->
+            <div class="settings-section">
+                <h4 class="settings-section-title">Data</h4>
+                <div class="settings-list">
+                    <div class="settings-item" onclick="app.exportData()">
+                        <div class="settings-item-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                            <i class="ph-bold ph-download-simple"></i>
+                        </div>
+                        <div class="settings-item-content">
+                            <p class="settings-item-title">Export Backup</p>
+                            <p class="settings-item-desc">Download your data as JSON</p>
+                        </div>
+                        <i class="ph-bold ph-arrow-right settings-item-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-section">
+                <h4 class="settings-section-title" style="color: var(--danger);">Danger Zone</h4>
+                <div class="settings-list">
+                    <div class="settings-item" onclick="app.confirmDeleteAccount()">
+                        <div class="settings-item-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                            <i class="ph-bold ph-trash"></i>
+                        </div>
+                        <div class="settings-item-content">
+                            <p class="settings-item-title" style="color: var(--danger);">Delete Account</p>
+                            <p class="settings-item-desc">Permanently delete your account and data</p>
+                        </div>
+                        <i class="ph-bold ph-arrow-right settings-item-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appearance Section -->
+            <div class="settings-section">
+                <h4 class="settings-section-title">Appearance</h4>
+                <div class="settings-toggle-row">
+                    <div class="settings-toggle-info">
+                        <h4>Light Theme</h4>
+                        <p>Switch to a brighter royal theme</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="theme-toggle" onchange="app.toggleTheme(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Notification Preferences Section -->
+            <div class="settings-section">
+                <h4 class="settings-section-title">Notifications</h4>
+                <div class="settings-toggle-row">
+                    <div class="settings-toggle-info">
+                        <h4>Streak Reminders</h4>
+                        <p>Daily reminder to maintain your streak</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="streak-notify" checked onchange="app.updateNotificationSetting('streakReminders', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-toggle-row">
+                    <div class="settings-toggle-info">
+                        <h4>Morning Protocol</h4>
+                        <p>Remind me to complete morning planning</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="morning-notify" checked onchange="app.updateNotificationSetting('morningReminder', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-toggle-row">
+                    <div class="settings-toggle-info">
+                        <h4>Evening Report</h4>
+                        <p>Remind me to complete evening reflection</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="evening-notify" checked onchange="app.updateNotificationSetting('eveningReminder', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Render notifications page
+     * @param {HTMLElement} container - Container element
+     */
+    renderNotifications(container) {
+        const notifications = Storage.getNotifications ? Storage.getNotifications() : [];
+        const streak = Storage.getStreak ? Storage.getStreak() : { current: 0, longest: 0, lastDate: null };
+
+        container.innerHTML = `
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-bell" style="color: var(--indigo);"></i>
+                        Notifications
+                    </h2>
+                    <p class="view-subtitle">Stay updated on your progress</p>
+                </div>
+                ${notifications.length > 0 ? `
+                    <button class="btn btn-secondary" onclick="app.clearNotifications()">
+                        <i class="ph-bold ph-checks"></i> Mark All Read
+                    </button>
+                ` : ''}
+            </div>
+
+            <!-- Streak Achievement Card -->
+            <div class="streak-card glass-card" style="margin-bottom: 1.5rem;">
+                <div class="streak-card-content">
+                    <div class="streak-number">${streak.current}</div>
+                    <div class="streak-label">Day Streak</div>
+                    ${streak.current >= 7 ? `<div class="streak-milestone">🔥 One week warrior!</div>` : ''}
+                    ${streak.current >= 30 ? `<div class="streak-milestone">👑 Monthly Monarch!</div>` : ''}
+                    ${streak.current >= 100 ? `<div class="streak-milestone">🏆 Century Legend!</div>` : ''}
+                    ${streak.current > 0 && streak.current < 7 ? `
+                        <div class="streak-milestone">${7 - streak.current} days until Week Warrior!</div>
+                    ` : ''}
+                    ${streak.current === 0 ? `
+                        <div class="streak-milestone">Start learning to build your streak!</div>
+                    ` : ''}
+                </div>
+            </div>
+
+            <div class="notification-list">
+                ${notifications.length > 0 ? notifications.map(n => `
+                    <div class="notification-item ${n.read ? '' : 'unread'}" onclick="app.markNotificationRead('${n.id}')">
+                        <div class="notification-icon ${n.type || 'info'}">
+                            <i class="ph-bold ${this.getNotificationIcon(n.type)}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p class="notification-title">${Utils.sanitize(n.title)}</p>
+                            <p class="notification-message">${Utils.sanitize(n.message)}</p>
+                            <p class="notification-time">${Utils.formatTimeAgo(n.createdAt)}</p>
+                        </div>
+                    </div>
+                `).join('') : `
+                    <div class="empty-notifications">
+                        <i class="ph-duotone ph-bell-slash"></i>
+                        <h3>No notifications</h3>
+                        <p>You're all caught up!</p>
+                    </div>
+                `}
+            </div>
+        `;
+    },
+
+    getNotificationIcon(type) {
+        const icons = {
+            success: 'ph-check-circle',
+            warning: 'ph-warning',
+            streak: 'ph-fire',
+            info: 'ph-info'
+        };
+        return icons[type] || icons.info;
     }
 };
 

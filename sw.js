@@ -3,10 +3,11 @@
  * Enables offline functionality and caching
  */
 
-const CACHE_NAME = 'king-daily-v2';
+const CACHE_NAME = 'king-daily-v4';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
+    '/auth.html',
     '/styles.css',
     '/js/app.js',
     '/js/storage.js',
@@ -14,6 +15,9 @@ const ASSETS_TO_CACHE = [
     '/js/charts.js',
     '/js/views.js',
     '/js/utils.js',
+    '/js/config.js',
+    '/js/auth.js',
+    '/js/sync.js',
     '/manifest.json',
     '/icons/icon-192.png',
     '/icons/icon-512.png'

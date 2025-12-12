@@ -1,8 +1,10 @@
 {
+    "id": "/king-daily-pwa-v1",
     "name": "King Daily",
     "short_name": "King Daily",
-    "description": "The Ruler's Journal - Plan your daily activities and track your progress with royal precision.",
+    "description": "The Ruler's Journal - Plan your daily activities, track learning progress, and rule your day with royal precision.",
     "start_url": "/index.html",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#0B0F19",
     "theme_color": "#D4AF37",
