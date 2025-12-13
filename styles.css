@@ -2777,6 +2777,304 @@ h6 {
     margin: 1rem 0;
 }
 
+/* Nav Section Label */
+.nav-section-label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Coming Soon Badge */
+.nav-badge {
+    font-size: 0.5625rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    margin-left: auto;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.nav-badge.coming-soon {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.nav-btn {
+    position: relative;
+}
+
+/* ===================================
+   IDEA SECTION STYLES
+   =================================== */
+.idea-type-selector {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.idea-type-btn {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.idea-type-btn:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.idea-type-btn.active {
+    border-color: var(--royal-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.idea-type-btn i {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.idea-type-btn span {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Implementation Fields */
+.implementation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.implementation-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.implementation-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.implementation-field label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.implementation-field label i {
+    color: var(--royal-gold);
+}
+
+/* Recent Items Preview */
+.recent-items-preview {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.recent-items-preview h4 {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.recent-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.recent-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.recent-item-icon.project {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--indigo);
+}
+
+.recent-item-icon.quote {
+    background: rgba(236, 72, 153, 0.15);
+    color: #ec4899;
+}
+
+.recent-item-icon.thought {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.recent-item-icon.good {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.recent-item-icon.lesson {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--info);
+}
+
+.recent-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-item-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recent-item-date {
+    font-size: 0.6875rem;
+    color: #64748b;
+}
+
+.recent-item-status {
+    font-size: 0.625rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-weight: 600;
+}
+
+.recent-item-status.pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.recent-item-status.completed {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+}
+
+.recent-item-status.abandoned {
+    background: rgba(100, 116, 139, 0.2);
+    color: #64748b;
+}
+
+/* History Modal Tabs */
+.history-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.history-tab {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: rgba(15, 23, 42, 0.5);
+    color: #94a3b8;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    transition: all 0.2s ease;
+}
+
+.history-tab.active {
+    background: var(--royal-gold);
+    color: var(--royal-dark);
+}
+
+.history-tab:hover:not(.active) {
+    background: rgba(15, 23, 42, 0.7);
+}
+
+/* Coming Soon Section */
+.coming-soon-card {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(212, 175, 55, 0.05));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 1rem;
+}
+
+.coming-soon-icon {
+    font-size: 4rem;
+    color: var(--royal-gold);
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.coming-soon-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 0.375rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+}
+
+.coming-soon-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.coming-soon-message {
+    color: #94a3b8;
+    font-size: 0.9375rem;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.coming-soon-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.coming-soon-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2rem;
+    font-size: 0.8125rem;
+    color: #cbd5e1;
+}
+
+.coming-soon-feature i {
+    color: var(--royal-gold);
+}
+
 /* ===================================
    STREAK ACHIEVEMENT CARD
    =================================== */

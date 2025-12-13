@@ -1354,15 +1354,17 @@ const Views = {
         const lastSync = Sync.getLastSync();
 
         if (!user) {
-            // Not logged in - show login prompt
             container.innerHTML = `
-    < div class="page-header mb-6" >
-        <h2 class="page-title">
-            <i class="ph-duotone ph-gear text-gold" style="margin-right: 0.5rem;"></i>
-            Settings
-        </h2>
-                </div >
-    <div class="glass-card empty-state" style="border-style: dashed;">
+                <div class="view-header">
+                    <div>
+                        <h2 class="view-title">
+                            <i class="ph-duotone ph-gear" style="color: var(--royal-gold);"></i>
+                            Settings
+                        </h2>
+                        <p class="view-subtitle">Manage your account and preferences</p>
+                    </div>
+                </div>
+                <div class="glass-card empty-state" style="border-style: dashed;">
         <i class="ph-duotone ph-user-circle"></i>
         <h3>Not Signed In</h3>
         <p>Sign in to sync your data across devices and access your profile.</p>
@@ -1375,14 +1377,17 @@ const Views = {
         }
 
         container.innerHTML = `
-    < div class="page-header mb-6" >
-        <h2 class="page-title">
-            <i class="ph-duotone ph-gear text-gold" style="margin-right: 0.5rem;"></i>
-            Settings
-        </h2>
-            </div >
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-gear" style="color: var(--royal-gold);"></i>
+                        Settings
+                    </h2>
+                    <p class="view-subtitle">Manage your account and preferences</p>
+                </div>
+            </div>
 
-            < !--User Profile Header-- >
+            <!-- User Profile Header -->
             <div class="glass-card settings-header">
                 <div class="settings-avatar">
                     <div class="settings-avatar-img">
@@ -1616,6 +1621,338 @@ const Views = {
             info: 'ph-info'
         };
         return icons[type] || icons.info;
+    },
+
+    // ==========================================
+    // TODAY'S IDEA VIEW
+    // ==========================================
+
+    renderIdea(container, data) {
+        const ideas = Storage.getIdeas ? Storage.getIdeas() : [];
+        const recentIdeas = ideas.slice(0, 3);
+
+        container.innerHTML = `
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-lightbulb" style="color: #f59e0b;"></i>
+                        Today's Idea
+                    </h2>
+                    <p class="view-subtitle">Capture your brilliant thoughts and plan their implementation</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <form id="idea-form" onsubmit="app.saveIdea(event)">
+                    <!-- Idea Type Selector -->
+                    <div class="idea-type-selector">
+                        <label class="idea-type-btn active" data-type="project">
+                            <input type="radio" name="ideaType" value="project" checked hidden>
+                            <i class="ph-duotone ph-rocket-launch"></i>
+                            <span>Project</span>
+                        </label>
+                        <label class="idea-type-btn" data-type="quote">
+                            <input type="radio" name="ideaType" value="quote" hidden>
+                            <i class="ph-duotone ph-quotes"></i>
+                            <span>Quote</span>
+                        </label>
+                        <label class="idea-type-btn" data-type="thought">
+                            <input type="radio" name="ideaType" value="thought" hidden>
+                            <i class="ph-duotone ph-brain"></i>
+                            <span>New Thought</span>
+                        </label>
+                    </div>
+
+                    <!-- Idea Content -->
+                    <div class="form-group">
+                        <label class="form-label">What's your idea?</label>
+                        <input type="text" name="ideaTitle" class="form-input" placeholder="Give it a title..." required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="ideaDescription" class="form-input" rows="3" placeholder="Describe your idea in detail..."></textarea>
+                    </div>
+
+                    <!-- Implementation Details -->
+                    <h4 style="font-family: var(--font-sans); font-size: 0.875rem; color: #94a3b8; margin: 1.5rem 0 1rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                        <i class="ph-bold ph-strategy" style="color: var(--royal-gold);"></i> Implementation Plan
+                    </h4>
+                    
+                    <div class="implementation-grid">
+                        <div class="implementation-field">
+                            <label><i class="ph-bold ph-calendar"></i> When</label>
+                            <input type="date" name="ideaWhen" class="form-input">
+                        </div>
+                        <div class="implementation-field">
+                            <label><i class="ph-bold ph-map-pin"></i> Where</label>
+                            <input type="text" name="ideaWhere" class="form-input" placeholder="Location or context">
+                        </div>
+                        <div class="implementation-field">
+                            <label><i class="ph-bold ph-users"></i> With Who</label>
+                            <input type="text" name="ideaWithWho" class="form-input" placeholder="Collaborators or people involved">
+                        </div>
+                        <div class="implementation-field">
+                            <label><i class="ph-bold ph-target"></i> Why</label>
+                            <input type="text" name="ideaWhy" class="form-input" placeholder="Purpose or motivation">
+                        </div>
+                        <div class="implementation-field full-width">
+                            <label><i class="ph-bold ph-list-checks"></i> How (Optional)</label>
+                            <textarea name="ideaHow" class="form-input" rows="2" placeholder="Steps to implement..."></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">
+                            <i class="ph-bold ph-lightbulb"></i> Save Idea
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="app.openIdeaHistory()">
+                            <i class="ph-bold ph-clock-counter-clockwise"></i> History
+                        </button>
+                    </div>
+                </form>
+
+                ${recentIdeas.length > 0 ? `
+                    <div class="recent-items-preview">
+                        <h4>Recent Ideas</h4>
+                        ${recentIdeas.map(idea => `
+                            <div class="recent-item">
+                                <div class="recent-item-icon ${idea.type}">
+                                    <i class="ph-bold ${idea.type === 'project' ? 'ph-rocket-launch' : idea.type === 'quote' ? 'ph-quotes' : 'ph-brain'}"></i>
+                                </div>
+                                <div class="recent-item-content">
+                                    <p class="recent-item-title">${Utils.sanitize(idea.title)}</p>
+                                    <p class="recent-item-date">${Utils.formatTimeAgo(idea.createdAt)}</p>
+                                </div>
+                                <span class="recent-item-status ${idea.status}">${idea.status}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+        // Add click handlers for idea type buttons
+        container.querySelectorAll('.idea-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                container.querySelectorAll('.idea-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                btn.querySelector('input').checked = true;
+            });
+        });
+    },
+
+    // ==========================================
+    // THE GOOD IN TODAY VIEW
+    // ==========================================
+
+    renderDailyGood(container, data) {
+        const goods = Storage.getDailyGoods ? Storage.getDailyGoods() : [];
+        const recentGoods = goods.slice(0, 3);
+
+        container.innerHTML = `
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-heart" style="color: #ef4444;"></i>
+                        The Good in Today
+                    </h2>
+                    <p class="view-subtitle">Capture the blessings and good moments of your day</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <form id="daily-good-form" onsubmit="app.saveDailyGood(event)">
+                    <!-- Category Selector -->
+                    <div class="idea-type-selector">
+                        <label class="idea-type-btn active" data-type="person">
+                            <input type="radio" name="goodCategory" value="person" checked hidden>
+                            <i class="ph-duotone ph-user"></i>
+                            <span>Person</span>
+                        </label>
+                        <label class="idea-type-btn" data-type="place">
+                            <input type="radio" name="goodCategory" value="place" hidden>
+                            <i class="ph-duotone ph-map-pin"></i>
+                            <span>Place</span>
+                        </label>
+                        <label class="idea-type-btn" data-type="event">
+                            <input type="radio" name="goodCategory" value="event" hidden>
+                            <i class="ph-duotone ph-star"></i>
+                            <span>Event</span>
+                        </label>
+                        <label class="idea-type-btn" data-type="moment">
+                            <input type="radio" name="goodCategory" value="moment" hidden>
+                            <i class="ph-duotone ph-sparkle"></i>
+                            <span>Moment</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">What good thing happened?</label>
+                        <textarea name="goodDescription" class="form-input" rows="4" placeholder="Describe the good thing that happened today..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional details (optional)</label>
+                        <input type="text" name="goodDetails" class="form-input" placeholder="Who, where, or any other details...">
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">
+                            <i class="ph-bold ph-heart"></i> Save Good Moment
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="app.openDailyGoodHistory()">
+                            <i class="ph-bold ph-clock-counter-clockwise"></i> History
+                        </button>
+                    </div>
+                </form>
+
+                ${recentGoods.length > 0 ? `
+                    <div class="recent-items-preview">
+                        <h4>Recent Good Moments</h4>
+                        ${recentGoods.map(good => `
+                            <div class="recent-item">
+                                <div class="recent-item-icon good">
+                                    <i class="ph-bold ph-heart"></i>
+                                </div>
+                                <div class="recent-item-content">
+                                    <p class="recent-item-title">${Utils.sanitize(good.description.substring(0, 50))}${good.description.length > 50 ? '...' : ''}</p>
+                                    <p class="recent-item-date">${Utils.formatTimeAgo(good.date)}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+        // Add click handlers
+        container.querySelectorAll('.idea-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                container.querySelectorAll('.idea-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                btn.querySelector('input').checked = true;
+            });
+        });
+    },
+
+    // ==========================================
+    // DAILY LESSONS VIEW
+    // ==========================================
+
+    renderDailyLessons(container, data) {
+        const lessons = Storage.getLessons ? Storage.getLessons() : [];
+        const recentLessons = lessons.slice(0, 3);
+
+        container.innerHTML = `
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-book-open-text" style="color: var(--info);"></i>
+                        Daily Lessons
+                    </h2>
+                    <p class="view-subtitle">Capture life lessons and wisdom from your daily experiences</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <form id="lesson-form" onsubmit="app.saveLesson(event)">
+                    <div class="form-group">
+                        <label class="form-label">What did you learn today?</label>
+                        <textarea name="lessonContent" class="form-input" rows="5" placeholder="Describe the lesson you learned..." required style="font-size: 1rem; line-height: 1.7;"></textarea>
+                    </div>
+
+                    <div class="implementation-grid" style="margin-top: 0;">
+                        <div class="implementation-field">
+                            <label><i class="ph-bold ph-tag"></i> Tags</label>
+                            <input type="text" name="lessonTags" class="form-input" placeholder="e.g., patience, leadership, faith">
+                        </div>
+                        <div class="implementation-field">
+                            <label><i class="ph-bold ph-book-open"></i> Source</label>
+                            <input type="text" name="lessonSource" class="form-input" placeholder="Book, person, or experience">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">
+                            <i class="ph-bold ph-book-open-text"></i> Save Lesson
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="app.openLessonsHistory()">
+                            <i class="ph-bold ph-clock-counter-clockwise"></i> History
+                        </button>
+                    </div>
+                </form>
+
+                ${recentLessons.length > 0 ? `
+                    <div class="recent-items-preview">
+                        <h4>Recent Lessons</h4>
+                        ${recentLessons.map(lesson => `
+                            <div class="recent-item">
+                                <div class="recent-item-icon lesson">
+                                    <i class="ph-bold ph-book-open-text"></i>
+                                </div>
+                                <div class="recent-item-content">
+                                    <p class="recent-item-title">${Utils.sanitize(lesson.content.substring(0, 60))}${lesson.content.length > 60 ? '...' : ''}</p>
+                                    <p class="recent-item-date">${Utils.formatTimeAgo(lesson.date)}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    },
+
+    // ==========================================
+    // DAILY SAVINGS VIEW (COMING SOON)
+    // ==========================================
+
+    renderDailySavings(container) {
+        container.innerHTML = `
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-piggy-bank" style="color: var(--royal-gold);"></i>
+                        Daily Savings
+                    </h2>
+                    <p class="view-subtitle">Build wealth through daily micro-saving habits</p>
+                </div>
+            </div>
+
+            <div class="glass-card coming-soon-card">
+                <i class="ph-duotone ph-piggy-bank coming-soon-icon"></i>
+                <span class="coming-soon-badge">Coming Soon</span>
+                <h3 class="coming-soon-title">Your Financial Kingdom Awaits</h3>
+                <p class="coming-soon-message">
+                    "Small daily deposits build extraordinary wealth. The journey to financial freedom starts with a single saved coin."
+                </p>
+                
+                <div class="coming-soon-features">
+                    <div class="coming-soon-feature">
+                        <i class="ph-bold ph-target"></i>
+                        <span>Daily Savings Goals</span>
+                    </div>
+                    <div class="coming-soon-feature">
+                        <i class="ph-bold ph-receipt"></i>
+                        <span>Expense Tracking</span>
+                    </div>
+                    <div class="coming-soon-feature">
+                        <i class="ph-bold ph-trophy"></i>
+                        <span>Savings Milestones</span>
+                    </div>
+                    <div class="coming-soon-feature">
+                        <i class="ph-bold ph-chart-line-up"></i>
+                        <span>Progress Reports</span>
+                    </div>
+                    <div class="coming-soon-feature">
+                        <i class="ph-bold ph-bell-ringing"></i>
+                        <span>Smart Reminders</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="Utils.showToast('We will notify you when Daily Savings launches! 💰', 'gold')">
+                    <i class="ph-bold ph-bell"></i> Notify Me When Available
+                </button>
+            </div>
+        `;
     }
 };
 

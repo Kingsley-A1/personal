@@ -1084,6 +1084,149 @@ const Storage = {
         }
         this.saveSettings(settings);
         return settings;
+    },
+
+    // ==========================================
+    // IDEAS MANAGEMENT
+    // ==========================================
+
+    /**
+     * Get all ideas
+     * @returns {Array} List of ideas
+     */
+    getIdeas() {
+        const stored = localStorage.getItem('king-daily-ideas');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        return [];
+    },
+
+    /**
+     * Add a new idea
+     * @param {Object} idea - Idea object
+     */
+    addIdea(idea) {
+        const ideas = this.getIdeas();
+        ideas.unshift({
+            id: Date.now(),
+            ...idea,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            completedAt: null
+        });
+        localStorage.setItem('king-daily-ideas', JSON.stringify(ideas));
+        return ideas[0];
+    },
+
+    /**
+     * Update idea status
+     * @param {number} id - Idea ID
+     * @param {string} status - New status
+     */
+    updateIdeaStatus(id, status) {
+        const ideas = this.getIdeas();
+        const idea = ideas.find(i => i.id === id);
+        if (idea) {
+            idea.status = status;
+            if (status === 'completed') {
+                idea.completedAt = new Date().toISOString();
+            }
+            localStorage.setItem('king-daily-ideas', JSON.stringify(ideas));
+        }
+    },
+
+    /**
+     * Filter ideas by status
+     * @param {string} status - Status to filter
+     * @returns {Array} Filtered ideas
+     */
+    filterIdeasByStatus(status) {
+        return this.getIdeas().filter(i => i.status === status);
+    },
+
+    // ==========================================
+    // DAILY GOODS MANAGEMENT
+    // ==========================================
+
+    /**
+     * Get all daily goods
+     * @returns {Array} List of daily goods
+     */
+    getDailyGoods() {
+        const stored = localStorage.getItem('king-daily-goods');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        return [];
+    },
+
+    /**
+     * Add a new daily good
+     * @param {Object} good - Good moment object
+     */
+    addDailyGood(good) {
+        const goods = this.getDailyGoods();
+        goods.unshift({
+            id: Date.now(),
+            ...good,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('king-daily-goods', JSON.stringify(goods));
+        return goods[0];
+    },
+
+    /**
+     * Get daily goods by date
+     * @param {string} date - Date string
+     * @returns {Array} Goods from that date
+     */
+    getDailyGoodsByDate(date) {
+        return this.getDailyGoods().filter(g => g.date.split('T')[0] === date);
+    },
+
+    // ==========================================
+    // DAILY LESSONS MANAGEMENT
+    // ==========================================
+
+    /**
+     * Get all lessons
+     * @returns {Array} List of lessons
+     */
+    getLessons() {
+        const stored = localStorage.getItem('king-daily-lessons');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        return [];
+    },
+
+    /**
+     * Add a new lesson
+     * @param {Object} lesson - Lesson object
+     */
+    addLesson(lesson) {
+        const lessons = this.getLessons();
+        lessons.unshift({
+            id: Date.now(),
+            ...lesson,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('king-daily-lessons', JSON.stringify(lessons));
+        return lessons[0];
+    },
+
+    /**
+     * Search lessons by query
+     * @param {string} query - Search query
+     * @returns {Array} Matching lessons
+     */
+    searchLessons(query) {
+        const q = query.toLowerCase();
+        return this.getLessons().filter(l =>
+            l.content.toLowerCase().includes(q) ||
+            (l.tags && l.tags.some(t => t.toLowerCase().includes(q)))
+        );
     }
 };
 

@@ -75,6 +75,18 @@ const app = {
                         themeToggle.checked = settings.theme === 'light';
                     }
                     break;
+                case 'idea':
+                    Views.renderIdea(container, this.data);
+                    break;
+                case 'dailygood':
+                    Views.renderDailyGood(container, this.data);
+                    break;
+                case 'lessons':
+                    Views.renderDailyLessons(container, this.data);
+                    break;
+                case 'savings':
+                    Views.renderDailySavings(container);
+                    break;
                 default:
                     // Check if it's a course detail view
                     if (view.startsWith('course-')) {
@@ -979,6 +991,180 @@ const app = {
         Storage.clearNotifications();
         this.navigate('notifications');
         Utils.showToast('All notifications marked as read', 'gold');
+    },
+
+    // ==========================================
+    // IDEAS, GOODS, LESSONS HANDLERS
+    // ==========================================
+
+    /**
+     * Save a new idea
+     * @param {Event} e - Form submit event
+     */
+    saveIdea(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const idea = {
+            type: formData.get('ideaType'),
+            title: formData.get('ideaTitle'),
+            description: formData.get('ideaDescription'),
+            implementation: {
+                when: formData.get('ideaWhen'),
+                where: formData.get('ideaWhere'),
+                how: formData.get('ideaHow'),
+                withWho: formData.get('ideaWithWho'),
+                why: formData.get('ideaWhy')
+            }
+        };
+
+        Storage.addIdea(idea);
+        Utils.showToast('💡 Idea saved! Great thinking!', 'gold');
+        e.target.reset();
+        this.navigate('idea');
+    },
+
+    /**
+     * Save a daily good moment
+     * @param {Event} e - Form submit event
+     */
+    saveDailyGood(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const good = {
+            category: formData.get('goodCategory'),
+            description: formData.get('goodDescription'),
+            details: formData.get('goodDetails')
+        };
+
+        Storage.addDailyGood(good);
+        Utils.showToast('❤️ Good moment captured!', 'gold');
+        e.target.reset();
+        this.navigate('dailygood');
+    },
+
+    /**
+     * Save a lesson
+     * @param {Event} e - Form submit event
+     */
+    saveLesson(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const lesson = {
+            content: formData.get('lessonContent'),
+            tags: formData.get('lessonTags') ? formData.get('lessonTags').split(',').map(t => t.trim()) : [],
+            source: formData.get('lessonSource')
+        };
+
+        Storage.addLesson(lesson);
+        Utils.showToast('📚 Lesson recorded! Wisdom grows.', 'gold');
+        e.target.reset();
+        this.navigate('lessons');
+    },
+
+    /**
+     * Open idea history modal
+     */
+    openIdeaHistory() {
+        const ideas = Storage.getIdeas();
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="ph-bold ph-lightbulb" style="color: #f59e0b;"></i> Idea History</h3>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+            <div class="history-tabs">
+                <button class="history-tab active" onclick="app.filterIdeaHistory('all')">All</button>
+                <button class="history-tab" onclick="app.filterIdeaHistory('pending')">Pending</button>
+                <button class="history-tab" onclick="app.filterIdeaHistory('completed')">Completed</button>
+                <button class="history-tab" onclick="app.filterIdeaHistory('abandoned')">Abandoned</button>
+            </div>
+            <div id="idea-history-list">
+                ${ideas.length > 0 ? ideas.map(idea => `
+                    <div class="recent-item" style="margin-bottom: 0.75rem;">
+                        <div class="recent-item-icon ${idea.type}">
+                            <i class="ph-bold ${idea.type === 'project' ? 'ph-rocket-launch' : idea.type === 'quote' ? 'ph-quotes' : 'ph-brain'}"></i>
+                        </div>
+                        <div class="recent-item-content">
+                            <p class="recent-item-title">${Utils.sanitize(idea.title)}</p>
+                            <p class="recent-item-date">${Utils.formatTimeAgo(idea.createdAt)}</p>
+                        </div>
+                        <span class="recent-item-status ${idea.status}">${idea.status}</span>
+                    </div>
+                `).join('') : '<p style="text-align: center; color: #64748b; padding: 2rem;">No ideas yet. Start capturing your brilliant thoughts!</p>'}
+            </div>
+        `;
+        modal.classList.add('active');
+    },
+
+    /**
+     * Open daily good history modal
+     */
+    openDailyGoodHistory() {
+        const goods = Storage.getDailyGoods();
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="ph-bold ph-heart" style="color: #ef4444;"></i> Daily Good History</h3>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+            <div id="good-history-list" style="max-height: 400px; overflow-y: auto;">
+                ${goods.length > 0 ? goods.map(good => `
+                    <div class="recent-item" style="margin-bottom: 0.75rem;">
+                        <div class="recent-item-icon good">
+                            <i class="ph-bold ph-heart"></i>
+                        </div>
+                        <div class="recent-item-content">
+                            <p class="recent-item-title">${Utils.sanitize(good.description.substring(0, 60))}${good.description.length > 60 ? '...' : ''}</p>
+                            <p class="recent-item-date">${Utils.formatTimeAgo(good.date)} • ${good.category}</p>
+                        </div>
+                    </div>
+                `).join('') : '<p style="text-align: center; color: #64748b; padding: 2rem;">No good moments logged yet. Start appreciating the good in your life!</p>'}
+            </div>
+        `;
+        modal.classList.add('active');
+    },
+
+    /**
+     * Open lessons history modal
+     */
+    openLessonsHistory() {
+        const lessons = Storage.getLessons();
+        const modal = document.getElementById('modal');
+        const modalContent = document.querySelector('.modal-content');
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="ph-bold ph-book-open-text" style="color: var(--info);"></i> Lessons History</h3>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+            <div id="lessons-history-list" style="max-height: 400px; overflow-y: auto;">
+                ${lessons.length > 0 ? lessons.map(lesson => `
+                    <div class="recent-item" style="margin-bottom: 0.75rem;">
+                        <div class="recent-item-icon lesson">
+                            <i class="ph-bold ph-book-open-text"></i>
+                        </div>
+                        <div class="recent-item-content">
+                            <p class="recent-item-title">${Utils.sanitize(lesson.content.substring(0, 80))}${lesson.content.length > 80 ? '...' : ''}</p>
+                            <p class="recent-item-date">${Utils.formatTimeAgo(lesson.date)}${lesson.source ? ' • ' + lesson.source : ''}</p>
+                        </div>
+                    </div>
+                `).join('') : '<p style="text-align: center; color: #64748b; padding: 2rem;">No lessons captured yet. Start learning and growing!</p>'}
+            </div>
+        `;
+        modal.classList.add('active');
     }
 };
 
