@@ -26,6 +26,11 @@ const Views = {
         const progressPercent = todayTasks > 0 ? Math.round((todayCompleted / todayTasks) * 100) : 0;
 
         container.innerHTML = `
+            <!-- Personalized Greeting -->
+            <div class="greeting-section">
+                <h2 class="greeting-text">${Utils.getGreeting()}, <span class="text-gold">${Utils.getUserName()}</span></h2>
+            </div>
+
             <div class="page-header mb-8">
                 <h2 class="page-title">The Kingdom at a Glance</h2>
                 <p class="quote-block">"${quote}"</p>

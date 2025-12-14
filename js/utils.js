@@ -247,6 +247,36 @@ const Utils = {
      */
     getRandomQuote() {
         return this.quotes[Math.floor(Math.random() * this.quotes.length)];
+    },
+
+    /**
+     * Get time-based greeting
+     * @returns {string} Greeting based on current hour
+     */
+    getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 5) return 'Midnight hour';
+        if (hour < 12) return 'Good morning';
+        if (hour < 17) return 'Good afternoon';
+        if (hour < 21) return 'Good evening';
+        return 'Good night';
+    },
+
+    /**
+     * Get user's first name or default
+     * @returns {string} User's first name or 'Champion'
+     */
+    getUserName() {
+        const user = Config.getUser();
+        if (user && user.name) {
+            return user.name.split(' ')[0];
+        }
+        // Check localStorage for guest name
+        const settings = JSON.parse(localStorage.getItem('king-daily-settings') || '{}');
+        if (settings.userName) {
+            return settings.userName.split(' ')[0];
+        }
+        return 'Champion';
     }
 };
 

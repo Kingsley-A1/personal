@@ -526,6 +526,70 @@ h6 {
     width: 100%;
 }
 
+/* --- Greeting Section --- */
+.greeting-section {
+    margin-bottom: 1rem;
+}
+
+.greeting-text {
+    font-family: var(--font-sans);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+@media (max-width: 480px) {
+    .greeting-text {
+        font-size: 1.25rem;
+    }
+}
+
+/* --- Tighter Mobile Responsiveness --- */
+@media (max-width: 480px) {
+    .glass-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.6875rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .page-title,
+    .view-title {
+        font-size: 1.25rem;
+    }
+
+    .quote-block {
+        font-size: 0.8125rem;
+        padding: 0.75rem;
+    }
+
+    .progress-container {
+        padding: 0;
+    }
+
+    .progress-label,
+    .progress-value {
+        font-size: 0.75rem;
+    }
+}
+
 /* --- Form Elements --- */
 .form-group {
     margin-bottom: 1rem;
