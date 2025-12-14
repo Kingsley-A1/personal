@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Reign Admin - Platform Management Dashboard">
+    <meta name="theme-color" content="#0B0F19">
+    <title>Reign Admin | Command Center</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin/admin.css">
+</head>
+
+<body class="admin-theme">
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <i class="ph-fill ph-crown"></i>
+                <div>
+                    <h1>REIGN</h1>
+                    <span class="admin-badge">Admin</span>
+                </div>
+            </div>
+
+            <nav class="admin-nav">
+                <div class="nav-section">
+                    <p class="nav-section-label">Management</p>
+                    <button onclick="AdminApp.navigate('dashboard')" class="admin-nav-btn active" data-view="dashboard">
+                        <i class="ph-duotone ph-gauge"></i>
+                        <span>Command Center</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('users')" class="admin-nav-btn" data-view="users">
+                        <i class="ph-duotone ph-users"></i>
+                        <span>User Management</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('analytics')" class="admin-nav-btn" data-view="analytics">
+                        <i class="ph-duotone ph-chart-line-up"></i>
+                        <span>Analytics</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('heatmap')" class="admin-nav-btn" data-view="heatmap">
+                        <i class="ph-duotone ph-fire"></i>
+                        <span>Activity Heatmap</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('announcements')" class="admin-nav-btn"
+                        data-view="announcements">
+                        <i class="ph-duotone ph-megaphone"></i>
+                        <span>Announcements</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-section-label">Personal Tools</p>
+                    <button onclick="AdminApp.navigate('my-tasks')" class="admin-nav-btn" data-view="my-tasks">
+                        <i class="ph-duotone ph-list-checks"></i>
+                        <span>My Tasks</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('my-journal')" class="admin-nav-btn" data-view="my-journal">
+                        <i class="ph-duotone ph-book-bookmark"></i>
+                        <span>My Journal</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('my-learning')" class="admin-nav-btn" data-view="my-learning">
+                        <i class="ph-duotone ph-graduation-cap"></i>
+                        <span>My Learning</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-section-label">System</p>
+                    <button onclick="AdminApp.navigate('settings')" class="admin-nav-btn" data-view="settings">
+                        <i class="ph-duotone ph-gear-six"></i>
+                        <span>Platform Settings</span>
+                    </button>
+                    <button onclick="AdminApp.navigate('audit')" class="admin-nav-btn" data-view="audit">
+                        <i class="ph-duotone ph-clipboard-text"></i>
+                        <span>Audit Log</span>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="admin-user">
+                <div class="admin-user-avatar">
+                    <span id="admin-initials">SA</span>
+                </div>
+                <div class="admin-user-info">
+                    <span class="admin-user-name" id="admin-name">Super Admin</span>
+                    <span class="admin-user-role" id="admin-role">Super Admin</span>
+                </div>
+                <button onclick="AdminApp.logout()" class="admin-logout-btn" title="Logout">
+                    <i class="ph-bold ph-sign-out"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="admin-menu-btn" onclick="AdminApp.toggleSidebar()">
+                        <i class="ph-bold ph-list"></i>
+                    </button>
+                    <h2 class="admin-page-title" id="page-title">Command Center</h2>
+                </div>
+                <div class="admin-header-right">
+                    <div class="admin-search">
+                        <i class="ph-bold ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search users, logs..." id="global-search">
+                    </div>
+                    <div class="admin-header-time">
+                        <span id="admin-date">Today</span>
+                        <span id="admin-time">00:00</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content" id="admin-view">
+                <!-- Dynamic content rendered here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Impersonation Banner -->
+    <div id="impersonation-banner" class="impersonation-banner hidden">
+        <i class="ph-bold ph-user-switch"></i>
+        <span>Viewing as: <strong id="impersonated-user">User Name</strong></span>
+        <button onclick="AdminApp.stopImpersonation()">Exit Impersonation</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="admin/admin-app.js"></script>
+
+    <script>
+        // Check admin auth on load
+        document.addEventListener('DOMContentLoaded', () => {
+            AdminApp.init();
+        });
+    </script>
+</body>
+
+</html>
