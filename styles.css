@@ -588,6 +588,144 @@ h6 {
     .progress-value {
         font-size: 0.75rem;
     }
+
+    /* Task Cards Compact */
+    .task-item {
+        padding: 0.875rem;
+    }
+
+    .task-title {
+        font-size: 0.875rem;
+    }
+
+    .task-meta {
+        font-size: 0.6875rem;
+    }
+
+    /* Grid Single Column */
+    .grid-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Modal Full Width */
+    .modal-content {
+        width: 95%;
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 1rem 1rem 0 0;
+        margin-bottom: 0;
+    }
+
+    /* Chart Container Scroll */
+    .chart-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Larger Touch Targets */
+    .nav-btn,
+    .mobile-nav-btn {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+
+    .icon-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.625rem;
+    }
+
+    /* Header Compact */
+    .header {
+        padding: 0.75rem 1rem;
+    }
+
+    .header-brand h1 {
+        font-size: 1.25rem;
+    }
+
+    /* Form Elements Touch Friendly */
+    .form-input,
+    .form-select,
+    select {
+        min-height: 44px;
+        padding: 0.75rem;
+        font-size: 16px;
+        /* Prevents iOS zoom */
+    }
+
+    /* Priority/Status Badges */
+    .priority-badge,
+    .status-badge {
+        font-size: 0.625rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* Event Cards */
+    .event-card {
+        padding: 0.875rem;
+    }
+
+    /* Learning Cards Compact */
+    .learning-card {
+        padding: 1rem;
+    }
+
+    .course-title {
+        font-size: 0.9375rem;
+    }
+
+    /* Settings Items */
+    .settings-item {
+        padding: 0.875rem;
+    }
+
+    /* Main Content Padding */
+    .main-content {
+        padding: 1rem;
+    }
+}
+
+/* Table Scrollable Wrapper */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+}
+
+.table-responsive table {
+    min-width: 600px;
+}
+
+/* Long Text Ellipsis */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Safe Area for Notch Phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .mobile-nav {
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 481px) and (max-width: 768px) {
+    .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .main-content {
+        padding: 1.25rem;
+    }
+
+    .modal-content {
+        width: 85%;
+        max-width: 500px;
+    }
 }
 
 /* --- Form Elements --- */
@@ -4016,4 +4154,323 @@ body.light-theme .recent-item-title {
 
 body.light-theme .recent-item-date {
     color: #64748b;
+}
+
+/* ===================================
+   LIGHT THEME - Additional Components
+   =================================== */
+
+/* Quote Block */
+body.light-theme .quote-block {
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.05), rgba(212, 175, 55, 0.03));
+    border-left-color: var(--royal-gold);
+    color: #475569;
+}
+
+/* Progress Bars */
+body.light-theme .progress-bar {
+    background: #e2e8f0;
+}
+
+body.light-theme .progress-fill {
+    background: linear-gradient(90deg, var(--royal-gold), #d4a574);
+}
+
+body.light-theme .progress-label,
+body.light-theme .progress-value {
+    color: #475569;
+}
+
+/* Priority Badges */
+body.light-theme .priority-high {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+body.light-theme .priority-medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+body.light-theme .priority-low {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+/* Status Badges */
+body.light-theme .status-pending {
+    background: rgba(100, 116, 139, 0.1);
+    color: #475569;
+}
+
+body.light-theme .status-in-progress {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+body.light-theme .status-completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+body.light-theme .status-deferred {
+    background: rgba(139, 92, 246, 0.1);
+    color: #7c3aed;
+}
+
+/* Charts */
+body.light-theme .chart-container {
+    background: white;
+    border: 1px solid #e2e8f0;
+}
+
+body.light-theme .chart-title {
+    color: #1e293b;
+}
+
+/* Learning Section */
+body.light-theme .learning-card {
+    background: white;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .learning-card:hover {
+    border-color: var(--royal-gold);
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.08);
+}
+
+body.light-theme .learning-card-title {
+    color: #1e293b;
+}
+
+body.light-theme .learning-card-platform {
+    color: #64748b;
+}
+
+body.light-theme .learning-progress-text {
+    color: #475569;
+}
+
+body.light-theme .log-study-btn {
+    background: var(--royal-gold);
+    color: white;
+}
+
+body.light-theme .log-study-btn:hover {
+    background: #a67c00;
+}
+
+/* Calendar Events */
+body.light-theme .event-card {
+    background: white;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .event-card:hover {
+    background: #f8fafc;
+}
+
+body.light-theme .event-title {
+    color: #1e293b;
+}
+
+body.light-theme .event-time,
+body.light-theme .event-date {
+    color: #64748b;
+}
+
+body.light-theme .event-type-badge {
+    background: rgba(79, 70, 229, 0.1);
+    color: #4f46e5;
+}
+
+/* Evening Report */
+body.light-theme .report-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+body.light-theme .report-section-title {
+    color: #1e293b;
+}
+
+body.light-theme .report-textarea {
+    background: white;
+    border-color: #e2e8f0;
+    color: #1e293b;
+}
+
+body.light-theme .report-textarea:focus {
+    border-color: var(--royal-gold);
+}
+
+body.light-theme .mood-btn {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+}
+
+body.light-theme .mood-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+body.light-theme .mood-btn.active {
+    background: rgba(184, 134, 11, 0.1);
+    border-color: var(--royal-gold);
+    color: var(--royal-gold);
+}
+
+/* Greeting Section */
+body.light-theme .greeting-section {
+    color: #1e293b;
+}
+
+body.light-theme .greeting-text {
+    color: #1e293b;
+}
+
+/* Streak Badge in Header */
+body.light-theme .streak-badge {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+/* Empty States */
+body.light-theme .empty-state {
+    color: #64748b;
+}
+
+body.light-theme .empty-state-icon {
+    color: #cbd5e1;
+}
+
+body.light-theme .empty-state-title {
+    color: #475569;
+}
+
+/* Page Header */
+body.light-theme .page-header {
+    color: #1e293b;
+}
+
+body.light-theme .page-title {
+    color: #0f172a;
+}
+
+/* PWA Toast */
+body.light-theme .pwa-toast {
+    background: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .pwa-toast-title {
+    color: #1e293b;
+}
+
+body.light-theme .pwa-toast-message {
+    color: #64748b;
+}
+
+/* Dividers */
+body.light-theme .divider,
+body.light-theme hr {
+    background: #e2e8f0;
+    border-color: #e2e8f0;
+}
+
+/* Select Inputs */
+body.light-theme select {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+}
+
+body.light-theme select:focus {
+    border-color: var(--royal-gold);
+}
+
+/* Category Pills */
+body.light-theme .category-pill {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+body.light-theme .category-pill.active {
+    background: var(--royal-gold);
+    color: white;
+}
+
+/* Task Action Buttons */
+body.light-theme .task-action-btn {
+    color: #64748b;
+}
+
+body.light-theme .task-action-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+body.light-theme .task-action-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+/* Session Names */
+body.light-theme .session-name {
+    background: rgba(184, 134, 11, 0.1);
+    color: var(--royal-gold);
+}
+
+/* Time Display */
+body.light-theme .time-display {
+    color: #475569;
+}
+
+/* Tab Navigation */
+body.light-theme .tab-btn {
+    color: #64748b;
+    border-color: transparent;
+}
+
+body.light-theme .tab-btn:hover {
+    color: #1e293b;
+    background: #f8fafc;
+}
+
+body.light-theme .tab-btn.active {
+    color: var(--royal-gold);
+    border-color: var(--royal-gold);
+}
+
+/* Slider/Range Input */
+body.light-theme input[type="range"] {
+    background: #e2e8f0;
+}
+
+body.light-theme input[type="range"]::-webkit-slider-thumb {
+    background: var(--royal-gold);
+}
+
+/* Checkbox and Radio */
+body.light-theme input[type="checkbox"],
+body.light-theme input[type="radio"] {
+    accent-color: var(--royal-gold);
+}
+
+/* Mobile Menu Button */
+body.light-theme .mobile-menu-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #475569;
+}
+
+body.light-theme .mobile-menu-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+}
+
+/* Sidebar Overlay */
+body.light-theme .sidebar-overlay {
+    background: rgba(0, 0, 0, 0.3);
 }

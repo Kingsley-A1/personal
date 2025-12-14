@@ -3,7 +3,7 @@
  * Enables offline functionality and caching
  */
 
-const CACHE_NAME = 'reign-v10';
+const CACHE_NAME = 'reign-v11';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

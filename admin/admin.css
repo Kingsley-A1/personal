@@ -910,3 +910,236 @@
     color: #64748b;
     margin-bottom: 0.5rem;
 }
+
+/* ===================================
+   ADMIN LIGHT THEME
+   =================================== */
+body.light-theme .admin-container {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+body.light-theme .admin-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-right-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .admin-brand h1 {
+    color: #1e293b;
+}
+
+body.light-theme .admin-nav-btn {
+    color: #475569;
+}
+
+body.light-theme .admin-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1e293b;
+}
+
+body.light-theme .admin-nav-btn.active {
+    background: var(--admin-accent-10);
+    color: var(--admin-accent);
+}
+
+body.light-theme .admin-user {
+    background: rgba(0, 0, 0, 0.03);
+    border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .admin-user-name {
+    color: #1e293b;
+}
+
+body.light-theme .admin-header {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .admin-page-title {
+    color: #1e293b;
+}
+
+body.light-theme .admin-search {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .admin-search input {
+    color: #1e293b;
+}
+
+body.light-theme .stat-card-admin {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .stat-card-admin .stat-value {
+    color: #1e293b;
+}
+
+body.light-theme .dashboard-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .dashboard-card-title {
+    color: #1e293b;
+}
+
+body.light-theme .health-item {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .health-label {
+    color: #475569;
+}
+
+body.light-theme .health-value {
+    color: #1e293b;
+}
+
+body.light-theme .activity-item {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .activity-text {
+    color: #1e293b;
+}
+
+body.light-theme .alert-item {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.15);
+}
+
+body.light-theme .alert-text {
+    color: #1e293b;
+}
+
+body.light-theme .admin-table th {
+    background: rgba(0, 0, 0, 0.03);
+    color: #475569;
+}
+
+body.light-theme .admin-table td {
+    color: #1e293b;
+    border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .admin-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .heatmap-cell.level-0 {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .heatmap-cell.level-1 {
+    background: rgba(79, 70, 229, 0.2);
+}
+
+body.light-theme .heatmap-cell.level-2 {
+    background: rgba(79, 70, 229, 0.4);
+}
+
+body.light-theme .heatmap-cell.level-3 {
+    background: rgba(79, 70, 229, 0.6);
+}
+
+body.light-theme .setting-row {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .setting-label {
+    color: #1e293b;
+}
+
+body.light-theme .toggle-slider {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* ===================================
+   ADMIN MOBILE IMPROVEMENTS
+   =================================== */
+@media (max-width: 480px) {
+    .admin-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .admin-page-title {
+        font-size: 1rem;
+    }
+
+    .admin-content {
+        padding: 0.75rem;
+    }
+
+    .stats-grid {
+        gap: 0.75rem;
+    }
+
+    .stat-card-admin {
+        padding: 1rem;
+    }
+
+    .stat-card-admin .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .dashboard-card-title {
+        font-size: 0.875rem;
+    }
+
+    .health-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .action-btns button {
+        padding: 0.5rem;
+    }
+
+    .heatmap-cell {
+        width: 14px;
+        height: 14px;
+    }
+
+    .heatmap-label {
+        width: 30px;
+        font-size: 0.625rem;
+    }
+}
+
+/* Admin Sidebar Mobile Overlay */
+@media (max-width: 768px) {
+    .admin-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 90;
+    }
+
+    .admin-sidebar-overlay.active {
+        display: block;
+    }
+
+    .admin-sidebar.open+.admin-sidebar-overlay {
+        display: block;
+    }
+}
