@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description"
-        content="Reign - The King's Journal for planning daily activities and tracking progress with an elite, royal experience.">
-    <meta name="theme-color" content="#0B0F19">
-    <title>Reign | The King's Journal</title>
+        content="Reign - The Queen's Journal for planning daily activities and tracking progress with an elegant, graceful experience.">
+    <meta name="theme-color" content="#1a0a18">
+    <title>Reign | The Queen's Journal</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,13 +84,13 @@
                 localStorage.setItem('pwaInstalled', 'true');
                 if (typeof Toastify !== 'undefined') {
                     Toastify({
-                        text: "👑 Reign installed successfully!",
+                        text: "👸 Reign installed successfully!",
                         duration: 3000,
                         gravity: "top",
                         position: "center",
                         style: {
-                            background: "linear-gradient(135deg, #D4AF37 0%, #C5A028 100%)",
-                            color: "#0B0F19",
+                            background: "linear-gradient(135deg, #b76e79 0%, #9a525c 100%)",
+                            color: "white",
                             fontWeight: "600"
                         }
                     }).showToast();
@@ -149,7 +149,7 @@
     </script>
 </head>
 
-<body>
+<body class="queen-theme">
     <div class="app-container">
         <!-- Header -->
         <header class="header">
@@ -157,7 +157,7 @@
                 <i class="ph-fill ph-crown"></i>
                 <div>
                     <h1>REIGN</h1>
-                    <p class="tagline hidden-mobile">Rule Your Day</p>
+                    <p class="tagline hidden-mobile">Grace Your Day</p>
                 </div>
             </div>
 

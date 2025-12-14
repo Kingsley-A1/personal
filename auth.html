@@ -820,9 +820,10 @@
 
                     showToast('Welcome back, ' + data.user.name + '! 👑');
 
-                    // Redirect to app
+                    // Redirect to app based on persona
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        const persona = localStorage.getItem('reign_persona') || 'king';
+                        window.location.href = persona === 'queen' ? 'queen.html' : 'index.html';
                     }, 1000);
 
                 } catch (error) {
@@ -873,9 +874,10 @@
 
                     showToast('Welcome to the Kingdom, ' + data.user.name + '! 👑');
 
-                    // Redirect to app
+                    // Redirect to app based on persona
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        const persona = localStorage.getItem('reign_persona') || 'king';
+                        window.location.href = persona === 'queen' ? 'queen.html' : 'index.html';
                     }, 1000);
 
                 } catch (error) {

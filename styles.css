@@ -26,6 +26,63 @@
     --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* Queen Theme - Rose Gold Palette */
+.queen-theme {
+    --royal-gold: #b76e79;
+    --royal-dark: #1a0a18;
+    --royal-surface: #251520;
+    --royal-light: #F5E6E8;
+    --royal-accent: #9a525c;
+    --royal-gold-10: rgba(183, 110, 121, 0.1);
+    --royal-gold-20: rgba(183, 110, 121, 0.2);
+    --shadow-gold: 0 0 15px rgba(183, 110, 121, 0.3);
+}
+
+.queen-theme body,
+.queen-theme .app-container {
+    background: linear-gradient(145deg, #1a0a18 0%, #0d050d 100%);
+}
+
+.queen-theme .header {
+    background: rgba(26, 10, 24, 0.95);
+    border-bottom-color: rgba(183, 110, 121, 0.15);
+}
+
+.queen-theme .sidebar {
+    background: linear-gradient(180deg, rgba(26, 10, 24, 0.98) 0%, rgba(13, 5, 13, 0.98) 100%);
+    border-right-color: rgba(183, 110, 121, 0.1);
+}
+
+.queen-theme .glass-card {
+    background: linear-gradient(145deg, rgba(37, 21, 32, 0.9), rgba(26, 10, 24, 0.7));
+    border-color: rgba(183, 110, 121, 0.12);
+}
+
+.queen-theme .text-gold {
+    color: #b76e79;
+}
+
+.queen-theme .btn-primary {
+    background: linear-gradient(135deg, #b76e79 0%, #9a525c 100%);
+}
+
+.queen-theme .btn-primary:hover {
+    background: linear-gradient(135deg, #c5828c 0%, #a85f69 100%);
+    box-shadow: 0 4px 15px rgba(183, 110, 121, 0.4);
+}
+
+.queen-theme .nav-btn.active,
+.queen-theme .mobile-nav-btn.active {
+    background: rgba(183, 110, 121, 0.15);
+    color: #b76e79;
+    border-left-color: #b76e79;
+}
+
+.queen-theme .streak-badge {
+    background: rgba(183, 110, 121, 0.15);
+    color: #b76e79;
+}
+
 /* --- Base Styles --- */
 *,
 *::before,
@@ -3718,4 +3775,104 @@ body.light-theme .user-avatar {
 /* Toast */
 body.light-theme .toastify {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===================================
+   LIGHT THEME - New Sections
+   =================================== */
+
+/* Chronicle Cards */
+body.light-theme .chronicle-card {
+    background: white;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .chronicle-card:hover {
+    border-color: #cbd5e1;
+}
+
+body.light-theme .chronicle-card-title {
+    color: #1e293b;
+}
+
+body.light-theme .chronicle-card-type,
+body.light-theme .chronicle-card-time {
+    color: #64748b;
+}
+
+body.light-theme .chronicle-date-label {
+    color: var(--royal-gold);
+    border-left-color: var(--royal-gold);
+}
+
+/* Idea Type Selector */
+body.light-theme .idea-type-btn {
+    background: white;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+body.light-theme .idea-type-btn:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+body.light-theme .idea-type-btn.active {
+    background: rgba(184, 134, 11, 0.1);
+    border-color: var(--royal-gold);
+    color: var(--royal-gold);
+}
+
+/* History Tabs */
+body.light-theme .history-tab {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+body.light-theme .history-tab.active {
+    background: var(--royal-gold);
+    color: white;
+}
+
+body.light-theme .history-tab:hover:not(.active) {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+/* Coming Soon Card */
+body.light-theme .coming-soon-card {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(212, 175, 55, 0.03));
+    border-color: rgba(245, 158, 11, 0.15);
+}
+
+body.light-theme .coming-soon-title {
+    color: #1e293b;
+}
+
+body.light-theme .coming-soon-message {
+    color: #64748b;
+}
+
+/* Nav Section Labels */
+body.light-theme .nav-section-label {
+    color: #94a3b8;
+}
+
+/* Recent Items */
+body.light-theme .recent-item {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .recent-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+body.light-theme .recent-item-title {
+    color: #1e293b;
+}
+
+body.light-theme .recent-item-date {
+    color: #64748b;
 }

@@ -1,8 +1,8 @@
 {
-    "id": "/king-daily-pwa-v1",
-    "name": "King Daily",
-    "short_name": "King Daily",
-    "description": "The Ruler's Journal - Plan your daily activities, track learning progress, and rule your day with royal precision.",
+    "id": "/reign-pwa-v1",
+    "name": "Reign",
+    "short_name": "Reign",
+    "description": "Rule Your Day - Plan your daily activities, track learning progress, and reign over your life with royal precision.",
     "start_url": "/index.html",
     "scope": "/",
     "display": "standalone",
@@ -23,7 +23,10 @@
             "purpose": "any maskable"
         }
     ],
-    "categories": ["productivity", "lifestyle"],
+    "categories": [
+        "productivity",
+        "lifestyle"
+    ],
     "lang": "en",
     "dir": "ltr"
 }
