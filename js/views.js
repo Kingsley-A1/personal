@@ -472,81 +472,167 @@ const Views = {
     },
 
     /**
-     * Render Archive View
+     * Render Royal Chronicle - Unified Activity History
      * @param {HTMLElement} container - Container element
      * @param {Object} data - App data
      */
     renderArchive(container, data) {
-        const logs = Object.entries(data.logs).sort((a, b) => new Date(b[0]) - new Date(a[0]));
+        // Gather all activities from different sources
+        const ideas = Storage.getIdeas ? Storage.getIdeas() : [];
+        const goods = Storage.getDailyGoods ? Storage.getDailyGoods() : [];
+        const lessons = Storage.getLessons ? Storage.getLessons() : [];
+        const logs = Object.entries(data.logs || {});
+
+        // Combine all activities with type markers
+        const allActivities = [
+            ...ideas.map(i => ({ ...i, activityType: 'idea', date: i.createdAt })),
+            ...goods.map(g => ({ ...g, activityType: 'good' })),
+            ...lessons.map(l => ({ ...l, activityType: 'lesson' })),
+            ...logs.map(([date, log]) => ({ date, log, activityType: 'journal' }))
+        ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Group by date
+        const groupByDate = (activities) => {
+            const groups = {};
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+            activities.forEach(a => {
+                const d = new Date(a.date).toDateString();
+                let label;
+                if (d === today) label = 'Today';
+                else if (d === yesterday) label = 'Yesterday';
+                else label = Utils.formatDate(a.date, { month: 'short', day: 'numeric' });
+
+                if (!groups[label]) groups[label] = [];
+                groups[label].push(a);
+            });
+            return groups;
+        };
+
+        const grouped = groupByDate(allActivities);
+        const totalCount = allActivities.length;
 
         container.innerHTML = `
-            <div class="page-header">
-                <h2 class="page-title">Journal Archive</h2>
-                <p class="page-subtitle">The history of your reign.</p>
+            <div class="view-header">
+                <div>
+                    <h2 class="view-title">
+                        <i class="ph-duotone ph-scroll" style="color: var(--royal-gold);"></i>
+                        The Royal Chronicle
+                    </h2>
+                    <p class="view-subtitle">Your complete journey of growth • ${totalCount} entries</p>
+                </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                ${logs.length === 0 ? `
+            <!-- Filter Tabs -->
+            <div class="history-tabs" style="margin-bottom: 1.5rem;">
+                <button class="history-tab active" onclick="app.filterChronicle('all')">
+                    <i class="ph-bold ph-list"></i> All
+                </button>
+                <button class="history-tab" onclick="app.filterChronicle('idea')">
+                    <i class="ph-bold ph-lightbulb"></i> Ideas
+                </button>
+                <button class="history-tab" onclick="app.filterChronicle('good')">
+                    <i class="ph-bold ph-heart"></i> Good
+                </button>
+                <button class="history-tab" onclick="app.filterChronicle('lesson')">
+                    <i class="ph-bold ph-book-open-text"></i> Lessons
+                </button>
+                <button class="history-tab" onclick="app.filterChronicle('journal')">
+                    <i class="ph-bold ph-notebook"></i> Journal
+                </button>
+            </div>
+
+            <!-- Activities List -->
+            <div id="chronicle-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                ${totalCount === 0 ? `
                     <div class="glass-card empty-state">
                         <i class="ph-duotone ph-scroll"></i>
                         <h3>No history recorded yet</h3>
-                        <p>Complete your first Morning Protocol to begin.</p>
+                        <p>Start your journey by logging an idea, good moment, or lesson.</p>
                     </div>
-                ` : logs.map(([date, log]) => {
-            const tasks = log.morning && log.morning.tasks ? log.morning.tasks : [];
+                ` : Object.entries(grouped).map(([dateLabel, activities]) => `
+                    <div class="chronicle-date-group">
+                        <h4 class="chronicle-date-label">${dateLabel}</h4>
+                        <div class="chronicle-cards">
+                            ${activities.map(activity => this.renderActivityCard(activity)).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    },
+
+    /**
+     * Render a single activity card
+     * @param {Object} activity - Activity object
+     * @returns {string} HTML string
+     */
+    renderActivityCard(activity) {
+        const icons = {
+            idea: { icon: 'ph-lightbulb', color: '#f59e0b', label: 'Idea' },
+            good: { icon: 'ph-heart', color: '#ef4444', label: 'Good Moment' },
+            lesson: { icon: 'ph-book-open-text', color: 'var(--info)', label: 'Lesson' },
+            journal: { icon: 'ph-notebook', color: 'var(--royal-gold)', label: 'Journal' }
+        };
+        const config = icons[activity.activityType] || icons.journal;
+
+        if (activity.activityType === 'journal') {
+            const log = activity.log;
+            const tasks = log.morning?.tasks || [];
             const completedCount = tasks.filter(t => t.status === 'completed').length;
-            const sessionName = log.morning && log.morning.sessionName ? log.morning.sessionName : '';
 
             return `
-                        <div class="glass-card p-6">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <div>
-                                    <h3 class="text-gold" style="font-weight: 700;">${Utils.formatDate(date, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h3>
-                                    ${sessionName ? `<span class="text-muted" style="font-size: 0.75rem;">${Utils.sanitize(sessionName)}</span>` : ''}
-                                </div>
-                                ${tasks.length > 0 ? `
-                                    <span class="status-badge ${completedCount === tasks.length ? 'status-completed' : 'status-pending'}">
-                                        ${completedCount}/${tasks.length} Tasks
-                                    </span>
-                                ` : ''}
-                            </div>
-
-                            <div class="grid grid-1 grid-2 gap-6">
-                                <!-- Morning Summary -->
-                                <div>
-                                    <p style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin-bottom: 0.5rem;">Morning Tasks</p>
-                                    ${tasks.length > 0 ? `
-                                        <div style="display: flex; flex-direction: column; gap: 0.375rem;">
-                                            ${tasks.slice(0, 3).map(task => `
-                                                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
-                                                    ${task.status === 'completed'
-                    ? '<i class="ph-fill ph-check-circle" style="color: var(--success);"></i>'
-                    : '<i class="ph-fill ph-circle" style="color: #475569;"></i>'
-                }
-                                                    <span style="color: ${task.status === 'completed' ? '#64748b' : 'white'};">${Utils.sanitize(task.title)}</span>
-                                                </div>
-                                            `).join('')}
-                                            ${tasks.length > 3 ? `<span class="text-muted" style="font-size: 0.75rem;">+${tasks.length - 3} more</span>` : ''}
-                                        </div>
-                                    ` : '<p class="text-muted" style="font-size: 0.875rem; font-style: italic;">No tasks recorded</p>'}
-                                </div>
-
-                                <!-- Evening Summary -->
-                                <div>
-                                    ${log.evening ? `
-                                        <p style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin-bottom: 0.5rem;">Evening Reflection</p>
-                                        <p style="font-size: 0.875rem; color: var(--success); margin-bottom: 0.25rem;">
-                                            <i class="ph-bold ph-trophy"></i> ${Utils.sanitize(log.evening.success).substring(0, 80)}${log.evening.success.length > 80 ? '...' : ''}
-                                        </p>
-                                        ${log.evening.mood ? `
-                                            <span style="font-size: 0.75rem; color: #64748b;">Mood: ${log.evening.mood}/5 | Energy: ${log.evening.energyLevel}/5</span>
-                                        ` : ''}
-                                    ` : '<p class="text-muted" style="font-size: 0.875rem; font-style: italic;">No evening report</p>'}
-                                </div>
-                            </div>
+                <div class="chronicle-card" data-type="journal">
+                    <div class="chronicle-card-icon" style="background: rgba(212, 175, 55, 0.15); color: ${config.color};">
+                        <i class="ph-bold ${config.icon}"></i>
+                    </div>
+                    <div class="chronicle-card-content">
+                        <div class="chronicle-card-header">
+                            <span class="chronicle-card-type">${config.label}</span>
+                            <span class="chronicle-card-time">${Utils.formatTimeAgo(activity.date)}</span>
                         </div>
-                    `;
-        }).join('')}
+                        <p class="chronicle-card-title">${log.morning?.sessionName || 'Daily Entry'}</p>
+                        <p class="chronicle-card-meta">
+                            ${tasks.length > 0 ? `<span><i class="ph-bold ph-check-circle"></i> ${completedCount}/${tasks.length} tasks</span>` : ''}
+                            ${log.evening ? `<span><i class="ph-bold ph-moon"></i> Evening logged</span>` : ''}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // For ideas, goods, and lessons
+        let title = '';
+        let subtitle = '';
+        let statusBadge = '';
+
+        if (activity.activityType === 'idea') {
+            title = activity.title || 'Untitled Idea';
+            subtitle = activity.description ? activity.description.substring(0, 60) + '...' : '';
+            statusBadge = `<span class="recent-item-status ${activity.status}">${activity.status}</span>`;
+        } else if (activity.activityType === 'good') {
+            title = activity.description ? activity.description.substring(0, 50) : 'Good moment';
+            subtitle = activity.category || '';
+        } else if (activity.activityType === 'lesson') {
+            title = activity.content ? activity.content.substring(0, 60) : 'Life lesson';
+            subtitle = activity.tags?.join(', ') || activity.source || '';
+        }
+
+        return `
+            <div class="chronicle-card" data-type="${activity.activityType}">
+                <div class="chronicle-card-icon" style="background: rgba(${activity.activityType === 'idea' ? '245, 158, 11' : activity.activityType === 'good' ? '239, 68, 68' : '59, 130, 246'}, 0.15); color: ${config.color};">
+                    <i class="ph-bold ${config.icon}"></i>
+                </div>
+                <div class="chronicle-card-content">
+                    <div class="chronicle-card-header">
+                        <span class="chronicle-card-type">${config.label}</span>
+                        <span class="chronicle-card-time">${Utils.formatTimeAgo(activity.date)}</span>
+                    </div>
+                    <p class="chronicle-card-title">${Utils.sanitize(title)}</p>
+                    ${subtitle ? `<p class="chronicle-card-subtitle">${Utils.sanitize(subtitle)}</p>` : ''}
+                </div>
+                ${statusBadge}
             </div>
         `;
     },

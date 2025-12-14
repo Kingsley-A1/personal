@@ -1,9 +1,9 @@
 /**
- * King Daily - Service Worker
+ * Reign - Service Worker
  * Enables offline functionality and caching
  */
 
-const CACHE_NAME = 'king-daily-v4';
+const CACHE_NAME = 'reign-v6';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

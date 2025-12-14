@@ -1165,6 +1165,47 @@ const app = {
             </div>
         `;
         modal.classList.add('active');
+    },
+
+    /**
+     * Filter Royal Chronicle activities
+     * @param {string} type - Activity type to filter
+     */
+    filterChronicle(type) {
+        const cards = document.querySelectorAll('.chronicle-card');
+        const tabs = document.querySelectorAll('.history-tab');
+
+        // Update active tab
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.textContent.toLowerCase().includes(type === 'all' ? 'all' : type)) {
+                tab.classList.add('active');
+            }
+        });
+
+        // Filter cards
+        cards.forEach(card => {
+            if (type === 'all' || card.dataset.type === type) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Update date groups visibility
+        document.querySelectorAll('.chronicle-date-group').forEach(group => {
+            const visibleCards = group.querySelectorAll('.chronicle-card[style*="display: flex"]');
+            const hiddenCards = group.querySelectorAll('.chronicle-card[style*="display: none"]');
+
+            // Show group if any cards are visible, or hide if all are hidden
+            if (type === 'all') {
+                group.style.display = 'block';
+            } else {
+                const hasVisibleCards = Array.from(group.querySelectorAll('.chronicle-card'))
+                    .some(c => c.dataset.type === type);
+                group.style.display = hasVisibleCards ? 'block' : 'none';
+            }
+        });
     }
 };
 

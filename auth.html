@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>King Daily | Royal Access</title>
+    <title>Reign | Royal Access</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -397,341 +397,533 @@
                 font-size: 1.5rem;
             }
         }
+
+        /* Auth Step Visibility */
+        .auth-step {
+            display: none;
+        }
+
+        .auth-step.active {
+            display: block;
+        }
+
+        /* Persona Selector */
+        .persona-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .persona-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.5rem 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .persona-btn:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .persona-btn:first-child:hover {
+            border-color: var(--royal-gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .persona-btn:last-child:hover {
+            border-color: #b76e79;
+            background: rgba(183, 110, 121, 0.08);
+        }
+
+        .persona-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .persona-icon.king {
+            background: linear-gradient(135deg, var(--royal-gold) 0%, #C49B2F 100%);
+            color: var(--royal-dark);
+        }
+
+        .persona-icon.queen {
+            background: linear-gradient(135deg, #b76e79 0%, #9a525c 100%);
+            color: white;
+        }
+
+        .persona-label {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .persona-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .auth-btn.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+        }
+
+        .auth-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .skip-note {
+            text-align: center;
+            color: #475569;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.875rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--royal-gold);
+        }
     </style>
 </head>
 
 <body>
     <div class="auth-container">
-        <div class="auth-header">
-            <div class="auth-logo">
-                <i class="ph-fill ph-crown"></i>
-            </div>
-            <h1 class="auth-title">King Daily</h1>
-            <p class="auth-subtitle">Enter the royal chambers to sync your data across all devices</p>
-        </div>
-
-        <div class="auth-card">
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
-                <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+        <!-- Step 1: Persona Selection -->
+        <div id="persona-step" class="auth-step active">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="ph-fill ph-crown"></i>
+                </div>
+                <h1 class="auth-title">Welcome to Reign</h1>
+                <p class="auth-subtitle">Choose your royal identity to begin your journey</p>
             </div>
 
-            <div id="error-message" class="error-message">
-                <i class="ph-bold ph-warning-circle"></i>
-                <span id="error-text"></span>
-            </div>
-
-            <!-- Login Form -->
-            <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <div class="input-icon-wrap">
-                        <i class="ph-duotone ph-envelope"></i>
-                        <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <div class="input-icon-wrap">
-                        <i class="ph-duotone ph-lock"></i>
-                        <input type="password" name="password" class="form-input" placeholder="••••••••" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
-                            <i class="ph-bold ph-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: -0.5rem;">
-                    <label
-                        style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.8125rem; color: #94a3b8;">
-                        <input type="checkbox" name="rememberMe" style="accent-color: var(--royal-gold);">
-                        <span>Remember me</span>
-                    </label>
-                    <a href="#" onclick="showForgotPassword(event)"
-                        style="font-size: 0.8125rem; color: var(--indigo); text-decoration: none;">Forgot password?</a>
-                </div>
-                <button type="submit" class="auth-btn" id="login-btn">
-                    <i class="ph-bold ph-sign-in"></i>
-                    Sign In to Kingdom
-                </button>
-            </form>
-
-            <!-- Register Form -->
-            <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label class="form-label">Your Name</label>
-                    <div class="input-icon-wrap">
-                        <i class="ph-duotone ph-user"></i>
-                        <input type="text" name="name" class="form-input" placeholder="King John" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <div class="input-icon-wrap">
-                        <i class="ph-duotone ph-envelope"></i>
-                        <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <div class="input-icon-wrap">
-                        <i class="ph-duotone ph-lock"></i>
-                        <input type="password" name="password" id="reg-password" class="form-input"
-                            placeholder="Create a strong password" required minlength="6"
-                            oninput="checkPasswordStrength(this)">
-                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
-                            <i class="ph-bold ph-eye"></i>
-                        </button>
-                    </div>
-                    <div class="password-strength">
-                        <div id="password-strength-bar" class="password-strength-bar"></div>
-                    </div>
-                    <!-- Password Requirements -->
-                    <div id="password-requirements" style="margin-top: 0.75rem; font-size: 0.6875rem;">
-                        <div class="pwd-req" id="req-length"><i class="ph-bold ph-circle"></i> At least 6 characters
+            <div class="auth-card">
+                <div class="persona-selector">
+                    <button class="persona-btn" onclick="selectPersona('king')">
+                        <div class="persona-icon king">
+                            <i class="ph-fill ph-crown"></i>
                         </div>
-                        <div class="pwd-req" id="req-upper"><i class="ph-bold ph-circle"></i> One uppercase letter</div>
-                        <div class="pwd-req" id="req-number"><i class="ph-bold ph-circle"></i> One number</div>
-                        <div class="pwd-req" id="req-special"><i class="ph-bold ph-circle"></i> One special character
-                            (optional)</div>
-                    </div>
+                        <span class="persona-label">King</span>
+                        <span class="persona-desc">Rule your day with strength</span>
+                    </button>
+                    <button class="persona-btn" onclick="selectPersona('queen')">
+                        <div class="persona-icon queen">
+                            <i class="ph-fill ph-crown"></i>
+                        </div>
+                        <span class="persona-label">Queen</span>
+                        <span class="persona-desc">Grace your day with elegance</span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Confirm Password</label>
-                    <div class="input-icon-wrap">
-                        <i class="ph-duotone ph-lock-key"></i>
-                        <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••"
-                            required>
-                    </div>
-                </div>
-                <button type="submit" class="auth-btn" id="register-btn">
-                    <i class="ph-bold ph-crown"></i>
-                    Claim Your Throne
-                </button>
-            </form>
 
-            <div class="skip-link">
-                <a href="index.html">Continue without account →</a>
+                <div class="auth-divider">or</div>
+
+                <button class="auth-btn secondary" onclick="continueWithoutAccount()">
+                    <i class="ph-bold ph-arrow-right"></i>
+                    Continue without account
+                </button>
+                <p class="skip-note">You can create an account later to sync your data</p>
             </div>
         </div>
 
-        <p class="auth-footer">
-            Your data is encrypted and securely stored in the cloud.
-        </p>
-    </div>
+        <!-- Step 2: Auth Forms -->
+        <div id="auth-step" class="auth-step">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="ph-fill ph-crown"></i>
+                </div>
+                <h1 class="auth-title">Reign</h1>
+                <p class="auth-subtitle">Enter the royal chambers to sync your data across all devices</p>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="js/config.js"></script>
-    <script>
-        // Tab switching
-        function switchTab(tab) {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            <button class="back-btn" onclick="goBackToPersonaStep()">
+                <i class="ph-bold ph-arrow-left"></i> Back to identity
+            </button>
 
-            document.querySelector(`.auth-tab:${tab === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
-            document.getElementById(`${tab}-form`).classList.add('active');
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+                    <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+                </div>
 
-            hideError();
-        }
+                <div id="error-message" class="error-message">
+                    <i class="ph-bold ph-warning-circle"></i>
+                    <span id="error-text"></span>
+                </div>
 
-        // Toggle password visibility
-        function togglePassword(btn) {
-            const input = btn.parentElement.querySelector('input');
-            const icon = btn.querySelector('i');
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-icon-wrap">
+                            <i class="ph-duotone ph-envelope"></i>
+                            <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-icon-wrap">
+                            <i class="ph-duotone ph-lock"></i>
+                            <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <i class="ph-bold ph-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-top: -0.5rem;">
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.8125rem; color: #94a3b8;">
+                            <input type="checkbox" name="rememberMe" style="accent-color: var(--royal-gold);">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" onclick="showForgotPassword(event)"
+                            style="font-size: 0.8125rem; color: var(--indigo); text-decoration: none;">Forgot
+                            password?</a>
+                    </div>
+                    <button type="submit" class="auth-btn" id="login-btn">
+                        <i class="ph-bold ph-sign-in"></i>
+                        Sign In to Kingdom
+                    </button>
+                </form>
 
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'ph-bold ph-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'ph-bold ph-eye';
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label class="form-label">Your Name</label>
+                        <div class="input-icon-wrap">
+                            <i class="ph-duotone ph-user"></i>
+                            <input type="text" name="name" class="form-input" placeholder="King John" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-icon-wrap">
+                            <i class="ph-duotone ph-envelope"></i>
+                            <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-icon-wrap">
+                            <i class="ph-duotone ph-lock"></i>
+                            <input type="password" name="password" id="reg-password" class="form-input"
+                                placeholder="Create a strong password" required minlength="6"
+                                oninput="checkPasswordStrength(this)">
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <i class="ph-bold ph-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div id="password-strength-bar" class="password-strength-bar"></div>
+                        </div>
+                        <!-- Password Requirements -->
+                        <div id="password-requirements" style="margin-top: 0.75rem; font-size: 0.6875rem;">
+                            <div class="pwd-req" id="req-length"><i class="ph-bold ph-circle"></i> At least 6 characters
+                            </div>
+                            <div class="pwd-req" id="req-upper"><i class="ph-bold ph-circle"></i> One uppercase letter
+                            </div>
+                            <div class="pwd-req" id="req-number"><i class="ph-bold ph-circle"></i> One number</div>
+                            <div class="pwd-req" id="req-special"><i class="ph-bold ph-circle"></i> One special
+                                character
+                                (optional)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <div class="input-icon-wrap">
+                            <i class="ph-duotone ph-lock-key"></i>
+                            <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••"
+                                required>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-btn" id="register-btn">
+                        <i class="ph-bold ph-crown"></i>
+                        Claim Your Throne
+                    </button>
+                </form>
+
+                <div class="skip-link">
+                    <a href="index.html">Continue without account →</a>
+                </div>
+            </div>
+
+            <p class="auth-footer">
+                Your data is encrypted and securely stored in the cloud.
+            </p>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        <script src="js/config.js"></script>
+        <script>
+            // Tab switching
+            function switchTab(tab) {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+                document.querySelector(`.auth-tab:${tab === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
+                document.getElementById(`${tab}-form`).classList.add('active');
+
+                hideError();
             }
-        }
 
-        // Password strength checker with requirements
-        function checkPasswordStrength(input) {
-            const password = input.value;
-            const bar = document.getElementById('password-strength-bar');
+            // Toggle password visibility
+            function togglePassword(btn) {
+                const input = btn.parentElement.querySelector('input');
+                const icon = btn.querySelector('i');
 
-            // Check individual requirements
-            const hasLength = password.length >= 6;
-            const hasUpper = /[A-Z]/.test(password);
-            const hasNumber = /[0-9]/.test(password);
-            const hasSpecial = /[^a-zA-Z0-9]/.test(password);
-
-            // Update requirements display
-            updateReq('req-length', hasLength);
-            updateReq('req-upper', hasUpper);
-            updateReq('req-number', hasNumber);
-            updateReq('req-special', hasSpecial);
-
-            // Calculate strength
-            let strength = 0;
-            if (hasLength) strength++;
-            if (hasUpper) strength++;
-            if (hasNumber) strength++;
-            if (hasSpecial) strength++;
-
-            bar.className = 'password-strength-bar';
-            if (strength >= 3) bar.classList.add('strong');
-            else if (strength >= 2) bar.classList.add('medium');
-            else if (strength >= 1) bar.classList.add('weak');
-        }
-
-        function updateReq(id, valid) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (valid) {
-                el.classList.add('valid');
-                el.querySelector('i').className = 'ph-fill ph-check-circle';
-            } else {
-                el.classList.remove('valid');
-                el.querySelector('i').className = 'ph-bold ph-circle';
-            }
-        }
-
-        // Forgot password placeholder
-        function showForgotPassword(e) {
-            e.preventDefault();
-            showToast('Password reset coming soon! Contact support for assistance.', 'error');
-        }
-
-        // Show error
-        function showError(message) {
-            const errorEl = document.getElementById('error-message');
-            document.getElementById('error-text').textContent = message;
-            errorEl.classList.add('show');
-        }
-
-        // Hide error
-        function hideError() {
-            document.getElementById('error-message').classList.remove('show');
-        }
-
-        // Show toast
-        function showToast(message, type = 'success') {
-            Toastify({
-                text: message,
-                duration: 3000,
-                gravity: 'top',
-                position: 'center',
-                style: {
-                    background: type === 'success'
-                        ? 'linear-gradient(135deg, #D4AF37, #C49B2F)'
-                        : 'linear-gradient(135deg, #ef4444, #dc2626)',
-                    borderRadius: '0.75rem',
-                    fontWeight: '600',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)'
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'ph-bold ph-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'ph-bold ph-eye';
                 }
-            }).showToast();
-        }
+            }
 
-        // Handle login
-        async function handleLogin(e) {
-            e.preventDefault();
-            hideError();
+            // Password strength checker with requirements
+            function checkPasswordStrength(input) {
+                const password = input.value;
+                const bar = document.getElementById('password-strength-bar');
 
-            const btn = document.getElementById('login-btn');
-            const form = e.target;
-            const formData = new FormData(form);
+                // Check individual requirements
+                const hasLength = password.length >= 6;
+                const hasUpper = /[A-Z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                const hasSpecial = /[^a-zA-Z0-9]/.test(password);
 
-            btn.classList.add('loading');
-            btn.innerHTML = '<span>Signing In...</span>';
+                // Update requirements display
+                updateReq('req-length', hasLength);
+                updateReq('req-upper', hasUpper);
+                updateReq('req-number', hasNumber);
+                updateReq('req-special', hasSpecial);
 
-            try {
-                const response = await fetch(`${Config.API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: formData.get('email'),
-                        password: formData.get('password')
-                    })
-                });
+                // Calculate strength
+                let strength = 0;
+                if (hasLength) strength++;
+                if (hasUpper) strength++;
+                if (hasNumber) strength++;
+                if (hasSpecial) strength++;
 
-                const data = await response.json();
+                bar.className = 'password-strength-bar';
+                if (strength >= 3) bar.classList.add('strong');
+                else if (strength >= 2) bar.classList.add('medium');
+                else if (strength >= 1) bar.classList.add('weak');
+            }
 
-                if (!response.ok) {
-                    throw new Error(data.error || 'Login failed');
+            function updateReq(id, valid) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (valid) {
+                    el.classList.add('valid');
+                    el.querySelector('i').className = 'ph-fill ph-check-circle';
+                } else {
+                    el.classList.remove('valid');
+                    el.querySelector('i').className = 'ph-bold ph-circle';
+                }
+            }
+
+            // Forgot password placeholder
+            function showForgotPassword(e) {
+                e.preventDefault();
+                showToast('Password reset coming soon! Contact support for assistance.', 'error');
+            }
+
+            // Show error
+            function showError(message) {
+                const errorEl = document.getElementById('error-message');
+                document.getElementById('error-text').textContent = message;
+                errorEl.classList.add('show');
+            }
+
+            // Hide error
+            function hideError() {
+                document.getElementById('error-message').classList.remove('show');
+            }
+
+            // Show toast
+            function showToast(message, type = 'success') {
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'center',
+                    style: {
+                        background: type === 'success'
+                            ? 'linear-gradient(135deg, #D4AF37, #C49B2F)'
+                            : 'linear-gradient(135deg, #ef4444, #dc2626)',
+                        borderRadius: '0.75rem',
+                        fontWeight: '600',
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)'
+                    }
+                }).showToast();
+            }
+
+            // Handle login
+            async function handleLogin(e) {
+                e.preventDefault();
+                hideError();
+
+                const btn = document.getElementById('login-btn');
+                const form = e.target;
+                const formData = new FormData(form);
+
+                btn.classList.add('loading');
+                btn.innerHTML = '<span>Signing In...</span>';
+
+                try {
+                    const response = await fetch(`${Config.API_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: formData.get('email'),
+                            password: formData.get('password')
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Login failed');
+                    }
+
+                    // Save token and user
+                    localStorage.setItem('kingdaily_token', data.token);
+                    localStorage.setItem('kingdaily_user', JSON.stringify(data.user));
+
+                    showToast('Welcome back, ' + data.user.name + '! 👑');
+
+                    // Redirect to app
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+
+                } catch (error) {
+                    showError(error.message);
+                    btn.classList.remove('loading');
+                    btn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Sign In to Kingdom';
+                }
+            }
+
+            // Handle register
+            async function handleRegister(e) {
+                e.preventDefault();
+                hideError();
+
+                const btn = document.getElementById('register-btn');
+                const form = e.target;
+                const formData = new FormData(form);
+
+                // Validate passwords match
+                if (formData.get('password') !== formData.get('confirmPassword')) {
+                    showError('Passwords do not match');
+                    return;
                 }
 
-                // Save token and user
-                localStorage.setItem('kingdaily_token', data.token);
-                localStorage.setItem('kingdaily_user', JSON.stringify(data.user));
+                btn.classList.add('loading');
+                btn.innerHTML = '<span>Creating Account...</span>';
 
-                showToast('Welcome back, ' + data.user.name + '! 👑');
+                try {
+                    const response = await fetch(`${Config.API_URL}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: formData.get('name'),
+                            email: formData.get('email'),
+                            password: formData.get('password')
+                        })
+                    });
 
-                // Redirect to app
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                    const data = await response.json();
 
-            } catch (error) {
-                showError(error.message);
-                btn.classList.remove('loading');
-                btn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Sign In to Kingdom';
-            }
-        }
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Registration failed');
+                    }
 
-        // Handle register
-        async function handleRegister(e) {
-            e.preventDefault();
-            hideError();
+                    // Save token and user
+                    localStorage.setItem('kingdaily_token', data.token);
+                    localStorage.setItem('kingdaily_user', JSON.stringify(data.user));
 
-            const btn = document.getElementById('register-btn');
-            const form = e.target;
-            const formData = new FormData(form);
+                    showToast('Welcome to the Kingdom, ' + data.user.name + '! 👑');
 
-            // Validate passwords match
-            if (formData.get('password') !== formData.get('confirmPassword')) {
-                showError('Passwords do not match');
-                return;
-            }
+                    // Redirect to app
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
 
-            btn.classList.add('loading');
-            btn.innerHTML = '<span>Creating Account...</span>';
-
-            try {
-                const response = await fetch(`${Config.API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: formData.get('name'),
-                        email: formData.get('email'),
-                        password: formData.get('password')
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Registration failed');
+                } catch (error) {
+                    showError(error.message);
+                    btn.classList.remove('loading');
+                    btn.innerHTML = '<i class="ph-bold ph-crown"></i> Claim Your Throne';
                 }
-
-                // Save token and user
-                localStorage.setItem('kingdaily_token', data.token);
-                localStorage.setItem('kingdaily_user', JSON.stringify(data.user));
-
-                showToast('Welcome to the Kingdom, ' + data.user.name + '! 👑');
-
-                // Redirect to app
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
-
-            } catch (error) {
-                showError(error.message);
-                btn.classList.remove('loading');
-                btn.innerHTML = '<i class="ph-bold ph-crown"></i> Claim Your Throne';
             }
-        }
 
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('kingdaily_token');
-            if (token) {
+            // Check if already logged in
+            document.addEventListener('DOMContentLoaded', () => {
+                const token = localStorage.getItem('kingdaily_token');
+                if (token) {
+                    const persona = localStorage.getItem('reign_persona') || 'king';
+                    window.location.href = persona === 'queen' ? 'queen.html' : 'index.html';
+                }
+            });
+
+            // Persona Selection
+            let selectedPersona = 'king';
+
+            function selectPersona(persona) {
+                selectedPersona = persona;
+                localStorage.setItem('reign_persona', persona);
+
+                // Show auth step
+                document.getElementById('persona-step').classList.remove('active');
+                document.getElementById('auth-step').classList.add('active');
+            }
+
+            function continueWithoutAccount() {
+                // Set to King UI with light theme for guests
+                localStorage.setItem('reign_persona', 'king');
+                localStorage.setItem('reign_guest', 'true');
+
+                // Apply light theme
+                const settings = JSON.parse(localStorage.getItem('king-daily-settings') || '{}');
+                settings.theme = 'light';
+                localStorage.setItem('king-daily-settings', JSON.stringify(settings));
+
                 window.location.href = 'index.html';
             }
-        });
-    </script>
+
+            function goBackToPersonaStep() {
+                document.getElementById('auth-step').classList.remove('active');
+                document.getElementById('persona-step').classList.add('active');
+            }
+        </script>
 </body>
 
 </html>

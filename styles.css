@@ -3076,6 +3076,121 @@ h6 {
 }
 
 /* ===================================
+   ROYAL CHRONICLE STYLES
+   =================================== */
+.chronicle-date-group {
+    margin-bottom: 1.5rem;
+}
+
+.chronicle-date-label {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--royal-gold);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid var(--royal-gold);
+}
+
+.chronicle-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.chronicle-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.chronicle-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateX(4px);
+}
+
+.chronicle-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+}
+
+.chronicle-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.chronicle-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.chronicle-card-type {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.chronicle-card-time {
+    font-size: 0.6875rem;
+    color: #475569;
+}
+
+.chronicle-card-title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: white;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chronicle-card-subtitle {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0.25rem 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chronicle-card-meta {
+    display: flex;
+    gap: 1rem;
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.chronicle-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.chronicle-card-meta i {
+    color: var(--royal-gold);
+}
+
+/* ===================================
    STREAK ACHIEVEMENT CARD
    =================================== */
 .streak-card {
