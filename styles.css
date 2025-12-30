@@ -83,6 +83,76 @@
     color: #b76e79;
 }
 
+/* Queen Theme - Additional Components */
+.queen-theme .sidebar-toggle {
+    background: linear-gradient(135deg, #b76e79, #9a525c);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(183, 110, 121, 0.3);
+}
+
+.queen-theme .sidebar-toggle:hover {
+    box-shadow: 0 6px 20px rgba(183, 110, 121, 0.5), 0 0 0 3px rgba(183, 110, 121, 0.4);
+}
+
+.queen-theme .nav-divider {
+    background: linear-gradient(90deg, transparent, rgba(183, 110, 121, 0.15), transparent);
+}
+
+.queen-theme .nav-section-label {
+    color: rgba(183, 110, 121, 0.6);
+}
+
+.queen-theme .nav-btn:hover {
+    background: rgba(183, 110, 121, 0.08);
+}
+
+.queen-theme .nav-btn::before {
+    background: linear-gradient(180deg, #b76e79, #9a525c);
+}
+
+.queen-theme .page-hero {
+    border-color: rgba(183, 110, 121, 0.2);
+}
+
+.queen-theme .btn-outline {
+    border-color: rgba(183, 110, 121, 0.3);
+    color: #b76e79;
+}
+
+.queen-theme .btn-outline:hover {
+    background: rgba(183, 110, 121, 0.1);
+    border-color: #b76e79;
+}
+
+.queen-theme .form-input,
+.queen-theme .form-select,
+.queen-theme .form-textarea {
+    border-color: rgba(183, 110, 121, 0.2);
+}
+
+.queen-theme .form-input:focus,
+.queen-theme .form-select:focus,
+.queen-theme .form-textarea:focus {
+    border-color: #b76e79;
+    box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.1);
+}
+
+.queen-theme .mobile-nav {
+    background: rgba(26, 10, 24, 0.98);
+    border-top-color: rgba(183, 110, 121, 0.1);
+}
+
+.queen-theme .header-brand i {
+    color: #b76e79;
+}
+
+.queen-theme ::-webkit-scrollbar-thumb {
+    background: rgba(183, 110, 121, 0.3);
+}
+
+.queen-theme ::-webkit-scrollbar-thumb:hover {
+    background: rgba(183, 110, 121, 0.5);
+}
+
 /* --- Base Styles --- */
 *,
 *::before,

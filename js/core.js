@@ -96,6 +96,7 @@ const Storage = {
             savings: { goals: [], transactions: [] },
             settings: {
                 username: 'King',
+                role: 'king',
                 theme: 'dark',
                 notifications: true,
                 soundEnabled: false
@@ -304,6 +305,156 @@ const Utils = {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    },
+
+    // ==========================================
+    // LOADING STATE HELPERS
+    // ==========================================
+
+    /**
+     * Set button loading state
+     * @param {HTMLElement|string} btn - Button element or selector
+     * @param {boolean} loading - Whether to show loading state
+     */
+    setButtonLoading(btn, loading = true) {
+        const el = typeof btn === 'string' ? document.querySelector(btn) : btn;
+        if (!el) return;
+
+        if (loading) {
+            el.classList.add('loading');
+            el.dataset.originalText = el.innerHTML;
+            el.disabled = true;
+        } else {
+            el.classList.remove('loading');
+            if (el.dataset.originalText) {
+                el.innerHTML = el.dataset.originalText;
+                delete el.dataset.originalText;
+            }
+            el.disabled = false;
+        }
+    },
+
+    /**
+     * Show skeleton loader in container
+     * @param {HTMLElement|string} container - Container element or selector
+     * @param {string} type - Type: 'card', 'list', 'stats', 'table'
+     * @param {number} count - Number of skeleton items
+     */
+    showSkeleton(container, type = 'card', count = 3) {
+        const el = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!el) return;
+
+        let html = '';
+
+        switch (type) {
+            case 'card':
+                for (let i = 0; i < count; i++) {
+                    html += `
+                        <div class="skeleton-card" style="position: relative;">
+                            <div class="skeleton-icon" style="margin-bottom: 1rem;"></div>
+                            <div class="skeleton-text title"></div>
+                            <div class="skeleton-text medium"></div>
+                            <div class="skeleton-text short"></div>
+                        </div>
+                    `;
+                }
+                break;
+
+            case 'list':
+                for (let i = 0; i < count; i++) {
+                    html += `
+                        <div class="skeleton-list-item">
+                            <div class="skeleton-avatar"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-text medium" style="margin-bottom: 0.5rem;"></div>
+                                <div class="skeleton-text short"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                break;
+
+            case 'stats':
+                for (let i = 0; i < count; i++) {
+                    html += `
+                        <div class="skeleton-stat">
+                            <div class="skeleton-text"></div>
+                            <div class="skeleton-text"></div>
+                        </div>
+                    `;
+                }
+                break;
+
+            case 'table':
+                for (let i = 0; i < count; i++) {
+                    html += `
+                        <div class="skeleton-table-row">
+                            <div class="skeleton-text"></div>
+                            <div class="skeleton-text"></div>
+                            <div class="skeleton-text"></div>
+                            <div class="skeleton-text short"></div>
+                        </div>
+                    `;
+                }
+                break;
+
+            default:
+                html = `
+                    <div class="skeleton-card" style="position: relative;">
+                        <div class="skeleton-text title"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text medium"></div>
+                    </div>
+                `;
+        }
+
+        el.innerHTML = html;
+    },
+
+    /**
+     * Show full page loading overlay
+     * @param {string} message - Optional loading message
+     */
+    showPageLoading(message = 'Loading...') {
+        // Remove existing if any
+        this.hidePageLoading();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'page-loading-overlay';
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
+            <div class="spinner"></div>
+            <p class="loading-text">${this.sanitize(message)}</p>
+        `;
+        document.body.appendChild(overlay);
+    },
+
+    /**
+     * Hide full page loading overlay
+     */
+    hidePageLoading() {
+        const overlay = document.getElementById('page-loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+    },
+
+    /**
+     * Add loading state to any element
+     * @param {HTMLElement|string} element - Element or selector
+     */
+    addCardLoading(element) {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (el) el.classList.add('card-loading');
+    },
+
+    /**
+     * Remove loading state from element
+     * @param {HTMLElement|string} element - Element or selector
+     */
+    removeCardLoading(element) {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (el) el.classList.remove('card-loading');
     }
 };
 
@@ -459,12 +610,46 @@ const UI = {
     },
 
     /**
-     * Initialize theme
+     * Initialize theme and role
      */
     initTheme() {
         const data = Storage.getData();
         const theme = data.settings?.theme || 'dark';
+        const role = data.settings?.role || 'king';
+
+        // Apply light/dark theme
         document.documentElement.setAttribute('data-theme', theme);
+
+        // Apply role theme (queen gets special styling)
+        if (role === 'queen') {
+            document.body.classList.add('queen-theme');
+            document.body.classList.remove('king-theme');
+        } else {
+            document.body.classList.add('king-theme');
+            document.body.classList.remove('queen-theme');
+        }
+    },
+
+    /**
+     * Set user role (king/queen)
+     * @param {string} role - 'king' or 'queen'
+     */
+    setRole(role) {
+        const data = Storage.getData();
+        if (!data.settings) data.settings = {};
+        data.settings.role = role;
+        Storage.saveData(data);
+        this.initTheme();
+        Utils.showToast(`Role set to ${role === 'queen' ? 'Queen 👸' : 'King 👑'}`, 'gold');
+    },
+
+    /**
+     * Get current user role
+     * @returns {string} 'king' or 'queen'
+     */
+    getRole() {
+        const data = Storage.getData();
+        return data.settings?.role || 'king';
     },
 
     /**

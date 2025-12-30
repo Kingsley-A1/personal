@@ -1099,39 +1099,79 @@ const AdminApp = {
         Utils.showToast('Exited impersonation mode', 'gold');
     },
 
-    promoteUser(userId) {
+    /**
+     * Promote a user to a higher role
+     * Uses real API - requires superadmin for admin/superadmin promotions
+     */
+    async promoteUser(userId) {
         this.closeUserModal();
-        const user = this.getMockUsers().find(u => u.id === userId);
-        if (!user) return;
 
-        const roles = ['user', 'moderator', 'admin', 'super_admin'];
-        const currentIndex = roles.indexOf(user.role);
-        if (currentIndex < roles.length - 1) {
-            const newRole = roles[currentIndex + 1];
-            Utils.showToast(`${user.name} promoted to ${newRole}`, 'success');
-        } else {
-            Utils.showToast(`${user.name} is already at highest role`, 'warning');
+        // Get current user info for context
+        const userInfo = this._cachedUsers?.find(u => u.id === userId);
+        const userName = userInfo?.name || 'User';
+
+        const roleChoice = prompt(
+            'Enter new role:\n• admin\n• superadmin\n\n(Cancel to abort)',
+            'admin'
+        );
+
+        if (!roleChoice) return;
+
+        if (!['admin', 'superadmin'].includes(roleChoice)) {
+            Utils.showToast('Invalid role. Use: admin or superadmin', 'warning');
+            return;
+        }
+
+        try {
+            const result = await AdminAPI.promoteUser(userId, roleChoice);
+            Utils.showToast(`${result.user.name} promoted to ${roleChoice}`, 'success');
+            this.navigate('users'); // Refresh user list
+        } catch (error) {
+            console.error('Promote user error:', error);
+            Utils.showToast(error.message || 'Failed to promote user', 'danger');
         }
     },
 
-    suspendUser(userId) {
+    /**
+     * Suspend a user account
+     * Uses real API call to /api/admin/users/:id/suspend
+     */
+    async suspendUser(userId) {
         this.closeUserModal();
-        const user = this.getMockUsers().find(u => u.id === userId);
-        if (!user) return;
 
-        if (confirm(`Are you sure you want to suspend ${user.name}?`)) {
-            Utils.showToast(`${user.name} has been suspended`, 'danger');
-            this.navigate('users'); // Refresh
+        // Get user info for confirmation
+        const userInfo = this._cachedUsers?.find(u => u.id === userId);
+        const userName = userInfo?.name || 'this user';
+
+        if (!confirm(`Are you sure you want to suspend ${userName}?\n\nThey will not be able to log in until unsuspended.`)) {
+            return;
+        }
+
+        try {
+            const result = await AdminAPI.suspendUser(userId);
+            Utils.showToast(`${result.user.name} has been suspended`, 'danger');
+            this.navigate('users'); // Refresh user list
+        } catch (error) {
+            console.error('Suspend user error:', error);
+            Utils.showToast(error.message || 'Failed to suspend user', 'danger');
         }
     },
 
-    unsuspendUser(userId) {
+    /**
+     * Unsuspend (reactivate) a user account
+     * Uses real API call to /api/admin/users/:id/unsuspend
+     */
+    async unsuspendUser(userId) {
         this.closeUserModal();
-        const user = this.getMockUsers().find(u => u.id === userId);
-        if (!user) return;
 
-        Utils.showToast(`${user.name} has been unsuspended`, 'success');
-        this.navigate('users'); // Refresh
+        try {
+            const result = await AdminAPI.unsuspendUser(userId);
+            Utils.showToast(`${result.user.name} has been reactivated`, 'success');
+            this.navigate('users'); // Refresh user list
+        } catch (error) {
+            console.error('Unsuspend user error:', error);
+            Utils.showToast(error.message || 'Failed to unsuspend user', 'danger');
+        }
     },
 
     resetPassword(userId) {
@@ -1155,14 +1195,36 @@ const AdminApp = {
         }
     },
 
-    deleteUser(userId) {
+    /**
+     * Delete a user account permanently
+     * Uses real API call to /api/admin/users/:id
+     */
+    async deleteUser(userId) {
         this.closeUserModal();
-        const user = this.getMockUsers().find(u => u.id === userId);
-        if (!user) return;
 
-        if (confirm(`⚠️ DELETE USER\n\nAre you sure you want to permanently delete ${user.name}?\n\nThis action cannot be undone.`)) {
-            Utils.showToast(`${user.name} has been deleted`, 'danger');
-            this.navigate('users'); // Refresh
+        // Get user info for confirmation
+        const userInfo = this._cachedUsers?.find(u => u.id === userId);
+        const userName = userInfo?.name || 'this user';
+        const userEmail = userInfo?.email || '';
+
+        const confirmMsg = `⚠️ DELETE USER\n\nAre you sure you want to permanently delete ${userName}?\n${userEmail}\n\nThis action CANNOT be undone. All their data will be lost.`;
+
+        if (!confirm(confirmMsg)) {
+            return;
+        }
+
+        // Double confirmation for safety
+        if (!confirm(`FINAL CONFIRMATION\n\nType OK to delete ${userName} forever.`)) {
+            return;
+        }
+
+        try {
+            const result = await AdminAPI.deleteUser(userId);
+            Utils.showToast(`${result.deletedUser.name} has been permanently deleted`, 'danger');
+            this.navigate('users'); // Refresh user list
+        } catch (error) {
+            console.error('Delete user error:', error);
+            Utils.showToast(error.message || 'Failed to delete user', 'danger');
         }
     },
 
@@ -1183,8 +1245,43 @@ const AdminApp = {
         Utils.showToast('Users exported to CSV', 'success');
     },
 
-    sendAnnouncement() {
-        Utils.showToast('Announcement sent to all users!', 'success');
+    /**
+     * Send a new announcement
+     * Uses real API call to /api/admin/announce
+     */
+    async sendAnnouncement() {
+        const titleEl = document.querySelector('.announcement-form input[type="text"]');
+        const messageEl = document.querySelector('.announcement-form textarea');
+        const targetEl = document.querySelector('.announcement-form select');
+
+        const title = titleEl?.value?.trim();
+        const message = messageEl?.value?.trim();
+        const target = targetEl?.value || 'all';
+
+        if (!title) {
+            Utils.showToast('Please enter an announcement title', 'warning');
+            return;
+        }
+
+        if (!message) {
+            Utils.showToast('Please enter an announcement message', 'warning');
+            return;
+        }
+
+        try {
+            await AdminAPI.createAnnouncement({ title, message, target });
+            Utils.showToast('Announcement sent successfully!', 'success');
+
+            // Clear form
+            if (titleEl) titleEl.value = '';
+            if (messageEl) messageEl.value = '';
+
+            // Refresh announcements view
+            this.navigate('announcements');
+        } catch (error) {
+            console.error('Send announcement error:', error);
+            Utils.showToast(error.message || 'Failed to send announcement', 'danger');
+        }
     },
 
     logout() {

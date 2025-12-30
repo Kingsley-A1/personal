@@ -143,6 +143,22 @@
                     </div>
                 </div>
 
+                <!-- Security Section -->
+                <div class="settings-section" id="security-section" style="display: none;">
+                    <h3 class="settings-section-title">
+                        <i class="ph-bold ph-shield-check" style="color: #10b981;"></i> Security & Recovery
+                    </h3>
+                    <div class="setting-item">
+                        <div>
+                            <p class="setting-label">Password Recovery</p>
+                            <p class="setting-desc">Set a security question to recover your password</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="openSecurityModal()">
+                            <i class="ph-bold ph-key"></i> Setup
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Account Section (if logged in) -->
                 <div id="account-section" class="settings-section" style="display: none;">
                     <h3 class="settings-section-title">
@@ -173,6 +189,22 @@
                     <h3 class="settings-section-title">
                         <i class="ph-bold ph-palette" style="color: #8b5cf6;"></i> Appearance
                     </h3>
+                    <div class="setting-item">
+                        <div>
+                            <p class="setting-label">Role / Theme Style</p>
+                            <p class="setting-desc">Choose your royal identity</p>
+                        </div>
+                        <div class="role-selector" style="display: flex; gap: 0.5rem;">
+                            <button id="role-king" class="role-btn active" onclick="setRole('king')"
+                                style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid var(--royal-gold); background: linear-gradient(135deg, #D4AF37, #B8860B); color: #0f172a; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.375rem; transition: all 0.2s ease;">
+                                <i class="ph-fill ph-crown"></i> King
+                            </button>
+                            <button id="role-queen" class="role-btn" onclick="setRole('queen')"
+                                style="padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid #b76e79; background: transparent; color: #b76e79; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.375rem; transition: all 0.2s ease;">
+                                <i class="ph-fill ph-crown"></i> Queen
+                            </button>
+                        </div>
+                    </div>
                     <div class="setting-item">
                         <div>
                             <p class="setting-label">Dark Mode</p>
@@ -291,6 +323,75 @@
             loadSettings();
         });
 
+
+
+        function openSecurityModal() {
+            UI.showModal(`
+                <div style="text-align: left;">
+                    <h3 style="margin-bottom: 1rem; color: white;">Setup Password Recovery</h3>
+                    <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        This security question will be used to recover your account if you forget your password.
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <label style="display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Security Question</label>
+                            <select id="sec-question" class="form-input">
+                                <option value="What represents you?">What represents you?</option>
+                                <option value="What is the name of your first pet?">What is the name of your first pet?</option>
+                                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                <option value="What city were you born in?">What city were you born in?</option>
+                                <option value="What is your favorite book?">What is your favorite book?</option>
+                                <option value="What was the model of your first car?">What was the model of your first car?</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Your Answer</label>
+                            <input type="text" id="sec-answer" class="form-input" placeholder="Enter your secret answer">
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Current Password</label>
+                            <input type="password" id="sec-password" class="form-input" placeholder="Confirm your password">
+                        </div>
+
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="btn btn-primary" onclick="saveSecurityQuestion(this)" style="flex: 1;">Save</button>
+                            <button class="btn btn-outline" onclick="UI.closeModal()" style="flex: 1;">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        async function saveSecurityQuestion(btn) {
+            const question = document.getElementById('sec-question').value;
+            const answer = document.getElementById('sec-answer').value;
+            const password = document.getElementById('sec-password').value;
+
+            if (!answer || !password) {
+                Utils.showToast('All fields are required', 'danger');
+                return;
+            }
+
+            UI.setButtonLoading(btn, true);
+
+            try {
+                await API.put('/auth/security-question', {
+                    question,
+                    answer,
+                    password
+                });
+
+                Utils.showToast('Security question updated!', 'success');
+                UI.closeModal();
+            } catch (error) {
+                Utils.showToast(error.message, 'danger');
+                UI.setButtonLoading(btn, false);
+            }
+        }
+
         function loadSettings() {
             const data = Storage.getData();
             settings = data.settings || {};
@@ -300,13 +401,19 @@
 
             // Set toggles
             const theme = settings.theme || 'dark';
+            const role = settings.role || 'king';
+
             document.getElementById('toggle-theme').classList.toggle('active', theme === 'dark');
             document.getElementById('toggle-notifications').classList.toggle('active', settings.notifications === true);
             document.getElementById('toggle-sound').classList.toggle('active', settings.soundEnabled === true);
 
+            // Set role buttons
+            updateRoleButtons(role);
+
             // Account section
             if (Auth.isLoggedIn()) {
                 document.getElementById('account-section').style.display = 'block';
+                document.getElementById('security-section').style.display = 'block';
                 const user = Auth.getUser();
                 document.getElementById('account-email').textContent = user?.email || 'Unknown';
                 document.getElementById('last-sync').textContent = data.lastUpdated ? Utils.formatTimeAgo(data.lastUpdated) : 'Never';
@@ -317,6 +424,28 @@
 
             // Setup auto-save for username
             document.getElementById('setting-username').addEventListener('input', Utils.debounce(saveSettings, 500));
+        }
+
+        function updateRoleButtons(role) {
+            const kingBtn = document.getElementById('role-king');
+            const queenBtn = document.getElementById('role-queen');
+
+            if (role === 'queen') {
+                kingBtn.style.background = 'transparent';
+                kingBtn.style.color = '#D4AF37';
+                queenBtn.style.background = 'linear-gradient(135deg, #b76e79, #9a525c)';
+                queenBtn.style.color = '#0f172a';
+            } else {
+                kingBtn.style.background = 'linear-gradient(135deg, #D4AF37, #B8860B)';
+                kingBtn.style.color = '#0f172a';
+                queenBtn.style.background = 'transparent';
+                queenBtn.style.color = '#b76e79';
+            }
+        }
+
+        function setRole(role) {
+            UI.setRole(role);
+            updateRoleButtons(role);
         }
 
         function saveSettings() {

@@ -678,10 +678,11 @@
                 <!-- Login Form -->
                 <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label class="form-label">Email Address</label>
+                        <label class="form-label">Email or Phone</label>
                         <div class="input-icon-wrap">
-                            <i class="ph-duotone ph-envelope"></i>
-                            <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+                            <i class="ph-duotone ph-user"></i>
+                            <input type="text" name="email" class="form-input" placeholder="email or phone number"
+                                required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -701,7 +702,7 @@
                             <input type="checkbox" name="rememberMe" style="accent-color: var(--royal-gold);">
                             <span>Remember me</span>
                         </label>
-                        <a href="#" onclick="showForgotPassword(event)"
+                        <a href="recover-password.html"
                             style="font-size: 0.8125rem; color: var(--indigo); text-decoration: none;">Forgot
                             password?</a>
                     </div>
@@ -721,10 +722,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Email Address</label>
+                        <label class="form-label">Email or Phone</label>
                         <div class="input-icon-wrap">
-                            <i class="ph-duotone ph-envelope"></i>
-                            <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+                            <i class="ph-duotone ph-user"></i>
+                            <input type="text" name="email" class="form-input" placeholder="email or phone number"
+                                required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -847,11 +849,7 @@
                 }
             }
 
-            // Forgot password placeholder
-            function showForgotPassword(e) {
-                e.preventDefault();
-                showToast('Password reset coming soon! Contact support for assistance.', 'error');
-            }
+
 
             // Show error
             function showError(message) {

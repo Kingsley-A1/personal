@@ -70,10 +70,10 @@ const SidebarComponent = {
                     : `${basePath}${item.href}`;
 
                 navHTML += `
-                    <a href="${isDisabled ? '#' : href}" class="nav-btn ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}" data-target="${item.id}" title="${item.label}">
-                        <i class="ph-duotone ${item.icon}"></i>
+                    <a href="${isDisabled ? '#' : href}" class="nav-btn ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}" data-target="${item.id}" title="${item.label}" aria-label="${item.label}${isActive ? ' (current page)' : ''}${isDisabled ? ' - coming soon' : ''}">
+                        <i class="ph-duotone ${item.icon}" aria-hidden="true"></i>
                         <span>${item.label}</span>
-                        ${item.badge ? `<span class="nav-badge coming-soon">${item.badge}</span>` : ''}
+                        ${item.badge ? `<span class="nav-badge coming-soon" aria-label="Coming soon">${item.badge}</span>` : ''}
                     </a>
                 `;
             }
@@ -86,8 +86,8 @@ const SidebarComponent = {
             <!-- Sidebar -->
             <aside class="sidebar ${isCollapsed ? 'collapsed' : ''}" id="app-sidebar">
                 <!-- Toggle Button -->
-                <button class="sidebar-toggle" onclick="SidebarComponent.toggleCollapse()" title="Toggle Sidebar">
-                    <i class="ph-bold ph-caret-left"></i>
+                <button class="sidebar-toggle" onclick="SidebarComponent.toggleCollapse()" title="Toggle Sidebar" aria-label="Toggle sidebar navigation" aria-expanded="true">
+                    <i class="ph-bold ph-caret-left" aria-hidden="true"></i>
                 </button>
                 
                 <nav class="sidebar-nav">
@@ -96,8 +96,8 @@ const SidebarComponent = {
                 
                 <!-- Sidebar Footer -->
                 <div class="sidebar-footer">
-                    <a href="${basePath}auth.html" class="sidebar-sync-btn">
-                        <i class="ph-bold ph-cloud-arrow-up"></i>
+                    <a href="${basePath}auth.html" class="sidebar-sync-btn" aria-label="Sync your data to the cloud">
+                        <i class="ph-bold ph-cloud-arrow-up" aria-hidden="true"></i>
                         <span>Sync Your Data</span>
                     </a>
                 </div>

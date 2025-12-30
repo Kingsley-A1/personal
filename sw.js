@@ -1,14 +1,26 @@
 /**
  * Reign - Service Worker
  * Enables offline functionality and caching
+ * Updated for production deployment
  */
 
-const CACHE_NAME = 'reign-v12';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'reign-v13';
+
+// Core assets that must be cached for offline functionality
+const CORE_ASSETS = [
     '/',
     '/index.html',
     '/auth.html',
     '/styles.css',
+    '/css/components.css',
+    '/manifest.json',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png'
+];
+
+// JavaScript files
+const JS_ASSETS = [
+    '/js/core.js',
     '/js/app.js',
     '/js/storage.js',
     '/js/router.js',
@@ -18,29 +30,51 @@ const ASSETS_TO_CACHE = [
     '/js/config.js',
     '/js/auth.js',
     '/js/sync.js',
-    '/manifest.json',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png'
+    '/js/components/header.js',
+    '/js/components/sidebar.js',
+    '/js/components/footer.js'
 ];
 
-// External CDN resources to cache
+// All pages
+const PAGE_ASSETS = [
+    '/pages/morning.html',
+    '/pages/evening.html',
+    '/pages/events.html',
+    '/pages/learning.html',
+    '/pages/lessons.html',
+    '/pages/idea.html',
+    '/pages/dailygood.html',
+    '/pages/relationships.html',
+    '/pages/notifications.html',
+    '/pages/archive.html',
+    '/pages/settings.html',
+    '/pages/about.html',
+    '/pages/support.html'
+];
+
+// Combine all assets
+const ASSETS_TO_CACHE = [...CORE_ASSETS, ...JS_ASSETS, ...PAGE_ASSETS];
+
+// External CDN resources (cache on first use)
 const CDN_RESOURCES = [
-    'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap',
-    'https://unpkg.com/@phosphor-icons/web',
-    'https://cdn.jsdelivr.net/npm/chart.js',
-    'https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css',
-    'https://cdn.jsdelivr.net/npm/toastify-js'
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+    'https://unpkg.com',
+    'https://cdn.jsdelivr.net'
 ];
 
-// Install event - cache assets
+// Install event - cache core assets
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('Service Worker: Caching assets...');
+                console.log('[SW] Caching core assets...');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
             .then(() => self.skipWaiting())
+            .catch((err) => {
+                console.error('[SW] Cache install failed:', err);
+            })
     );
 });
 
@@ -52,7 +86,7 @@ self.addEventListener('activate', (event) => {
                 return Promise.all(
                     cacheNames.map((cache) => {
                         if (cache !== CACHE_NAME) {
-                            console.log('Service Worker: Clearing old cache...');
+                            console.log('[SW] Clearing old cache:', cache);
                             return caches.delete(cache);
                         }
                     })
@@ -62,34 +96,65 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Network first for API, Cache first for assets
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
     // Skip non-GET requests
     if (event.request.method !== 'GET') return;
 
+    // Skip API requests (let them go to network)
+    if (url.pathname.startsWith('/api/')) {
+        return event.respondWith(fetch(event.request));
+    }
+
+    // For CDN resources - stale while revalidate
+    if (CDN_RESOURCES.some(cdn => url.origin.includes(cdn.replace('https://', '')))) {
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                const fetchPromise = fetch(event.request).then((networkResponse) => {
+                    if (networkResponse.ok) {
+                        const clone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+                    }
+                    return networkResponse;
+                }).catch(() => cachedResponse);
+
+                return cachedResponse || fetchPromise;
+            })
+        );
+        return;
+    }
+
+    // For app assets - cache first, network fallback
     event.respondWith(
         caches.match(event.request)
             .then((cachedResponse) => {
-                // Return cached version if available
                 if (cachedResponse) {
+                    // Return cached, but also update cache in background
+                    fetch(event.request).then((networkResponse) => {
+                        if (networkResponse.ok) {
+                            caches.open(CACHE_NAME).then((cache) => {
+                                cache.put(event.request, networkResponse);
+                            });
+                        }
+                    }).catch(() => { });
                     return cachedResponse;
                 }
 
-                // Otherwise fetch from network
+                // Not in cache, fetch from network
                 return fetch(event.request)
                     .then((networkResponse) => {
-                        // Cache successful responses for future use
                         if (networkResponse.ok) {
-                            const responseClone = networkResponse.clone();
-                            caches.open(CACHE_NAME)
-                                .then((cache) => {
-                                    cache.put(event.request, responseClone);
-                                });
+                            const clone = networkResponse.clone();
+                            caches.open(CACHE_NAME).then((cache) => {
+                                cache.put(event.request, clone);
+                            });
                         }
                         return networkResponse;
                     })
                     .catch(() => {
-                        // If offline and page requested, return cached index
+                        // Offline fallback for navigation
                         if (event.request.mode === 'navigate') {
                             return caches.match('/index.html');
                         }

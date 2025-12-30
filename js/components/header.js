@@ -50,16 +50,16 @@ const HeaderComponent = {
 
                 <div class="header-actions">
                     <!-- Learning Streak Badge -->
-                    <div id="streak-badge" class="streak-badge hidden" onclick="Nav.goto('learning')">
-                        <i class="ph-fill ph-fire"></i>
+                    <button id="streak-badge" class="streak-badge hidden" onclick="Nav.goto('learning')" aria-label="Learning streak - click to view progress">
+                        <i class="ph-fill ph-fire" aria-hidden="true"></i>
                         <span id="streak-count">0</span>
-                    </div>
+                    </button>
 
                     <!-- Sync Status -->
                     ${isLoggedIn ? `
                         <div class="sync-indicator" title="Data synced">
                             <div class="avatar-wrapper">
-                                <button id="user-avatar-btn" class="user-avatar-btn" onclick="HeaderComponent.toggleUserMenu()">
+                                <button id="user-avatar-btn" class="user-avatar-btn" onclick="HeaderComponent.toggleUserMenu()" aria-label="User menu" aria-expanded="false" aria-haspopup="true">
                                     <span class="user-initials">${Auth.getInitials()}</span>
                                 </button>
                             </div>
@@ -68,16 +68,16 @@ const HeaderComponent = {
                     ` : ''}
 
                     <!-- Guest Prompt -->
-                    <a href="${basePath}auth.html" id="guest-prompt" class="guest-prompt ${isLoggedIn ? 'hidden' : ''}" style="display: ${isLoggedIn ? 'none' : 'flex'}">
-                        <i class="ph-bold ph-cloud-arrow-up"></i>
-                        <span class="hidden-mobile">Sync Data</span>
+                    <a href="${basePath}auth.html" id="guest-prompt" class="guest-prompt ${isLoggedIn ? 'hidden' : ''}" style="display: ${isLoggedIn ? 'none' : 'flex'}" aria-label="Login or Sign Up to sync your data">
+                        <i class="ph-bold ph-cloud-arrow-up" aria-hidden="true"></i>
+                        <span class="hidden-mobile">Login/Sign Up</span>
                     </a>
 
                     <!-- Settings -->
                     <div class="header-settings hidden-mobile">
                         <label class="theme-toggle" title="Toggle Theme">
-                            <input type="checkbox" id="theme-toggle" onchange="HeaderComponent.toggleTheme()">
-                            <i class="ph-duotone ph-moon"></i>
+                            <input type="checkbox" id="theme-toggle" onchange="HeaderComponent.toggleTheme()" aria-label="Toggle dark/light theme">
+                            <i class="ph-duotone ph-moon" aria-hidden="true"></i>
                         </label>
                     </div>
                 </div>
@@ -93,8 +93,8 @@ const HeaderComponent = {
                         <a href="${basePath}pages/settings.html" class="dropdown-item">
                             <i class="ph-bold ph-gear"></i> Settings
                         </a>
-                        <button class="dropdown-item" onclick="Auth.logout()">
-                            <i class="ph-bold ph-sign-out"></i> Logout
+                        <button class="dropdown-item" onclick="Auth.logout()" aria-label="Log out of your account">
+                            <i class="ph-bold ph-sign-out" aria-hidden="true"></i> Logout
                         </button>
                     </div>
                 ` : ''}
@@ -103,6 +103,11 @@ const HeaderComponent = {
 
         // Update streak badge
         this.updateStreakBadge();
+
+        // Apply role theme (King/Queen) after components render
+        if (typeof UI !== 'undefined' && UI.initTheme) {
+            UI.initTheme();
+        }
     },
 
     /**

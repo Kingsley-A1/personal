@@ -76,17 +76,28 @@ function verifyToken(token) {
  * @returns {Promise<Object>} Created user (without password)
  */
 async function createUser(userData) {
-    const { name, email, password } = userData;
+    const { name, email, password } = userData; // 'email' here acts as the generic identifier
 
     // Check if database is configured
     if (!db.isConfigured()) {
         throw new Error('Database not configured. Please set DATABASE_URL in .env');
     }
 
-    // Check if email already exists
-    const existingUser = await findUserByEmail(email);
+    const identifier = email.trim();
+    const isPhone = /^\+?[0-9\s-]{10,}$/.test(identifier);
+    let finalEmail = null;
+    let finalPhone = null;
+
+    if (isPhone) {
+        finalPhone = identifier; // Could normalize here
+    } else {
+        finalEmail = identifier.toLowerCase();
+    }
+
+    // Check if identifier already exists
+    const existingUser = await findUserByIdentifier(identifier);
     if (existingUser) {
-        throw new Error('Email already registered');
+        throw new Error('Account already registered');
     }
 
     const hashedPassword = await hashPassword(password);
@@ -100,30 +111,42 @@ async function createUser(userData) {
         .toUpperCase();
 
     const result = await db.query(
-        `INSERT INTO users (email, password_hash, name, initials) 
-         VALUES ($1, $2, $3, $4) 
-         RETURNING id, email, name, avatar_url as avatar, initials, role, status, streak, created_at as "createdAt", updated_at as "updatedAt"`,
-        [email.toLowerCase().trim(), hashedPassword, name.trim(), initials]
+        `INSERT INTO users (email, phone, password_hash, name, initials) 
+         VALUES ($1, $2, $3, $4, $5) 
+         RETURNING id, email, phone, name, avatar_url as avatar, initials, role, status, streak, created_at as "createdAt", updated_at as "updatedAt"`,
+        [finalEmail, finalPhone, hashedPassword, name.trim(), initials]
     );
 
     return result.rows[0];
 }
 
 /**
- * Find user by email
+ * Find user by email or phone
+ * @param {string} identifier - User email or phone
+ * @returns {Promise<Object|null>} User or null
+ */
+async function findUserByIdentifier(identifier) {
+    if (!db.isConfigured()) return null;
+
+    const term = identifier.trim().toLowerCase(); // phone normalization might be needed if strictly enforcing format
+
+    const result = await db.query(
+        `SELECT id, email, phone, name, password_hash as password, avatar_url as avatar, initials, role, status, streak, 
+                created_at as "createdAt", updated_at as "updatedAt"
+         FROM users 
+         WHERE email = $1 OR phone = $1`,
+        [term]
+    );
+    return result.rows[0] || null;
+}
+
+/**
+ * Find user by email (Legacy - uses findUserByIdentifier)
  * @param {string} email - User email
  * @returns {Promise<Object|null>} User or null
  */
 async function findUserByEmail(email) {
-    if (!db.isConfigured()) return null;
-
-    const result = await db.query(
-        `SELECT id, email, name, password_hash as password, avatar_url as avatar, initials, role, status, streak, 
-                created_at as "createdAt", updated_at as "updatedAt"
-         FROM users WHERE email = $1`,
-        [email.toLowerCase().trim()]
-    );
-    return result.rows[0] || null;
+    return findUserByIdentifier(email);
 }
 
 /**
@@ -136,8 +159,8 @@ async function findUserById(id, includePassword = false) {
     if (!db.isConfigured()) return null;
 
     const columns = includePassword
-        ? 'id, email, name, password_hash as password, avatar_url as avatar, initials, role, status, streak, created_at as "createdAt", updated_at as "updatedAt"'
-        : 'id, email, name, avatar_url as avatar, initials, role, status, streak, created_at as "createdAt", updated_at as "updatedAt"';
+        ? 'id, email, phone, name, password_hash as password, avatar_url as avatar, initials, role, status, streak, created_at as "createdAt", updated_at as "updatedAt"'
+        : 'id, email, phone, name, avatar_url as avatar, initials, role, status, streak, created_at as "createdAt", updated_at as "updatedAt"';
 
     const result = await db.query(
         `SELECT ${columns} FROM users WHERE id = $1`,
@@ -262,6 +285,54 @@ async function authMiddleware(req, res, next) {
 }
 
 // ==========================================
+// ROLE-BASED ACCESS MIDDLEWARE
+// ==========================================
+
+/**
+ * Express middleware to verify admin role
+ * Must be used AFTER authMiddleware to ensure req.user exists
+ * 
+ * Usage: router.get('/admin-route', authMiddleware, adminMiddleware, handler)
+ */
+function adminMiddleware(req, res, next) {
+    // Verify user exists (authMiddleware should have set this)
+    if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Check for admin or superadmin role
+    const adminRoles = ['admin', 'superadmin'];
+    if (!adminRoles.includes(req.user.role)) {
+        return res.status(403).json({
+            error: 'Admin access required',
+            userRole: req.user.role
+        });
+    }
+
+    next();
+}
+
+/**
+ * Express middleware to verify superadmin role
+ * For operations like promoting users to admin, system settings, etc.
+ * Must be used AFTER authMiddleware
+ */
+function superAdminMiddleware(req, res, next) {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    if (req.user.role !== 'superadmin') {
+        return res.status(403).json({
+            error: 'Superadmin access required',
+            message: 'This operation requires superadmin privileges'
+        });
+    }
+
+    next();
+}
+
+// ==========================================
 // AUDIT LOGGING
 // ==========================================
 
@@ -309,19 +380,31 @@ async function loadUsersFromR2(r2) {
 }
 
 module.exports = {
+    // Password utilities
     hashPassword,
     verifyPassword,
+
+    // JWT utilities
     generateToken,
     verifyToken,
+
+    // User CRUD
     createUser,
     findUserByEmail,
     findUserById,
     updateUser,
     deleteUser,
     getAllUsers,
+
+    // Middleware
     authMiddleware,
+    adminMiddleware,
+    superAdminMiddleware,
+
+    // Audit
     logAudit,
-    // Legacy exports (deprecated)
+
+    // Legacy exports (deprecated - will be removed in future versions)
     saveUsersToR2,
     loadUsersFromR2
 };

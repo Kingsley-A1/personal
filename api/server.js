@@ -8,16 +8,27 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/auth');
 const syncRoutes = require('./routes/sync');
 const relationshipsRoutes = require('./routes/relationships');
+const adminRoutes = require('./routes/admin');
 const r2 = require('./lib/r2');
 const db = require('./lib/database');
 const auth = require('./lib/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+/**
+ * ============================================
+ * SECURITY MIDDLEWARE
+ * ============================================
+ * Helmet sets various HTTP headers to protect against
+ * common web vulnerabilities like XSS, clickjacking, etc.
+ */
+app.use(helmet());
 
 // Rate Limiters
 const generalLimiter = rateLimit({
@@ -69,6 +80,7 @@ app.use('/api/auth/register', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/relationships', relationshipsRoutes);
+app.use('/api/admin', adminRoutes);  // Admin routes (require auth + admin role)
 
 // Health check
 app.get('/api/health', async (req, res) => {
@@ -79,7 +91,7 @@ app.get('/api/health', async (req, res) => {
         database: dbConnected ? 'connected' : 'not configured',
         r2: r2.isConfigured() ? 'configured' : 'not configured',
         timestamp: new Date().toISOString(),
-        version: '2.1.0'
+        version: '2.2.0'  // Major: Admin API added, security improvements
     });
 });
 
@@ -101,13 +113,10 @@ process.on('SIGTERM', async () => {
 
 // Start server
 async function start() {
-    // Test database connection
+    // Test database connection on startup
     if (db.isConfigured()) {
         await db.testConnection();
     }
-
-    // Legacy: Load users from R2 (now deprecated, shows migration message)
-    await auth.loadUsersFromR2(r2);
 
     app.listen(PORT, () => {
         const dbStatus = db.isConfigured() ? '✅ CockroachDB' : '⚠️  Not configured';
@@ -115,7 +124,7 @@ async function start() {
 
         console.log(`
 ╔═══════════════════════════════════════════════════════╗
-║            👑 REIGN API Server v2.1.0 👑              ║
+║            👑 REIGN API Server v2.2.0 👑              ║
 ╠═══════════════════════════════════════════════════════╣
 ║  Server:     http://localhost:${PORT}                   ║
 ║  Database:   ${dbStatus}                       ║

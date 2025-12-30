@@ -1,19 +1,31 @@
 /**
  * King Daily - Storage Module
  * Handles all data persistence with localStorage
+ * NOTE: Uses 'reignData' key to match core.js (consolidated storage)
  */
 
 const Storage = {
-    STORAGE_KEY: 'kingDailyData',
+    // Use same key as core.js for data consistency
+    STORAGE_KEY: 'reignData',
 
-    // Default data structure
+    // Default data structure (matches core.js getDefaultData)
     defaultData: {
         logs: {},      // Daily logs keyed by date "YYYY-MM-DD"
         events: [],    // Calendar events
+        ideas: [],
+        lessons: [],
+        dailyGood: [],
+        relationships: [],
+        savings: { goals: [], transactions: [] },
         settings: {
             theme: 'dark',
-            userName: 'King'
+            role: 'king',
+            userName: 'King',
+            username: 'King',
+            notifications: true,
+            soundEnabled: false
         },
+        lastUpdated: null,
         // Learning Module Data
         learning: {
             courses: [],           // Learning courses
@@ -146,13 +158,41 @@ const Storage = {
      */
     save(data) {
         try {
+            data.lastUpdated = new Date().toISOString();
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
             return true;
         } catch (e) {
             console.error('Storage save error:', e);
-            Utils.showToast('Storage full! Export data then clear.', 'danger');
+            if (typeof Utils !== 'undefined') {
+                Utils.showToast('Storage full! Export data then clear.', 'danger');
+            }
             return false;
         }
+    },
+
+    /**
+     * Alias for load() - compatibility with core.js API
+     * @returns {Object} The stored data or default structure
+     */
+    getData() {
+        return this.load();
+    },
+
+    /**
+     * Alias for save() - compatibility with core.js API
+     * @param {Object} data - The data to save
+     * @returns {boolean} Success status
+     */
+    saveData(data) {
+        return this.save(data);
+    },
+
+    /**
+     * Get default data structure - compatibility with core.js
+     * @returns {Object} Default data structure
+     */
+    getDefaultData() {
+        return { ...this.defaultData };
     },
 
     /**
