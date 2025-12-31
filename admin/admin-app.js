@@ -11,6 +11,13 @@ const AdminApp = {
     impersonatedUser: null,
     adminUser: null,
 
+    // Pagination state
+    pagination: {
+        currentPage: 1,
+        perPage: 10,
+        total: 0
+    },
+
     /**
      * Initialize Admin Application
      */
@@ -155,18 +162,18 @@ const AdminApp = {
     /**
      * Render view content
      */
-    renderView(view) {
+    async renderView(view) {
         const container = document.getElementById('admin-view');
 
         switch (view) {
             case 'dashboard':
-                this.renderDashboard(container);
+                await this.renderDashboard(container);
                 break;
             case 'users':
-                this.renderUsers(container);
+                await this.renderUsers(container);
                 break;
             case 'analytics':
-                this.renderAnalytics(container);
+                await this.renderAnalytics(container);
                 break;
             case 'heatmap':
                 this.renderHeatmap(container);
@@ -187,18 +194,62 @@ const AdminApp = {
                 this.renderSettings(container);
                 break;
             case 'audit':
-                this.renderAuditLog(container);
+                await this.renderAuditLog(container);
                 break;
             default:
-                this.renderDashboard(container);
+                await this.renderDashboard(container);
         }
     },
 
     /**
      * Render Dashboard / Command Center
+     * Uses real API data with loading states
      */
-    renderDashboard(container) {
-        const stats = this.getMockStats();
+    async renderDashboard(container) {
+        // Show loading skeleton first
+        container.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card-admin" style="min-height: 120px; opacity: 0.5;"></div>
+                <div class="stat-card-admin" style="min-height: 120px; opacity: 0.5;"></div>
+                <div class="stat-card-admin" style="min-height: 120px; opacity: 0.5;"></div>
+                <div class="stat-card-admin" style="min-height: 120px; opacity: 0.5;"></div>
+            </div>
+            <p style="color: #64748b; text-align: center; padding: 2rem;">Loading dashboard data...</p>
+        `;
+
+        try {
+            // Fetch real data from API (with fallbacks)
+            const [analyticsData, healthData, auditData] = await Promise.all([
+                AdminAPI.getAnalytics().catch(() => null),
+                AdminAPI.getHealth().catch(() => ({ status: 'unknown', database: 'unknown' })),
+                AdminAPI.getAuditLogs({ limit: 5 }).catch(() => ({ logs: [] }))
+            ]);
+
+            // Use real data or fallback to mock
+            const stats = analyticsData || this.getMockStats();
+            const health = healthData;
+            const recentLogs = auditData.logs || [];
+
+            this.renderDashboardContent(container, stats, health, recentLogs);
+        } catch (error) {
+            console.error('Dashboard error:', error);
+            // Fallback to mock data on critical error
+            const stats = this.getMockStats();
+            this.renderDashboardContent(container, stats, { status: 'unknown' }, []);
+        }
+    },
+
+    /**
+     * Render dashboard content with data
+     */
+    renderDashboardContent(container, stats, health, recentLogs) {
+        const totalUsers = stats.totalUsers || stats.users?.total || 0;
+        const newToday = stats.newUsersToday || stats.users?.newToday || 0;
+        const activeToday = stats.activeToday || stats.users?.activeToday || 0;
+        const activePercent = stats.activePercent || 0;
+        const streakLeaders = stats.streakLeaders || stats.engagement?.streakLeaders || 0;
+        const tasksToday = stats.tasksToday || stats.content?.tasksToday || 0;
+        const completionRate = stats.completionRate || stats.content?.completionRate || 0;
 
         container.innerHTML = `
             <!-- Quick Stats -->
@@ -206,25 +257,25 @@ const AdminApp = {
                 <div class="stat-card-admin">
                     <i class="ph-fill ph-users stat-icon"></i>
                     <p class="stat-label">Total Users</p>
-                    <p class="stat-value">${stats.totalUsers.toLocaleString()}</p>
+                    <p class="stat-value">${totalUsers.toLocaleString()}</p>
                     <div class="stat-change up">
                         <i class="ph-bold ph-trend-up"></i>
-                        <span>+${stats.newUsersToday} today</span>
+                        <span>+${newToday} today</span>
                     </div>
                 </div>
                 <div class="stat-card-admin success">
                     <i class="ph-fill ph-user-check stat-icon" style="color: var(--admin-success);"></i>
                     <p class="stat-label">Active Today</p>
-                    <p class="stat-value">${stats.activeToday}</p>
+                    <p class="stat-value">${activeToday}</p>
                     <div class="stat-change up">
                         <i class="ph-bold ph-trend-up"></i>
-                        <span>${stats.activePercent}% of users</span>
+                        <span>${activePercent}% of users</span>
                     </div>
                 </div>
                 <div class="stat-card-admin warning">
                     <i class="ph-fill ph-fire stat-icon" style="color: var(--admin-warning);"></i>
                     <p class="stat-label">Streak Leaders</p>
-                    <p class="stat-value">${stats.streakLeaders}</p>
+                    <p class="stat-value">${streakLeaders}</p>
                     <div class="stat-change">
                         <span>7+ day streaks</span>
                     </div>
@@ -232,17 +283,17 @@ const AdminApp = {
                 <div class="stat-card-admin">
                     <i class="ph-fill ph-chart-line-up stat-icon"></i>
                     <p class="stat-label">Tasks Today</p>
-                    <p class="stat-value">${stats.tasksToday}</p>
+                    <p class="stat-value">${tasksToday}</p>
                     <div class="stat-change up">
                         <i class="ph-bold ph-trend-up"></i>
-                        <span>${stats.completionRate}% completed</span>
+                        <span>${completionRate}% completed</span>
                     </div>
                 </div>
             </div>
 
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
-                <!-- System Health -->
+                <!-- System Health (Real) -->
                 <div class="dashboard-card">
                     <div class="dashboard-card-header">
                         <h3 class="dashboard-card-title">
@@ -252,14 +303,14 @@ const AdminApp = {
                     </div>
                     <div class="health-grid">
                         <div class="health-item">
-                            <div class="health-indicator"></div>
+                            <div class="health-indicator ${health.status === 'ok' ? '' : 'warning'}"></div>
                             <span class="health-label">API Status</span>
-                            <span class="health-value">Healthy</span>
+                            <span class="health-value">${health.status === 'ok' ? 'Healthy' : 'Checking...'}</span>
                         </div>
                         <div class="health-item">
-                            <div class="health-indicator"></div>
+                            <div class="health-indicator ${health.database === 'connected' ? '' : 'danger'}"></div>
                             <span class="health-label">Database</span>
-                            <span class="health-value">Connected</span>
+                            <span class="health-value">${health.database === 'connected' ? 'Connected' : 'Unknown'}</span>
                         </div>
                         <div class="health-item">
                             <div class="health-indicator"></div>
@@ -267,9 +318,9 @@ const AdminApp = {
                             <span class="health-value">Running</span>
                         </div>
                         <div class="health-item">
-                            <div class="health-indicator warning"></div>
-                            <span class="health-label">Storage</span>
-                            <span class="health-value">72% used</span>
+                            <div class="health-indicator"></div>
+                            <span class="health-label">Version</span>
+                            <span class="health-value">${health.version || '2.0'}</span>
                         </div>
                     </div>
                 </div>
@@ -282,16 +333,19 @@ const AdminApp = {
                             Alerts
                         </h3>
                     </div>
-                    <div class="alert-item">
-                        <i class="ph-bold ph-warning-circle"></i>
-                        <span class="alert-text">Storage usage above 70%</span>
-                        <button class="alert-dismiss"><i class="ph-bold ph-x"></i></button>
-                    </div>
-                    <div class="alert-item">
-                        <i class="ph-bold ph-info"></i>
-                        <span class="alert-text">3 users pending verification</span>
-                        <button class="alert-dismiss"><i class="ph-bold ph-x"></i></button>
-                    </div>
+                    ${health.database !== 'connected' ? `
+                        <div class="alert-item danger">
+                            <i class="ph-bold ph-warning-circle"></i>
+                            <span class="alert-text">Database connection status unknown</span>
+                            <button class="alert-dismiss" onclick="this.parentElement.remove()"><i class="ph-bold ph-x"></i></button>
+                        </div>
+                    ` : `
+                        <div class="alert-item">
+                            <i class="ph-bold ph-check-circle"></i>
+                            <span class="alert-text">All systems operational</span>
+                            <button class="alert-dismiss" onclick="this.parentElement.remove()"><i class="ph-bold ph-x"></i></button>
+                        </div>
+                    `}
                 </div>
             </div>
 
@@ -304,7 +358,17 @@ const AdminApp = {
                     </h3>
                 </div>
                 <div class="activity-list">
-                    ${this.getMockActivity().map(a => `
+                    ${recentLogs.length > 0 ? recentLogs.map(log => `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="ph-bold ${this.getAuditIcon(log.action)}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-text">${log.action || 'Activity'} ${log.details ? '- ' + JSON.stringify(log.details).slice(0, 50) : ''}</p>
+                                <p class="activity-time">${this.formatTimeAgo(log.created_at)}</p>
+                            </div>
+                        </div>
+                    `).join('') : this.getMockActivity().map(a => `
                         <div class="activity-item">
                             <div class="activity-icon">
                                 <i class="${a.icon}"></i>
@@ -321,10 +385,78 @@ const AdminApp = {
     },
 
     /**
+     * Get icon for audit action
+     */
+    getAuditIcon(action) {
+        const icons = {
+            'LOGIN': 'ph-sign-in',
+            'LOGOUT': 'ph-sign-out',
+            'REGISTER': 'ph-user-plus',
+            'UPDATE_PROFILE': 'ph-pencil',
+            'DELETE_USER': 'ph-trash',
+            'SUSPEND_USER': 'ph-prohibit',
+            'PROMOTE_USER': 'ph-arrow-up'
+        };
+        return icons[action] || 'ph-circle';
+    },
+
+    /**
+     * Format time ago
+     */
+    formatTimeAgo(dateStr) {
+        if (!dateStr) return 'Just now';
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${diffDays}d ago`;
+    },
+
+    /**
      * Render Users Management
      */
-    renderUsers(container) {
-        const users = this.getMockUsers();
+    async renderUsers(container) {
+        // Show loading state
+        container.innerHTML = `
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <h3 class="dashboard-card-title">
+                        <i class="ph-duotone ph-users"></i>
+                        Loading Users...
+                    </h3>
+                </div>
+                <p style="color: #64748b; text-align: center; padding: 2rem;">Fetching user data...</p>
+            </div>
+        `;
+
+        try {
+            // Fetch real users from API
+            const response = await AdminAPI.getUsers({ limit: 50 }).catch(() => null);
+            const users = response?.users || this.getMockUsers();
+            this.users = users; // Cache for later use
+
+            this.renderUsersContent(container, users);
+        } catch (error) {
+            console.error('Users fetch error:', error);
+            this.renderUsersContent(container, this.getMockUsers());
+        }
+    },
+
+    /**
+     * Render users content with pagination
+     */
+    renderUsersContent(container, users) {
+        this.pagination.total = users.length;
+        const start = (this.pagination.currentPage - 1) * this.pagination.perPage;
+        const end = start + this.pagination.perPage;
+        const paginatedUsers = users.slice(start, end);
+        const totalPages = Math.ceil(users.length / this.pagination.perPage);
 
         container.innerHTML = `
             <div class="dashboard-card">
@@ -333,10 +465,10 @@ const AdminApp = {
                         <i class="ph-duotone ph-users"></i>
                         All Users (${users.length})
                     </h3>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" placeholder="Search users..." class="admin-search-input" 
-                               style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; font-size: 0.875rem;">
-                        <select style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; font-size: 0.875rem;">
+                    <div class="users-toolbar">
+                        <input type="text" placeholder="Search users..." class="toolbar-input" id="user-search"
+                               onkeyup="AdminApp.filterUsers(this.value)">
+                        <select id="role-filter" onchange="AdminApp.filterUsersByRole(this.value)" class="toolbar-select">
                             <option value="">All Roles</option>
                             <option value="user">User</option>
                             <option value="moderator">Moderator</option>
@@ -360,22 +492,22 @@ const AdminApp = {
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        ${users.map(user => `
-                            <tr>
+                    <tbody id="users-tbody">
+                        ${paginatedUsers.map(user => `
+                            <tr data-user-id="${user.id}" data-name="${(user.name || '').toLowerCase()}" data-role="${user.role}">
                                 <td>
-                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                        <div class="admin-user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
-                                            ${user.initials}
+                                    <div class="user-cell">
+                                        <div class="admin-user-avatar mini">
+                                            ${user.initials || (user.name ? user.name.charAt(0) : 'U')}
                                         </div>
-                                        <span>${user.name}</span>
+                                        <span>${user.name || 'Unknown'}</span>
                                     </div>
                                 </td>
-                                <td>${user.email}</td>
-                                <td><span class="role-badge ${user.role}">${user.role}</span></td>
-                                <td><span class="status-badge ${user.status}">${user.status}</span></td>
-                                <td><span class="streak-badge">${user.streak} 🔥</span></td>
-                                <td>${user.lastActive}</td>
+                                <td class="email-cell">${user.email || '-'}</td>
+                                <td><span class="role-badge ${user.role || 'user'}">${user.role || 'user'}</span></td>
+                                <td><span class="status-badge ${user.status || 'active'}">${user.status || 'active'}</span></td>
+                                <td><span class="streak-badge">${user.streak || 0} 🔥</span></td>
+                                <td class="time-cell">${user.lastActive || this.formatTimeAgo(user.last_login)}</td>
                                 <td>
                                     <div class="action-btns">
                                         <button onclick="AdminApp.viewUser('${user.id}')" title="View">
@@ -393,8 +525,81 @@ const AdminApp = {
                         `).join('')}
                     </tbody>
                 </table>
+
+                <!-- Pagination -->
+                <div class="pagination-bar">
+                    <div class="pagination-info">
+                        Showing ${start + 1}-${Math.min(end, users.length)} of ${users.length} users
+                    </div>
+                    <div class="pagination-controls">
+                        <select class="pagination-select" onchange="AdminApp.setPerPage(this.value)">
+                            <option value="10" ${this.pagination.perPage === 10 ? 'selected' : ''}>10 per page</option>
+                            <option value="25" ${this.pagination.perPage === 25 ? 'selected' : ''}>25 per page</option>
+                            <option value="50" ${this.pagination.perPage === 50 ? 'selected' : ''}>50 per page</option>
+                        </select>
+                        <div class="pagination-buttons">
+                            <button onclick="AdminApp.goToPage(1)" ${this.pagination.currentPage === 1 ? 'disabled' : ''}>
+                                <i class="ph-bold ph-caret-double-left"></i>
+                            </button>
+                            <button onclick="AdminApp.goToPage(${this.pagination.currentPage - 1})" ${this.pagination.currentPage === 1 ? 'disabled' : ''}>
+                                <i class="ph-bold ph-caret-left"></i>
+                            </button>
+                            <span class="page-indicator">Page ${this.pagination.currentPage} of ${totalPages || 1}</span>
+                            <button onclick="AdminApp.goToPage(${this.pagination.currentPage + 1})" ${this.pagination.currentPage >= totalPages ? 'disabled' : ''}>
+                                <i class="ph-bold ph-caret-right"></i>
+                            </button>
+                            <button onclick="AdminApp.goToPage(${totalPages})" ${this.pagination.currentPage >= totalPages ? 'disabled' : ''}>
+                                <i class="ph-bold ph-caret-double-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
+    },
+
+    /**
+     * Go to specific page
+     */
+    goToPage(page) {
+        const totalPages = Math.ceil(this.users.length / this.pagination.perPage);
+        if (page >= 1 && page <= totalPages) {
+            this.pagination.currentPage = page;
+            this.renderUsersContent(document.getElementById('admin-view'), this.users);
+        }
+    },
+
+    /**
+     * Set items per page
+     */
+    setPerPage(perPage) {
+        this.pagination.perPage = parseInt(perPage);
+        this.pagination.currentPage = 1;
+        this.renderUsersContent(document.getElementById('admin-view'), this.users);
+    },
+
+    /**
+     * Filter users by search term
+     */
+    filterUsers(searchTerm) {
+        const term = searchTerm.toLowerCase();
+        document.querySelectorAll('#users-tbody tr').forEach(row => {
+            const name = row.dataset.name || '';
+            row.style.display = name.includes(term) ? '' : 'none';
+        });
+    },
+
+    /**
+     * Filter users by role
+     */
+    filterUsersByRole(role) {
+        document.querySelectorAll('#users-tbody tr').forEach(row => {
+            if (!role || row.dataset.role === role) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     },
 
     /**
@@ -640,9 +845,12 @@ const AdminApp = {
     },
 
     /**
-     * Render Platform Settings
+     * Render Platform Settings with persistence
      */
     renderSettings(container) {
+        // Load saved settings
+        const settings = this.loadSettings();
+
         container.innerHTML = `
             <div class="dashboard-card">
                 <div class="dashboard-card-header">
@@ -650,15 +858,20 @@ const AdminApp = {
                         <i class="ph-duotone ph-gear-six"></i>
                         Platform Settings
                     </h3>
+                    <button class="btn-primary" onclick="AdminApp.saveSettings()" style="padding: 0.5rem 1rem;">
+                        <i class="ph-bold ph-floppy-disk"></i>
+                        Save Changes
+                    </button>
                 </div>
+                
                 <div class="settings-section">
-                    <h4 style="color: white; margin-bottom: 1rem;">General</h4>
+                    <h4 class="settings-section-title">General</h4>
                     <div class="setting-row">
                         <div class="setting-info">
                             <span class="setting-label">Platform Name</span>
                             <span class="setting-desc">Displayed in header and title</span>
                         </div>
-                        <input type="text" value="Reign" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white;">
+                        <input type="text" id="setting-name" value="${settings.platformName || 'REIGN'}" class="settings-input">
                     </div>
                     <div class="setting-row">
                         <div class="setting-info">
@@ -666,7 +879,7 @@ const AdminApp = {
                             <span class="setting-desc">Disable access for non-admins</span>
                         </div>
                         <label class="toggle">
-                            <input type="checkbox">
+                            <input type="checkbox" id="setting-maintenance" ${settings.maintenanceMode ? 'checked' : ''}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -676,13 +889,98 @@ const AdminApp = {
                             <span class="setting-desc">Allow new users to register</span>
                         </div>
                         <label class="toggle">
-                            <input type="checkbox" checked>
+                            <input type="checkbox" id="setting-registration" ${settings.allowRegistration !== false ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4 class="settings-section-title">Appearance</h4>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Default Theme</span>
+                            <span class="setting-desc">Theme for new users</span>
+                        </div>
+                        <select id="setting-theme" class="settings-select">
+                            <option value="king" ${settings.defaultTheme === 'king' ? 'selected' : ''}>King (Gold)</option>
+                            <option value="queen" ${settings.defaultTheme === 'queen' ? 'selected' : ''}>Queen (Purple)</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Session Timeout (days)</span>
+                            <span class="setting-desc">How long sessions stay active</span>
+                        </div>
+                        <input type="number" id="setting-timeout" value="${settings.sessionTimeout || 10}" min="1" max="30" class="settings-input" style="width: 80px;">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4 class="settings-section-title">Notifications</h4>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Email Notifications</span>
+                            <span class="setting-desc">Send email updates to users</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="setting-emails" ${settings.emailNotifications !== false ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Push Notifications</span>
+                            <span class="setting-desc">Browser push notifications</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="setting-push" ${settings.pushNotifications ? 'checked' : ''}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
                 </div>
             </div>
         `;
+    },
+
+    /**
+     * Load settings from localStorage
+     */
+    loadSettings() {
+        try {
+            const saved = localStorage.getItem('reign_admin_settings');
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            return {};
+        }
+    },
+
+    /**
+     * Save settings to localStorage
+     */
+    saveSettings() {
+        const settings = {
+            platformName: document.getElementById('setting-name')?.value || 'REIGN',
+            maintenanceMode: document.getElementById('setting-maintenance')?.checked || false,
+            allowRegistration: document.getElementById('setting-registration')?.checked !== false,
+            defaultTheme: document.getElementById('setting-theme')?.value || 'king',
+            sessionTimeout: parseInt(document.getElementById('setting-timeout')?.value) || 10,
+            emailNotifications: document.getElementById('setting-emails')?.checked !== false,
+            pushNotifications: document.getElementById('setting-push')?.checked || false
+        };
+
+        localStorage.setItem('reign_admin_settings', JSON.stringify(settings));
+
+        Toastify({
+            text: '✓ Settings saved successfully',
+            duration: 3000,
+            gravity: 'top',
+            position: 'center',
+            style: {
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                borderRadius: '0.75rem'
+            }
+        }).showToast();
     },
 
     /**

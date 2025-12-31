@@ -8,7 +8,8 @@ const jwt = require('jsonwebtoken');
 const db = require('./database');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret-not-for-production';
-const TOKEN_EXPIRY = '30d'; // 30 days
+const TOKEN_EXPIRY_REMEMBER = '10d';  // 10 days for "Remember Me"
+const TOKEN_EXPIRY_DEFAULT = '1d';    // 1 day default session
 const SALT_ROUNDS = 12;
 
 // Warn if using fallback secret
@@ -47,10 +48,12 @@ async function verifyPassword(password, hash) {
 /**
  * Generate JWT token
  * @param {Object} payload - Token payload
+ * @param {boolean} rememberMe - Whether to use extended expiry (10 days)
  * @returns {string} JWT token
  */
-function generateToken(payload) {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+function generateToken(payload, rememberMe = false) {
+    const expiry = rememberMe ? TOKEN_EXPIRY_REMEMBER : TOKEN_EXPIRY_DEFAULT;
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: expiry });
 }
 
 /**

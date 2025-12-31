@@ -19,6 +19,13 @@ const Config = {
         OFFLINE_QUEUE: true        // Queue syncs when offline
     },
 
+    // Session settings
+    SESSION: {
+        REMEMBER_ME_DAYS: 10,      // 10-day session for "Remember Me"
+        DEFAULT_DAYS: 1,           // 1-day default session
+        EXPIRY_KEY: 'reign_session_expiry'
+    },
+
     // Storage keys
     STORAGE_KEYS: {
         TOKEN: 'reign_token',
@@ -33,6 +40,15 @@ const Config = {
      */
     isLoggedIn() {
         return !!localStorage.getItem(this.STORAGE_KEYS.TOKEN);
+    },
+
+    /**
+     * Check if session is still valid (not expired)
+     */
+    isSessionValid() {
+        const expiry = localStorage.getItem(this.SESSION.EXPIRY_KEY);
+        if (!expiry) return this.isLoggedIn(); // Fallback for old sessions
+        return Date.now() < parseInt(expiry);
     },
 
     /**
@@ -56,8 +72,10 @@ const Config = {
     clearAuth() {
         localStorage.removeItem(this.STORAGE_KEYS.TOKEN);
         localStorage.removeItem(this.STORAGE_KEYS.USER);
+        localStorage.removeItem(this.SESSION.EXPIRY_KEY);
     }
 };
 
 // Make available globally
 window.Config = Config;
+

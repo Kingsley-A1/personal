@@ -288,40 +288,60 @@
 
 <body>
     <div class="admin-container">
-        <!-- Sidebar -->
+        <!-- Sidebar - Unified with admin.html -->
         <aside class="admin-sidebar" id="sidebar">
-            <div class="sidebar-header">
+            <div class="admin-brand">
                 <i class="ph-fill ph-crown"></i>
-                <span>REIGN Admin</span>
+                <div>
+                    <h1>REIGN</h1>
+                    <span class="admin-badge">Admin</span>
+                </div>
             </div>
 
-            <nav class="sidebar-nav">
-                <a href="admin.html" class="nav-item">
-                    <i class="ph-bold ph-house"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="admin.html#users" class="nav-item">
-                    <i class="ph-bold ph-users"></i>
-                    <span>Users</span>
-                </a>
-                <a href="feedback.html" class="nav-item active">
-                    <i class="ph-bold ph-chat-heart"></i>
-                    <span>Feedback</span>
-                </a>
-                <a href="admin.html#announcements" class="nav-item">
-                    <i class="ph-bold ph-megaphone"></i>
-                    <span>Announcements</span>
-                </a>
-                <a href="admin.html#audit" class="nav-item">
-                    <i class="ph-bold ph-clipboard-text"></i>
-                    <span>Audit Log</span>
-                </a>
+            <nav class="admin-nav">
+                <div class="nav-section">
+                    <p class="nav-section-label">Management</p>
+                    <a href="admin.html" class="admin-nav-btn" data-view="dashboard">
+                        <i class="ph-duotone ph-gauge"></i>
+                        <span>Command Center</span>
+                    </a>
+                    <a href="admin.html#users" class="admin-nav-btn" data-view="users">
+                        <i class="ph-duotone ph-users"></i>
+                        <span>User Management</span>
+                    </a>
+                    <a href="feedback.html" class="admin-nav-btn active" data-view="feedback">
+                        <i class="ph-duotone ph-chat-heart"></i>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="admin.html#announcements" class="admin-nav-btn" data-view="announcements">
+                        <i class="ph-duotone ph-megaphone"></i>
+                        <span>Announcements</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-section-label">System</p>
+                    <a href="admin.html#settings" class="admin-nav-btn" data-view="settings">
+                        <i class="ph-duotone ph-gear-six"></i>
+                        <span>Platform Settings</span>
+                    </a>
+                    <a href="admin.html#audit" class="admin-nav-btn" data-view="audit">
+                        <i class="ph-duotone ph-clipboard-text"></i>
+                        <span>Audit Log</span>
+                    </a>
+                </div>
             </nav>
 
-            <div class="sidebar-footer">
-                <a href="../index.html" class="nav-item">
+            <div class="admin-user">
+                <div class="admin-user-avatar">
+                    <span id="admin-initials">AD</span>
+                </div>
+                <div class="admin-user-info">
+                    <span class="admin-user-name" id="admin-name">Admin</span>
+                    <span class="admin-user-role">Administrator</span>
+                </div>
+                <a href="../index.html" class="admin-logout-btn" title="Back to App">
                     <i class="ph-bold ph-arrow-left"></i>
-                    <span>Back to App</span>
                 </a>
             </div>
         </aside>

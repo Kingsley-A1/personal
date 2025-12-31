@@ -67,10 +67,12 @@ router.post('/register', async (req, res) => {
 /**
  * POST /api/auth/login
  * Login with email and password
+ * 
+ * Body: { email: string, password: string, rememberMe?: boolean }
  */
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, rememberMe } = req.body;
 
         // Validation
         if (!email || !password) {
@@ -89,8 +91,8 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Generate token
-        const token = auth.generateToken({ userId: user.id });
+        // Generate token with conditional expiry (10d for rememberMe, 1d default)
+        const token = auth.generateToken({ userId: user.id }, !!rememberMe);
 
         // Return user without password
         const { password: _, ...safeUser } = user;
@@ -105,6 +107,7 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Login failed' });
     }
 });
+
 
 /**
  * GET /api/auth/profile

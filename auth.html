@@ -600,6 +600,71 @@
         .back-btn:hover {
             color: var(--royal-gold);
         }
+
+        /* Returning User Welcome */
+        .returning-welcome {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            animation: welcomeFadeIn 0.6s ease-out;
+        }
+
+        .returning-welcome .welcome-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--royal-gold), #C49B2F);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--royal-dark);
+        }
+
+        .returning-welcome .welcome-text {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .returning-welcome .welcome-text strong {
+            color: var(--royal-gold);
+            font-weight: 700;
+        }
+
+        .returning-welcome.hidden {
+            display: none;
+        }
+
+        @keyframes welcomeFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Skip animation for returning users */
+        .skip-animation .hero-line {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+
+        .skip-animation .gradient-text {
+            animation: shimmer 3s linear infinite;
+        }
     </style>
 </head>
 
@@ -612,8 +677,14 @@
                     <i class="ph-fill ph-crown"></i>
                 </div>
 
+                <!-- Returning User Welcome (shown for returning users) -->
+                <div id="returning-welcome" class="returning-welcome hidden">
+                    <div class="welcome-avatar" id="welcome-avatar">K</div>
+                    <span class="welcome-text">Welcome back, <strong id="welcome-name">Friend</strong>! 👋</span>
+                </div>
+
                 <!-- Dramatic Animated Text -->
-                <div class="hero-text">
+                <div class="hero-text" id="hero-text">
                     <span class="hero-line hero-line-1">You are about to</span>
                     <span class="hero-line hero-line-2">become</span>
                     <span class="hero-line hero-line-3 gradient-text">THE BEST IN YOU</span>
@@ -889,6 +960,10 @@
                 const btn = document.getElementById('login-btn');
                 const form = e.target;
                 const formData = new FormData(form);
+                const rememberMe = formData.get('rememberMe') === 'on';
+
+                // Persist Remember Me preference
+                localStorage.setItem('reign_remember_me', rememberMe ? 'true' : 'false');
 
                 btn.classList.add('loading');
                 btn.innerHTML = '<span>Signing In...</span>';
@@ -899,7 +974,8 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             email: formData.get('email'),
-                            password: formData.get('password')
+                            password: formData.get('password'),
+                            rememberMe: rememberMe
                         })
                     });
 
@@ -912,6 +988,11 @@
                     // Save token and user
                     localStorage.setItem('reign_token', data.token);
                     localStorage.setItem('reign_user', JSON.stringify(data.user));
+
+                    // Set session expiry (10 days for Remember Me, 1 day default)
+                    const expiryDays = rememberMe ? 10 : 1;
+                    const expiryTime = Date.now() + (expiryDays * 24 * 60 * 60 * 1000);
+                    localStorage.setItem('reign_session_expiry', expiryTime.toString());
 
                     showToast('Welcome back, ' + data.user.name + '! 👑');
 
@@ -930,6 +1011,7 @@
                     btn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Sign In';
                 }
             }
+
 
             // Handle register
             async function handleRegister(e) {
@@ -988,12 +1070,42 @@
                 }
             }
 
-            // Check if already logged in
+            // Check if already logged in OR returning user
             document.addEventListener('DOMContentLoaded', () => {
                 const token = localStorage.getItem('reign_token');
                 if (token) {
                     const persona = localStorage.getItem('reign_persona') || 'king';
                     window.location.href = persona === 'queen' ? 'queen.html' : 'index.html';
+                    return;
+                }
+
+                // Check for returning user (previously logged in)
+                const savedUser = localStorage.getItem('reign_user');
+                if (savedUser) {
+                    try {
+                        const user = JSON.parse(savedUser);
+                        if (user && user.name) {
+                            // Show personalized welcome
+                            const firstName = user.name.split(' ')[0];
+                            const initials = user.initials || user.name.charAt(0).toUpperCase();
+
+                            document.getElementById('welcome-name').textContent = firstName;
+                            document.getElementById('welcome-avatar').textContent = initials;
+                            document.getElementById('returning-welcome').classList.remove('hidden');
+
+                            // Skip hero animation for returning users
+                            document.getElementById('hero-text').classList.add('skip-animation');
+                        }
+                    } catch (e) {
+                        console.log('Could not parse saved user');
+                    }
+                }
+
+                // Check for Remember Me preference
+                const rememberMe = localStorage.getItem('reign_remember_me');
+                if (rememberMe === 'true') {
+                    const rememberCheckbox = document.querySelector('input[name="rememberMe"]');
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
                 }
             });
 
