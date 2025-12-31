@@ -10,12 +10,13 @@
 // ============================================
 const CONFIG = {
     APP_NAME: 'REIGN',
-    APP_VERSION: '1.0.0',
-    API_URL: window.location.hostname === 'localhost'
-        ? 'http://localhost:3000/api'
-        : 'https://reign-api.kingsley.app/api',
+    APP_VERSION: '2.0.0',
+    // Use /api for production (Vercel proxy), localhost:3001 for dev
+    API_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:3001/api'
+        : '/api',
     STORAGE_KEY: 'reignData',
-    AUTH_TOKEN_KEY: 'reign_auth_token',
+    AUTH_TOKEN_KEY: 'reign_token',
     USER_KEY: 'reign_user',
     THEME_KEY: 'reign_theme',
 

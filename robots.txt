@@ -1,0 +1,12 @@
+# REIGN - robots.txt
+# https://reign-pi.vercel.app
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://reign-pi.vercel.app/sitemap.xml
+
+# Block admin and API routes from crawlers
+Disallow: /admin/
+Disallow: /api/
