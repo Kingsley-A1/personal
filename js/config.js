@@ -1,5 +1,5 @@
 /**
- * King Daily - Configuration
+ * REIGN - Configuration
  * API endpoints and app settings
  */
 
@@ -21,11 +21,11 @@ const Config = {
 
     // Storage keys
     STORAGE_KEYS: {
-        TOKEN: 'kingdaily_token',
-        USER: 'kingdaily_user',
-        DATA: 'kingDailyData',
-        LAST_SYNC: 'kingdaily_last_sync',
-        PENDING_SYNC: 'kingdaily_pending_sync'
+        TOKEN: 'reign_token',
+        USER: 'reign_user',
+        DATA: 'reignData',
+        LAST_SYNC: 'reign_last_sync',
+        PENDING_SYNC: 'reign_pending_sync'
     },
 
     /**

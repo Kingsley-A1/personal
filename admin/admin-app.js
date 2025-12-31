@@ -37,7 +37,7 @@ const AdminApp = {
      * Get admin user from storage
      */
     getAdminUser() {
-        const userStr = localStorage.getItem('kingdaily_user');
+        const userStr = localStorage.getItem('reign_user');
         if (!userStr) {
             // For demo, create a default super admin
             const demoAdmin = {
@@ -47,7 +47,7 @@ const AdminApp = {
                 role: 'super_admin',
                 initials: 'SA'
             };
-            localStorage.setItem('kingdaily_user', JSON.stringify(demoAdmin));
+            localStorage.setItem('reign_user', JSON.stringify(demoAdmin));
             return demoAdmin;
         }
         return JSON.parse(userStr);
@@ -1285,8 +1285,8 @@ const AdminApp = {
     },
 
     logout() {
-        localStorage.removeItem('kingdaily_token');
-        localStorage.removeItem('kingdaily_user');
+        localStorage.removeItem('reign_token');
+        localStorage.removeItem('reign_user');
         window.location.href = '../auth.html';
     }
 };

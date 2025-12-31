@@ -429,7 +429,7 @@ const FeedbackModal = {
      */
     prefillUserData() {
         try {
-            const userStr = localStorage.getItem('kingdaily_user');
+            const userStr = localStorage.getItem('reign_user');
             if (userStr) {
                 const user = JSON.parse(userStr);
                 const nameInput = document.getElementById('feedback-name');
@@ -578,8 +578,8 @@ const FeedbackModal = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('kingdaily_token')
-                        ? `Bearer ${localStorage.getItem('kingdaily_token')}`
+                    'Authorization': localStorage.getItem('reign_token')
+                        ? `Bearer ${localStorage.getItem('reign_token')}`
                         : ''
                 },
                 body: JSON.stringify(formData)

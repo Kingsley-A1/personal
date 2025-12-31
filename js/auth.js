@@ -1,5 +1,5 @@
 /**
- * King Daily - Authentication Module
+ * REIGN - Authentication Module
  * Handles user authentication and profile management
  */
 

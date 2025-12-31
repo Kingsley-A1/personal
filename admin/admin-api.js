@@ -30,7 +30,7 @@ const AdminAPI = {
      * @returns {string|null} JWT token or null
      */
     getToken() {
-        return localStorage.getItem('kingdaily_token');
+        return localStorage.getItem('reign_token');
     },
 
     /**

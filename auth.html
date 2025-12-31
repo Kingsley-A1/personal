@@ -910,8 +910,8 @@
                     }
 
                     // Save token and user
-                    localStorage.setItem('kingdaily_token', data.token);
-                    localStorage.setItem('kingdaily_user', JSON.stringify(data.user));
+                    localStorage.setItem('reign_token', data.token);
+                    localStorage.setItem('reign_user', JSON.stringify(data.user));
 
                     showToast('Welcome back, ' + data.user.name + '! 👑');
 
@@ -967,8 +967,8 @@
                     }
 
                     // Save token and user
-                    localStorage.setItem('kingdaily_token', data.token);
-                    localStorage.setItem('kingdaily_user', JSON.stringify(data.user));
+                    localStorage.setItem('reign_token', data.token);
+                    localStorage.setItem('reign_user', JSON.stringify(data.user));
 
                     showToast('Welcome to the Kingdom, ' + data.user.name + '! 👑');
 
@@ -990,7 +990,7 @@
 
             // Check if already logged in
             document.addEventListener('DOMContentLoaded', () => {
-                const token = localStorage.getItem('kingdaily_token');
+                const token = localStorage.getItem('reign_token');
                 if (token) {
                     const persona = localStorage.getItem('reign_persona') || 'king';
                     window.location.href = persona === 'queen' ? 'queen.html' : 'index.html';

@@ -1,5 +1,5 @@
 /**
- * King Daily - Main Application Controller
+ * REIGN - Main Application Controller
  * Coordinates all modules and handles user interactions
  */
 

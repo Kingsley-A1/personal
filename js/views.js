@@ -1,5 +1,5 @@
 /**
- * King Daily - Views Module
+ * REIGN - Views Module
  * All UI rendering templates
  */
 
