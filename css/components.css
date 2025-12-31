@@ -5,6 +5,80 @@
  */
 
 /* ============================================
+   DARK MODE ENFORCEMENT
+   Always use dark mode regardless of user preference
+   ============================================ */
+html {
+    color-scheme: dark;
+}
+
+body {
+    background-color: var(--royal-dark, #0B0F19) !important;
+    color: var(--royal-light, #E2E8F0) !important;
+}
+
+/* ============================================
+   ICON VISIBILITY IMPROVEMENTS
+   Make icons more visible across all pages
+   ============================================ */
+
+/* Phosphor Icons - Increase visibility */
+[class*="ph-"] {
+    color: inherit;
+}
+
+/* Duotone icons - brighter fill */
+.ph-duotone {
+    --ph-light-color: currentColor;
+    --ph-light-opacity: 0.4;
+}
+
+/* Nav icons - more visible */
+.nav-btn i,
+.mobile-nav-btn i,
+.sidebar-nav i {
+    font-size: 1.35rem;
+    opacity: 1;
+    color: var(--royal-gold, #D4AF37);
+}
+
+.nav-btn:not(.active) i {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn.active i,
+.mobile-nav-btn.active i {
+    color: var(--royal-gold, #D4AF37);
+}
+
+/* Header icons */
+.header-actions i,
+.header i {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Card icons - larger and brighter */
+.glass-card i,
+.stat-card i,
+.page-hero-icon i {
+    font-size: inherit;
+    color: inherit;
+}
+
+/* Button icons */
+.btn i {
+    font-size: 1.1em;
+}
+
+/* Icon in list items */
+.list-item i,
+.item-icon i {
+    color: var(--royal-gold, #D4AF37);
+    font-size: 1.25rem;
+}
+
+/* ============================================
    PAGE HERO SECTIONS
    ============================================ */
 
