@@ -423,10 +423,16 @@ const Utils = {
         overlay.id = 'page-loading-overlay';
         overlay.className = 'loading-overlay';
         overlay.innerHTML = `
+            <i class="ph-fill ph-crown crown-icon"></i>
             <div class="spinner"></div>
             <p class="loading-text">${this.sanitize(message)}</p>
         `;
         document.body.appendChild(overlay);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            overlay.classList.add('show');
+        });
     },
 
     /**
