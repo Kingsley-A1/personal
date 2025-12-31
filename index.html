@@ -170,6 +170,23 @@
 </head>
 
 <body>
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner" class="pwa-install-banner">
+        <div class="pwa-banner-content">
+            <i class="ph-fill ph-crown"></i>
+            <div class="pwa-banner-text">
+                <strong>Install REIGN</strong>
+                <span>Add to home screen for the best experience</span>
+            </div>
+        </div>
+        <div class="pwa-banner-actions">
+            <button onclick="triggerInstall()" class="pwa-install-btn">Install</button>
+            <button onclick="hideInstallBanner()" class="pwa-dismiss-btn">
+                <i class="ph-bold ph-x"></i>
+            </button>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Header -->
         <header class="header">
