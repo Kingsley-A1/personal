@@ -1,0 +1,17 @@
+# Ignore the API folder - it's deployed separately on Render
+api/
+
+# Ignore markdown docs
+*.md
+
+# Ignore node modules and lock files
+node_modules/
+package-lock.json
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
