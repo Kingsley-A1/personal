@@ -7,7 +7,7 @@
     "buildCommand": "",
     "outputDirectory": "",
     "framework": null,
-    "ignoreCommand": "exit 0"
+    "ignoreCommand": "exit 0",
     "headers": [
         {
             "source": "/sw.js",
