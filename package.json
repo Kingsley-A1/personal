@@ -1,9 +1,0 @@
-{
-  "name": "reign-static",
-  "version": "1.0.0",
-  "private": true,
-  "description": "REIGN - Static frontend (API deployed separately on Render)",
-  "scripts": {
-    "build": "echo 'Static site - no build needed'"
-  }
-}

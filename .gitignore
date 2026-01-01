@@ -1,11 +1,13 @@
 # Dependencies
 node_modules/
-api/node_modules/
 package-lock.json
+
+# API folder - deployed separately on Render
+# Keep local for development, but don't deploy to Vercel
+api/
 
 # Environment files
 .env
-api/.env
 
 # Build outputs
 dist/
