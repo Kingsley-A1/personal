@@ -2,6 +2,8 @@
     "version": 2,
     "cleanUrls": true,
     "trailingSlash": false,
+    "buildCommand": "echo 'Static site'",
+    "outputDirectory": ".",
     "headers": [
         {
             "source": "/sw.js",
