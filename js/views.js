@@ -60,7 +60,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/morning.html" class="dashboard-card">
+                    <a href="app/morning.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">
                             <i class="ph-duotone ph-sun-horizon"></i>
                         </div>
@@ -70,7 +70,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/evening.html" class="dashboard-card">
+                    <a href="app/evening.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
                             <i class="ph-duotone ph-moon-stars"></i>
                         </div>
@@ -81,7 +81,7 @@ const Views = {
                     </a>
                     
                     <!-- GROWTH -->
-                    <a href="pages/learning.html" class="dashboard-card">
+                    <a href="app/learning.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i class="ph-duotone ph-graduation-cap"></i>
                         </div>
@@ -91,7 +91,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/ideas.html" class="dashboard-card">
+                    <a href="app/ideas.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #eab308, #ca8a04);">
                             <i class="ph-duotone ph-lightbulb"></i>
                         </div>
@@ -101,7 +101,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/logs.html" class="dashboard-card">
+                    <a href="app/logs.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                             <i class="ph-duotone ph-book-open"></i>
                         </div>
@@ -112,7 +112,7 @@ const Views = {
                     </a>
                     
                     <!-- REFLECTION -->
-                    <a href="pages/dailygood.html" class="dashboard-card">
+                    <a href="app/dailygood.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
                             <i class="ph-duotone ph-heart"></i>
                         </div>
@@ -122,7 +122,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/logs.html" class="dashboard-card">
+                    <a href="app/logs.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                             <i class="ph-duotone ph-scroll"></i>
                         </div>
@@ -132,7 +132,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/relationships.html" class="dashboard-card">
+                    <a href="app/relationships.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #f43f5e, #e11d48);">
                             <i class="ph-duotone ph-users-three"></i>
                         </div>
@@ -143,7 +143,7 @@ const Views = {
                     </a>
                     
                     <!-- PLANNING -->
-                    <a href="pages/events.html" class="dashboard-card">
+                    <a href="app/events.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
                             <i class="ph-duotone ph-calendar"></i>
                         </div>
@@ -153,7 +153,7 @@ const Views = {
                         </div>
                     </a>
                     
-                    <a href="pages/analytics.html" class="dashboard-card">
+                    <a href="app/analytics.html" class="dashboard-card">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, #a855f7, #9333ea);">
                             <i class="ph-duotone ph-chart-line"></i>
                         </div>

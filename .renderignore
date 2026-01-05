@@ -1,0 +1,34 @@
+# Ignore frontend files when deploying API on Render
+*.html
+*.css
+styles.css
+css/
+js/
+icons/
+app/
+admin/
+
+# Keep only API files
+!api/
+!api/**
+
+# Ignore other frontend assets
+sw.js
+robots.txt
+sitemap.xml
+manifest.json
+*.md
+!api/**/*.md
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore Vercel
+.vercel/
+vercel.json
+.vercelignore

@@ -11,33 +11,33 @@ const SidebarComponent = {
     navItems: [
         // Main Section
         { id: 'dashboard', label: 'The Throne', icon: 'ph-throne', href: 'index.html', section: null },
-        { id: 'morning', label: 'Morning Protocol', icon: 'ph-sun-horizon', href: 'pages/morning.html' },
-        { id: 'evening', label: 'Evening Report', icon: 'ph-moon-stars', href: 'pages/evening.html' },
+        { id: 'morning', label: 'Morning Protocol', icon: 'ph-sun-horizon', href: 'app/morning.html' },
+        { id: 'evening', label: 'Evening Report', icon: 'ph-moon-stars', href: 'app/evening.html' },
 
         // Growth Section
         { id: 'divider-growth', type: 'divider', label: 'Growth' },
-        { id: 'learning', label: 'Learning Forge', icon: 'ph-graduation-cap', href: 'pages/learning.html' },
-        { id: 'idea', label: "Today's Idea", icon: 'ph-lightbulb', href: 'pages/idea.html' },
-        { id: 'lessons', label: 'Daily Lessons', icon: 'ph-book-open-text', href: 'pages/lessons.html' },
+        { id: 'learning', label: 'Learning Forge', icon: 'ph-graduation-cap', href: 'app/learning.html' },
+        { id: 'idea', label: "Today's Idea", icon: 'ph-lightbulb', href: 'app/idea.html' },
+        { id: 'lessons', label: 'Daily Lessons', icon: 'ph-book-open-text', href: 'app/lessons.html' },
 
         // Reflection Section
         { id: 'divider-reflection', type: 'divider', label: 'Reflection' },
-        { id: 'dailygood', label: 'The Good in Today', icon: 'ph-heart', href: 'pages/dailygood.html' },
-        { id: 'archive', label: 'Journal Archive', icon: 'ph-book-bookmark', href: 'pages/archive.html' },
-        { id: 'relationships', label: 'Rainy Day People', icon: 'ph-heart-half', href: 'pages/relationships.html' },
+        { id: 'dailygood', label: 'The Good in Today', icon: 'ph-heart', href: 'app/dailygood.html' },
+        { id: 'archive', label: 'Journal Archive', icon: 'ph-book-bookmark', href: 'app/archive.html' },
+        { id: 'relationships', label: 'Rainy Day People', icon: 'ph-heart-half', href: 'app/relationships.html' },
 
         // Planning Section
         { id: 'divider-planning', type: 'divider', label: 'Planning' },
-        { id: 'events', label: 'Royal Calendar', icon: 'ph-calendar-check', href: 'pages/events.html' },
-        { id: 'savings', label: 'Daily Savings', icon: 'ph-piggy-bank', href: 'pages/savings.html', badge: 'Soon' },
+        { id: 'events', label: 'Royal Calendar', icon: 'ph-calendar-check', href: 'app/events.html' },
+        { id: 'savings', label: 'Daily Savings', icon: 'ph-piggy-bank', href: 'app/savings.html', badge: 'Soon' },
 
         // System Section
         { id: 'divider-system', type: 'divider', label: '' },
-        { id: 'profile', label: 'Profile', icon: 'ph-user-circle', href: 'pages/profile.html' },
-        { id: 'about', label: 'About REIGN', icon: 'ph-info', href: 'pages/about.html' },
-        { id: 'support', label: 'Support', icon: 'ph-hand-heart', href: 'pages/support.html' },
-        { id: 'notifications', label: 'Notifications', icon: 'ph-bell', href: 'pages/notifications.html' },
-        { id: 'settings', label: 'Settings', icon: 'ph-gear-six', href: 'pages/settings.html' }
+        { id: 'profile', label: 'Profile', icon: 'ph-user-circle', href: 'app/profile.html' },
+        { id: 'about', label: 'About REIGN', icon: 'ph-info', href: 'app/about.html' },
+        { id: 'support', label: 'Support', icon: 'ph-hand-heart', href: 'app/support.html' },
+        { id: 'notifications', label: 'Notifications', icon: 'ph-bell', href: 'app/notifications.html' },
+        { id: 'settings', label: 'Settings', icon: 'ph-gear-six', href: 'app/settings.html' }
     ],
 
     /**
@@ -52,7 +52,7 @@ const SidebarComponent = {
         }
 
         const currentPage = Nav.getCurrentPage();
-        const basePath = window.location.pathname.includes('/pages/') ? '../' : '';
+        const basePath = window.location.pathname.includes('/app/') ? '../' : '';
         const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
 
         let navHTML = '';

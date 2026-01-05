@@ -560,8 +560,8 @@ const Nav = {
      * @param {string} page - Page name (without .html)
      */
     goto(page) {
-        const basePath = window.location.pathname.includes('/pages/') ? '../' : '';
-        const pagesPath = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+        const basePath = window.location.pathname.includes('/app/') ? '../' : '';
+        const pagesPath = window.location.pathname.includes('/app/') ? '' : 'app/';
 
         // Handle special cases
         if (page === 'dashboard' || page === 'home') {
@@ -642,7 +642,7 @@ const UI = {
     setActiveNav() {
         const currentPage = Nav.getCurrentPage();
         document.querySelectorAll('.nav-btn, .nav-link').forEach(btn => {
-            const target = btn.dataset.target || btn.getAttribute('href')?.replace('.html', '').replace('pages/', '');
+            const target = btn.dataset.target || btn.getAttribute('href')?.replace('.html', '').replace('app/', '');
             btn.classList.toggle('active', target === currentPage);
         });
     },

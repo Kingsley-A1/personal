@@ -25,7 +25,7 @@ const HeaderComponent = {
 
         const isLoggedIn = Auth.isLoggedIn();
         const user = Auth.getUser();
-        const basePath = window.location.pathname.includes('/pages/') ? '../' : '';
+        const basePath = window.location.pathname.includes('/app/') ? '../' : '';
 
         container.innerHTML = `
             <header class="header">
@@ -48,7 +48,7 @@ const HeaderComponent = {
 
                     <!-- Notifications (shown when logged in) -->
                     ${isLoggedIn ? `
-                        <a href="${basePath}pages/notifications.html" id="notifications-btn" class="icon-btn notification-btn hidden-mobile" title="Notifications">
+                        <a href="${basePath}app/notifications.html" id="notifications-btn" class="icon-btn notification-btn hidden-mobile" title="Notifications">
                             <i class="ph-bold ph-bell"></i>
                             <span id="notification-badge" class="notification-dot hidden"></span>
                         </a>
@@ -57,7 +57,7 @@ const HeaderComponent = {
                     <!-- User Profile (shown when logged in) -->
                     ${isLoggedIn ? `
                         <div id="user-profile" class="user-profile">
-                            <a href="${basePath}pages/settings.html" class="user-avatar" title="Settings">
+                            <a href="${basePath}app/settings.html" class="user-avatar" title="Settings">
                                 <span id="user-initials">${Auth.getInitials()}</span>
                             </a>
                             <span id="sync-status" class="sync-status" title="Sync Status"></span>

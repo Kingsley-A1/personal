@@ -1,0 +1,52 @@
+{
+    "name": "reign-api",
+    "version": "2.2.0",
+    "description": "REIGN Backend API - Authentication, Cloud Sync, Relationships, and Admin",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node --watch server.js",
+        "test": "jest --runInBand",
+        "test:watch": "jest --watch --runInBand",
+        "test:coverage": "jest --coverage --runInBand",
+        "test:auth": "jest tests/auth.test.js --runInBand",
+        "test:admin": "jest tests/admin.test.js --runInBand",
+        "test:sync": "jest tests/sync.test.js --runInBand",
+        "test:relationships": "jest tests/relationships.test.js --runInBand",
+        "health": "curl -s http://localhost:3001/api/health | node -e \"console.log(JSON.parse(require('fs').readFileSync('/dev/stdin').toString()))\""
+    },
+    "keywords": [
+        "api",
+        "backend",
+        "authentication",
+        "sync",
+        "admin"
+    ],
+    "author": "REIGN Team",
+    "license": "ISC",
+    "dependencies": {
+        "@aws-sdk/client-s3": "^3.450.0",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "express-rate-limit": "^7.4.1",
+        "express-validator": "^7.2.0",
+        "helmet": "^8.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "multer": "^1.4.5-lts.1",
+        "nodemailer": "^7.0.12",
+        "pg": "^8.16.3",
+        "pino": "^10.1.0",
+        "pino-http": "^11.0.0",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "supertest": "^7.0.0",
+        "pino-pretty": "^11.0.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

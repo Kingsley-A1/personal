@@ -37,19 +37,19 @@ const JS_ASSETS = [
 
 // All pages
 const PAGE_ASSETS = [
-    '/pages/morning.html',
-    '/pages/evening.html',
-    '/pages/events.html',
-    '/pages/learning.html',
-    '/pages/lessons.html',
-    '/pages/idea.html',
-    '/pages/dailygood.html',
-    '/pages/relationships.html',
-    '/pages/notifications.html',
-    '/pages/archive.html',
-    '/pages/settings.html',
-    '/pages/about.html',
-    '/pages/support.html'
+    '/app/morning.html',
+    '/app/evening.html',
+    '/app/events.html',
+    '/app/learning.html',
+    '/app/lessons.html',
+    '/app/idea.html',
+    '/app/dailygood.html',
+    '/app/relationships.html',
+    '/app/notifications.html',
+    '/app/archive.html',
+    '/app/settings.html',
+    '/app/about.html',
+    '/app/support.html'
 ];
 
 // Combine all assets

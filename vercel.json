@@ -5,6 +5,19 @@
     "installCommand": null,
     "cleanUrls": true,
     "trailingSlash": false,
+    "routes": [
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/app/(.*)",
+            "dest": "/app/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/$1"
+        }
+    ],
     "headers": [
         {
             "source": "/sw.js",
