@@ -8,7 +8,7 @@ const FooterComponent = {
      * Quick action items for mobile bottom nav
      */
     quickActions: [
-        { id: 'dashboard', label: 'Home', icon: 'ph-throne', href: 'index.html' },
+        { id: 'dashboard', label: 'Home', icon: 'ph-crown', href: 'index.html' },
         { id: 'morning', label: 'Dawn', icon: 'ph-sun', href: 'app/morning.html' },
         { id: 'evening', label: 'Dusk', icon: 'ph-moon', href: 'app/evening.html' },
         { id: 'archive', label: 'Logs', icon: 'ph-book-open', href: 'app/archive.html' },

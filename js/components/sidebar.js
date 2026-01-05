@@ -10,7 +10,7 @@ const SidebarComponent = {
      */
     navItems: [
         // Main Section
-        { id: 'dashboard', label: 'The Throne', icon: 'ph-throne', href: 'index.html', section: null },
+        { id: 'dashboard', label: 'The Throne', icon: 'ph-crown', href: 'index.html', section: null },
         { id: 'morning', label: 'Morning Protocol', icon: 'ph-sun-horizon', href: 'app/morning.html' },
         { id: 'evening', label: 'Evening Report', icon: 'ph-moon-stars', href: 'app/evening.html' },
 
