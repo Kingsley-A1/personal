@@ -7,7 +7,7 @@
 │   FRONTEND      │ ──────────────────▶ │    BACKEND      │
 │   (Vercel)      │                     │    (Render)     │
 │   Static Files  │                     │   Express API   │
-│   reign.vercel.app                    │reign-api.onrender.com
+│   reign.vercel.app                    │reign-nz5m.onrender.com
 └─────────────────┘                     └─────────────────┘
                                                │
                                                │ SQL
@@ -80,7 +80,7 @@ In Render dashboard → Environment:
 ### Step 4: Deploy
 Click "Create Web Service" - Render will build and deploy.
 
-Your API URL: `https://reign-api.onrender.com`
+Your API URL: `https://reign-nz5m.onrender.com`
 
 ---
 
@@ -93,7 +93,7 @@ The `vercel.json` already has API rewrites configured:
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://reign-api.onrender.com/api/$1"
+      "destination": "https://reign-nz5m.onrender.com/api/$1"
     }
   ]
 }
@@ -130,7 +130,7 @@ Run the schema migration via the API's database initialization endpoint or manua
 
 ### Health Check
 ```bash
-curl https://reign-api.onrender.com/api/health
+curl https://reign-nz5m.onrender.com/api/health
 ```
 
 ### Frontend

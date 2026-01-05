@@ -1,6 +1,6 @@
 # REIGN API Endpoints Documentation
 
-**Base URL:** `https://reign-api.onrender.com` (Production) | `http://localhost:3001` (Local)
+**Base URL:** `https://reign-nz5m.onrender.com` (Production) | `http://localhost:3001` (Local)
 
 **API Version:** 2.2.0
 

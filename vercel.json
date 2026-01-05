@@ -49,7 +49,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://reign-api.onrender.com/api/:path*"
+            "destination": "https://reign-nz5m.onrender.com/api/:path*"
         }
     ]
 }
