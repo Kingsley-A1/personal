@@ -57,7 +57,7 @@ const HeaderComponent = {
                     <!-- User Profile (shown when logged in) -->
                     ${isLoggedIn ? `
                         <div id="user-profile" class="user-profile">
-                            <a href="${basePath}app/settings.html" class="user-avatar" title="Settings">
+                            <a href="${basePath}app/profile.html" class="user-avatar" title="Profile">
                                 <span id="user-initials">${Auth.getInitials()}</span>
                             </a>
                             <span id="sync-status" class="sync-status" title="Sync Status"></span>

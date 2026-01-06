@@ -3,8 +3,8 @@
  * Royal profile page with view/edit modes
  */
 
-// Add to Views object
-Views.renderProfile = function (container, data) {
+// Define global function for rendering profile
+window.renderProfileView = function (container, data) {
     const user = Auth.getUser();
 
     if (!user) {
