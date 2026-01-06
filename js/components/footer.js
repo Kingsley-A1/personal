@@ -12,7 +12,24 @@ const FooterComponent = {
         { id: 'morning', label: 'Dawn', icon: 'ph-sun', href: 'app/morning.html' },
         { id: 'evening', label: 'Dusk', icon: 'ph-moon', href: 'app/evening.html' },
         { id: 'archive', label: 'Logs', icon: 'ph-book-open', href: 'app/archive.html' },
-        { id: 'learning', label: 'Learn', icon: 'ph-graduation-cap', href: 'app/learning.html' }
+        { id: 'more', label: 'More', icon: 'ph-dots-three', type: 'action', action: 'FooterComponent.openMoreMenu()' }
+    ],
+
+    /**
+     * Additional pages shown in the "More" menu
+     */
+    moreMenuItems: [
+        { id: 'learning', label: 'Learning Forge', icon: 'ph-graduation-cap', href: 'app/learning.html' },
+        { id: 'idea', label: "Today's Idea", icon: 'ph-lightbulb', href: 'app/idea.html' },
+        { id: 'lessons', label: 'Daily Lessons', icon: 'ph-book-open-text', href: 'app/lessons.html' },
+        { id: 'dailygood', label: 'The Good in Today', icon: 'ph-heart', href: 'app/dailygood.html' },
+        { id: 'relationships', label: 'Relationships', icon: 'ph-heart-half', href: 'app/relationships.html' },
+        { id: 'events', label: 'Royal Calendar', icon: 'ph-calendar-check', href: 'app/events.html' },
+        { id: 'profile', label: 'Profile', icon: 'ph-user-circle', href: 'app/profile.html' },
+        { id: 'settings', label: 'Settings', icon: 'ph-gear-six', href: 'app/settings.html' },
+        { id: 'notifications', label: 'Notifications', icon: 'ph-bell', href: 'app/notifications.html' },
+        { id: 'about', label: 'About REIGN', icon: 'ph-info', href: 'app/about.html' },
+        { id: 'support', label: 'Support', icon: 'ph-hand-heart', href: 'app/support.html' }
     ],
 
     /**
@@ -31,10 +48,9 @@ const FooterComponent = {
         this.quickActions.forEach(item => {
             if (item.type === 'action') {
                 navHTML += `
-                    <button class="bottom-nav-btn action-btn" onclick="${item.action}">
-                        <div class="action-btn-inner">
-                            <i class="ph-bold ${item.icon}"></i>
-                        </div>
+                    <button class="bottom-nav-btn action-btn" onclick="${item.action}" title="${item.label}">
+                        <i class="ph-bold ${item.icon}"></i>
+                        <span>${item.label}</span>
                     </button>
                 `;
             } else {
@@ -56,7 +72,54 @@ const FooterComponent = {
             <nav class="mobile-nav">
                 ${navHTML}
             </nav>
+            
+            <!-- More Menu Modal -->
+            <div id="more-menu-overlay" class="more-menu-overlay" onclick="FooterComponent.closeMoreMenu()"></div>
+            <div id="more-menu" class="more-menu">
+                <div class="more-menu-header">
+                    <h3>More Pages</h3>
+                    <button class="more-menu-close" onclick="FooterComponent.closeMoreMenu()">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+                <div class="more-menu-grid">
+                    ${this.moreMenuItems.map(item => `
+                        <a href="${basePath}${item.href}" class="more-menu-item">
+                            <i class="ph-duotone ${item.icon}"></i>
+                            <span>${item.label}</span>
+                        </a>
+                    `).join('')}
+                </div>
+            </div>
         `;
+    },
+
+    /**
+     * Open the "More" menu
+     */
+    openMoreMenu() {
+        const menu = document.getElementById('more-menu');
+        const overlay = document.getElementById('more-menu-overlay');
+        if (menu) {
+            menu.classList.add('show');
+        }
+        if (overlay) {
+            overlay.classList.add('show');
+        }
+    },
+
+    /**
+     * Close the "More" menu
+     */
+    closeMoreMenu() {
+        const menu = document.getElementById('more-menu');
+        const overlay = document.getElementById('more-menu-overlay');
+        if (menu) {
+            menu.classList.remove('show');
+        }
+        if (overlay) {
+            overlay.classList.remove('show');
+        }
     },
 
     /**
