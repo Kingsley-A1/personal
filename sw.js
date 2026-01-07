@@ -4,12 +4,13 @@
  * Updated for production deployment
  */
 
-const CACHE_NAME = 'reign-v20';
+const CACHE_NAME = 'reign-v24';
 
 // Core assets that must be cached for offline functionality
 const CORE_ASSETS = [
     '/',
     '/index.html',
+    '/queen.html',
     '/auth.html',
     '/styles.css',
     '/css/components.css',

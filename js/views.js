@@ -10,6 +10,10 @@ const Views = {
    * @param {Object} data - App data
    */
   renderDashboard(container, data) {
+    const landingPage =
+      typeof UI !== "undefined" && UI.isQueen && UI.isQueen()
+        ? "queen.html"
+        : "index.html";
     const today = Storage.getToday();
     const todayLog = data.logs[today] || { morning: null, evening: null };
     const fullQuote = Utils.getRandomQuote();
@@ -57,7 +61,7 @@ const Views = {
                 <h3 style="font-family: var(--font-serif); font-weight: 700; color: white; margin-bottom: 1.5rem; text-align: center;">Your Royal Command Center</h3>
                 <div class="dashboard-grid">
                     <!-- CORE -->
-                    <a href="index.html" class="dashboard-card active">
+                <a href="${landingPage}" class="dashboard-card active">
                         <div class="dashboard-card-icon" style="background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));">
                             <i class="ph ph-crown" style="font-size: 2rem;"></i>
                         </div>

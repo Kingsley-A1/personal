@@ -5,6 +5,9 @@
  */
 
 const FeedbackModal = {
+    // Debug mode - set to false in production
+    DEBUG: false,
+
     // Modal state
     isExpanded: false,
     modalElement: null,
@@ -26,6 +29,13 @@ const FeedbackModal = {
     // Error tracking
     errorCount: 0,
     recentErrors: [],
+
+    /**
+     * Debug log helper
+     */
+    _log(...args) {
+        if (this.DEBUG) console.log('[FeedbackModal]', ...args);
+    },
 
     /**
      * Initialize the feedback system
@@ -110,7 +120,7 @@ const FeedbackModal = {
             this.recentErrors.shift();
         }
 
-        console.log('[FeedbackModal] Error detected:', error);
+        this._log('Error detected:', error);
 
         // Check if we should show feedback prompt
         if (this.shouldShowForError()) {
@@ -198,7 +208,7 @@ const FeedbackModal = {
      * Handle slow loading detection
      */
     handleSlowLoading(context) {
-        console.log('[FeedbackModal] Slow loading detected:', context);
+        this._log('Slow loading detected:', context);
 
         // Don't trigger repeatedly
         const lastSlowFeedback = sessionStorage.getItem('reign_slow_loading_shown');
@@ -296,10 +306,19 @@ const FeedbackModal = {
     },
 
     /**
-     * Get current persona (king/queen)
+     * Get current persona (king/queen) - using consistent source
      */
     getPersona() {
-        return localStorage.getItem('reign_persona') || 'king';
+        // Use Storage.getData() for consistent role source
+        try {
+            if (typeof Storage !== 'undefined' && Storage.getData) {
+                const data = Storage.getData();
+                return data.settings?.role || 'king';
+            }
+        } catch (e) {
+            // Fallback if Storage not ready
+        }
+        return 'king';
     },
 
     /**

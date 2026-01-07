@@ -1,47 +1,25 @@
 /**
  * REIGN - Core Module
- * Shared utilities, authentication, storage, and common functionality
+ * Shared utilities, storage extensions, and common functionality
  * This module is loaded on ALL pages for consistent behavior
- * @version 1.0.0
+ * 
+ * DEPENDENCIES: config.js must be loaded BEFORE this file
+ * @version 2.0.0
  */
 
 // ============================================
-// CONFIGURATION
+// VERIFY DEPENDENCIES
 // ============================================
-const CONFIG = {
-  APP_NAME: "REIGN",
-  APP_VERSION: "2.0.0",
-  // Use /api for production (Vercel proxy), localhost:3001 for dev
-  API_URL:
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-      ? "http://localhost:3001/api"
-      : "/api",
-  STORAGE_KEY: "reignData",
-  AUTH_TOKEN_KEY: "reign_token",
-  USER_KEY: "reign_user",
-  THEME_KEY: "reign_theme",
-
-  getAuthToken() {
-    return localStorage.getItem(this.AUTH_TOKEN_KEY);
-  },
-
-  setAuthToken(token) {
-    localStorage.setItem(this.AUTH_TOKEN_KEY, token);
-  },
-
-  clearAuth() {
-    localStorage.removeItem(this.AUTH_TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-  },
-};
+if (typeof Config === 'undefined') {
+  console.error('REIGN: Config is not defined. Make sure config.js is loaded before core.js');
+}
 
 // ============================================
-// STORAGE MODULE
+// STORAGE MODULE EXTENSIONS (adds to existing Storage from storage.js)
 // ============================================
-const Storage = {
+Object.assign(Storage, {
   /**
-   * Get today's date key
+   * Get today's date key (override if not present)
    * @returns {string} YYYY-MM-DD format
    */
   getToday() {
@@ -55,7 +33,7 @@ const Storage = {
    */
   getData() {
     try {
-      const data = localStorage.getItem(CONFIG.STORAGE_KEY);
+      const data = localStorage.getItem(Config.STORAGE_KEYS.DATA);
       if (data) {
         return JSON.parse(data);
       }
@@ -73,18 +51,24 @@ const Storage = {
   saveData(data, skipSync = false) {
     try {
       data.lastUpdated = new Date().toISOString();
-      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(Config.STORAGE_KEYS.DATA, JSON.stringify(data));
 
       // Auto-sync to cloud if logged in (debounced)
-      if (!skipSync && typeof Sync !== "undefined" && Auth.isLoggedIn()) {
-        Sync.debouncedUpload();
+      if (!skipSync && typeof Sync !== "undefined" && typeof Auth !== "undefined" && Auth.isLoggedIn()) {
+        if (typeof Sync.debouncedUpload === "function") {
+          Sync.debouncedUpload();
+        } else if (typeof Sync.autoSync === "function") {
+          Sync.autoSync(data);
+        }
       }
 
       return true;
     } catch (e) {
       console.error("Failed to save data:", e);
       if (e.name === "QuotaExceededError") {
-        Utils.showToast("Storage full! Please clear some old data.", "danger");
+        if (typeof Utils !== "undefined") {
+          Utils.showToast("Storage full! Please clear some old data.", "danger");
+        }
       }
       return false;
     }
@@ -195,12 +179,12 @@ const Storage = {
 
     return days;
   },
-};
+});
 
 // ============================================
-// UTILITIES MODULE
+// UTILITIES MODULE EXTENSIONS (adds to existing Utils from utils.js)
 // ============================================
-const Utils = {
+Object.assign(Utils, {
   /**
    * Get appropriate greeting based on time
    * @returns {string} Greeting text
@@ -431,6 +415,32 @@ const Utils = {
   },
 
   /**
+   * Format time display
+   * @returns {string} Formatted time (HH:MM AM/PM)
+   */
+  formatTime() {
+    return new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  },
+
+  /**
+   * Update header time display
+   */
+  updateHeaderTime() {
+    const timeEl = document.getElementById("current-time");
+    const dateEl = document.getElementById("current-date");
+
+    if (timeEl) {
+      timeEl.textContent = this.formatTime();
+    }
+    if (dateEl) {
+      dateEl.textContent = this.formatDate(new Date().toISOString());
+    }
+  },
+
+  /**
    * Format time ago
    * @param {string} dateStr - ISO date string
    * @returns {string} Relative time
@@ -648,67 +658,12 @@ const Utils = {
       typeof element === "string" ? document.querySelector(element) : element;
     if (el) el.classList.remove("card-loading");
   },
-};
+});
 
 // ============================================
-// AUTHENTICATION MODULE
+// NOTE: Auth module is defined in auth.js (loaded separately)
+// This ensures login/register/logout work consistently
 // ============================================
-const Auth = {
-  /**
-   * Check if user is logged in
-   * @returns {boolean}
-   */
-  isLoggedIn() {
-    return !!CONFIG.getAuthToken();
-  },
-
-  /**
-   * Get current user
-   * @returns {Object|null}
-   */
-  getUser() {
-    try {
-      const user = localStorage.getItem(CONFIG.USER_KEY);
-      return user ? JSON.parse(user) : null;
-    } catch {
-      return null;
-    }
-  },
-
-  /**
-   * Set current user
-   * @param {Object} user - User data
-   */
-  setUser(user) {
-    localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(user));
-  },
-
-  /**
-   * Logout user
-   */
-  logout() {
-    CONFIG.clearAuth();
-    Utils.showToast("Logged out successfully", "info");
-    window.location.href = "/index.html";
-  },
-
-  /**
-   * Get user initials for avatar
-   * @returns {string}
-   */
-  getInitials() {
-    const user = this.getUser();
-    if (user?.name) {
-      return user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    return "K";
-  },
-};
 
 // ============================================
 // NAVIGATION MODULE
@@ -721,10 +676,12 @@ const Nav = {
   goto(page) {
     const basePath = window.location.pathname.includes("/app/") ? "../" : "";
     const pagesPath = window.location.pathname.includes("/app/") ? "" : "app/";
+    // Safe access to UI.isQueen with fallback
+    const landingPage = (typeof UI !== 'undefined' && UI.isQueen && UI.isQueen()) ? "queen.html" : "index.html";
 
     // Handle special cases
     if (page === "dashboard" || page === "home") {
-      window.location.href = basePath + "index.html";
+      window.location.href = basePath + landingPage;
       return;
     }
 
@@ -759,39 +716,49 @@ const UI = {
    * Initialize page with common elements
    */
   init() {
-    this.updateAuthUI();
-    this.setActiveNav();
-    this.initTheme();
+    try {
+      this.updateAuthUI();
+      this.setActiveNav();
+      this.initTheme();
+    } catch (error) {
+      console.error('UI.init error:', error);
+    }
   },
 
   /**
    * Update UI based on auth state
    */
   updateAuthUI() {
-    const isLoggedIn = Auth.isLoggedIn();
-    const user = Auth.getUser();
+    try {
+      // Safe access to Auth - may not be loaded yet
+      const isLoggedIn = typeof Auth !== 'undefined' && Auth.isLoggedIn ? Auth.isLoggedIn() : false;
+      const user = typeof Auth !== 'undefined' && Auth.getUser ? Auth.getUser() : null;
+      const initials = typeof Auth !== 'undefined' && Auth.getInitials ? Auth.getInitials() : 'U';
 
-    // Update user avatar/button if exists
-    const userBtn = document.getElementById("user-avatar-btn");
-    if (userBtn) {
-      if (isLoggedIn && user) {
-        userBtn.innerHTML = `
-                    <span class="user-initials">${Auth.getInitials()}</span>
-                `;
-        userBtn.title = user.name || user.email;
+      // Update user avatar/button if exists
+      const userBtn = document.getElementById("user-avatar-btn");
+      if (userBtn) {
+        if (isLoggedIn && user) {
+          userBtn.innerHTML = `
+                      <span class="user-initials">${initials}</span>
+                  `;
+          userBtn.title = user.name || user.email;
+        }
       }
-    }
 
-    // Show/hide guest prompt
-    const guestPrompt = document.getElementById("guest-prompt");
-    if (guestPrompt) {
-      guestPrompt.style.display = isLoggedIn ? "none" : "flex";
-    }
+      // Show/hide guest prompt
+      const guestPrompt = document.getElementById("guest-prompt");
+      if (guestPrompt) {
+        guestPrompt.style.display = isLoggedIn ? "none" : "flex";
+      }
 
-    // Show/hide user menu
-    const userMenu = document.getElementById("user-menu");
-    if (userMenu) {
-      userMenu.style.display = isLoggedIn ? "flex" : "none";
+      // Show/hide user menu
+      const userMenu = document.getElementById("user-menu");
+      if (userMenu) {
+        userMenu.style.display = isLoggedIn ? "flex" : "none";
+      }
+    } catch (error) {
+      console.error('UI.updateAuthUI error:', error);
     }
   },
 
@@ -799,33 +766,41 @@ const UI = {
    * Set active navigation state
    */
   setActiveNav() {
-    const currentPage = Nav.getCurrentPage();
-    document.querySelectorAll(".nav-btn, .nav-link").forEach((btn) => {
-      const target =
-        btn.dataset.target ||
-        btn.getAttribute("href")?.replace(".html", "").replace("app/", "");
-      btn.classList.toggle("active", target === currentPage);
-    });
+    try {
+      const currentPage = Nav.getCurrentPage();
+      document.querySelectorAll(".nav-btn, .nav-link").forEach((btn) => {
+        const target =
+          btn.dataset.target ||
+          btn.getAttribute("href")?.replace(".html", "").replace("app/", "");
+        btn.classList.toggle("active", target === currentPage);
+      });
+    } catch (error) {
+      console.error('UI.setActiveNav error:', error);
+    }
   },
 
   /**
    * Initialize theme and role
    */
   initTheme() {
-    const data = Storage.getData();
-    const theme = data.settings?.theme || "dark";
-    const role = data.settings?.role || "king";
+    try {
+      const data = typeof Storage !== 'undefined' && Storage.getData ? Storage.getData() : {};
+      const theme = data.settings?.theme || "dark";
+      const role = data.settings?.role || "king";
 
-    // Apply light/dark theme
-    document.documentElement.setAttribute("data-theme", theme);
+      // Apply light/dark theme
+      document.documentElement.setAttribute("data-theme", theme);
 
-    // Apply role theme (queen gets special styling)
-    if (role === "queen") {
-      document.body.classList.add("queen-theme");
-      document.body.classList.remove("king-theme");
-    } else {
-      document.body.classList.add("king-theme");
-      document.body.classList.remove("queen-theme");
+      // Apply role theme (queen gets special styling)
+      if (role === "queen") {
+        document.body.classList.add("queen-theme");
+        document.body.classList.remove("king-theme");
+      } else {
+        document.body.classList.add("king-theme");
+        document.body.classList.remove("queen-theme");
+      }
+    } catch (error) {
+      console.error('UI.initTheme error:', error);
     }
   },
 
@@ -1009,7 +984,7 @@ const API = {
    * @returns {Promise<Object>}
    */
   async request(endpoint, options = {}) {
-    const token = CONFIG.getAuthToken();
+    const token = Config.getToken();
 
     const config = {
       ...options,
@@ -1021,7 +996,7 @@ const API = {
     };
 
     try {
-      const response = await fetch(`${CONFIG.API_URL}${endpoint}`, config);
+      const response = await fetch(`${Config.API_URL}${endpoint}`, config);
       const data = await response.json();
 
       if (!response.ok) {
@@ -1071,155 +1046,9 @@ const API = {
 };
 
 // ============================================
-// SYNC MODULE - Auto-sync user data
+// NOTE: Sync module is defined in sync.js (loaded separately)
+// This ensures consistent sync behavior with offline support
 // ============================================
-const Sync = {
-  // Track sync state
-  isSyncing: false,
-  lastSyncTime: null,
-  syncTimer: null,
-
-  /**
-   * Debounced upload to prevent too many API calls
-   */
-  debouncedUpload() {
-    if (this.syncTimer) {
-      clearTimeout(this.syncTimer);
-    }
-    // Wait 2 seconds after last change before syncing
-    this.syncTimer = setTimeout(() => {
-      this.upload();
-    }, 2000);
-  },
-
-  /**
-   * Upload local data to cloud
-   * @returns {Promise<boolean>}
-   */
-  async upload() {
-    if (this.isSyncing || !Auth.isLoggedIn()) return false;
-
-    this.isSyncing = true;
-    try {
-      const data = Storage.getData();
-      await API.post("/sync", {
-        appData: data,
-        localTimestamp: data.lastUpdated,
-      });
-      this.lastSyncTime = new Date();
-      console.log("✅ Auto-synced to cloud");
-      return true;
-    } catch (error) {
-      console.error("Sync upload failed:", error);
-      return false;
-    } finally {
-      this.isSyncing = false;
-    }
-  },
-
-  /**
-   * Download cloud data and merge with local
-   * @returns {Promise<boolean>}
-   */
-  async download() {
-    if (this.isSyncing || !Auth.isLoggedIn()) return false;
-
-    this.isSyncing = true;
-    try {
-      const response = await API.get("/sync");
-      if (response.appData) {
-        const localData = Storage.getData();
-        const cloudTimestamp = new Date(response.appData.lastUpdated || 0);
-        const localTimestamp = new Date(localData.lastUpdated || 0);
-
-        // If cloud data is newer, use it
-        if (cloudTimestamp > localTimestamp) {
-          // Merge settings to preserve local preferences
-          const mergedData = {
-            ...response.appData,
-            settings: { ...response.appData.settings, ...localData.settings },
-          };
-          Storage.saveData(mergedData, true); // skipSync to prevent loop
-          console.log("✅ Synced from cloud");
-          return true;
-        }
-      }
-      return false;
-    } catch (error) {
-      console.error("Sync download failed:", error);
-      return false;
-    } finally {
-      this.isSyncing = false;
-    }
-  },
-
-  /**
-   * Full sync: download first, then upload if needed
-   * @param {boolean} showToast - Show toast notification
-   * @returns {Promise<boolean>}
-   */
-  async fullSync(showToast = false) {
-    if (!Auth.isLoggedIn()) {
-      if (showToast) Utils.showToast("Please log in to sync", "info");
-      return false;
-    }
-
-    try {
-      // Download cloud data first
-      const downloaded = await this.download();
-
-      // Then upload local data
-      await this.upload();
-
-      if (showToast) {
-        Utils.showToast("Data synced! ☁️", "success");
-      }
-      return true;
-    } catch (error) {
-      if (showToast) {
-        Utils.showToast("Sync failed", "danger");
-      }
-      return false;
-    }
-  },
-
-  /**
-   * Initialize auto-sync on page load
-   */
-  init() {
-    if (Auth.isLoggedIn()) {
-      // Sync on page load (after short delay to not block rendering)
-      setTimeout(() => {
-        this.download().then((synced) => {
-          if (synced) {
-            // Reload page data if synced
-            window.dispatchEvent(new CustomEvent("datasynced"));
-          }
-        });
-      }, 1000);
-
-      // Sync before page unload
-      window.addEventListener("beforeunload", () => {
-        if (this.syncTimer) {
-          clearTimeout(this.syncTimer);
-          // Use sendBeacon for reliable sync on page close
-          const data = Storage.getData();
-          const token = CONFIG.getAuthToken();
-          if (token && navigator.sendBeacon) {
-            const payload = JSON.stringify({
-              appData: data,
-              localTimestamp: data.lastUpdated,
-            });
-            navigator.sendBeacon(
-              `${CONFIG.API_URL}/sync`,
-              new Blob([payload], { type: "application/json" })
-            );
-          }
-        }
-      });
-    }
-  },
-};
 
 // ============================================
 // GLOBAL FOCUS TIMER
@@ -1617,23 +1446,35 @@ const CloseHandler = {
 // INITIALIZATION
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
-  UI.init();
-  Sync.init();
-  CloseHandler.init();
-  FocusTimer.init();
+  // Initialize UI first (theme, auth state)
+  if (typeof UI !== "undefined") {
+    UI.init();
+  }
+  
+  // Initialize Sync (defined in sync.js)
+  if (typeof Sync !== "undefined" && typeof Sync.init === "function") {
+    Sync.init();
+  }
+  
+  // Initialize other modules
+  if (typeof CloseHandler !== "undefined") {
+    CloseHandler.init();
+  }
+  
+  if (typeof FocusTimer !== "undefined") {
+    FocusTimer.init();
+  }
 });
 
 // Export for module usage if needed
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
-    CONFIG,
+    Config, // Use Config from config.js
     Storage,
     Utils,
-    Auth,
     Nav,
     UI,
     API,
-    Sync,
     FocusTimer,
   };
 }

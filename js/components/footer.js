@@ -133,11 +133,17 @@ const FooterComponent = {
    * @param {string} containerId - ID of the container element
    */
   render(containerId = "footer-container") {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+    try {
+      const container = document.getElementById(containerId);
+      if (!container) return;
 
-    const currentPage = Nav.getCurrentPage();
-    const basePath = window.location.pathname.includes("/app/") ? "../" : "";
+      // Safe access to Nav - may not be loaded yet
+      const currentPage = typeof Nav !== 'undefined' && Nav.getCurrentPage ? Nav.getCurrentPage() : 'dashboard';
+      const basePath = window.location.pathname.includes("/app/") ? "../" : "";
+      const landingPage =
+        typeof UI !== "undefined" && UI.isQueen && UI.isQueen()
+          ? "queen.html"
+          : "index.html";
 
     let navHTML = "";
 
@@ -153,7 +159,7 @@ const FooterComponent = {
         const isActive = item.id === currentPage;
         const href =
           item.id === "dashboard"
-            ? `${basePath}index.html`
+            ? `${basePath}${landingPage}`
             : `${basePath}${item.href}`;
 
         navHTML += `
@@ -197,6 +203,14 @@ const FooterComponent = {
                 </div>
             </div>
         `;
+    } catch (error) {
+      console.error('FooterComponent.render error:', error);
+      // Show minimal fallback footer
+      const container = document.getElementById(containerId);
+      if (container) {
+        container.innerHTML = `<nav class="mobile-nav"></nav>`;
+      }
+    }
   },
 
   /**

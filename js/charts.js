@@ -29,6 +29,10 @@ const Charts = {
      * Initialize Chart.js defaults
      */
     init() {
+        if (typeof Chart === 'undefined') {
+            console.warn('Chart.js not available; charts disabled');
+            return;
+        }
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.borderColor = '#334155';
         Chart.defaults.font.family = "'Manrope', sans-serif";

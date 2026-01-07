@@ -4,12 +4,22 @@
  */
 
 const Sync = {
+    // Debug mode - set to false in production
+    DEBUG: false,
+
     // Debounce timer
     _syncTimer: null,
 
     // Sync status
     _isSyncing: false,
     _lastSync: null,
+
+    /**
+     * Debug log helper
+     */
+    _log(...args) {
+        if (this.DEBUG) console.log('[Sync]', ...args);
+    },
 
     /**
      * Initialize sync module
@@ -33,7 +43,7 @@ const Sync = {
      */
     async upload(data) {
         if (!Auth.isLoggedIn()) {
-            console.log('Sync: Not logged in, skipping upload');
+            this._log('Not logged in, skipping upload');
             return;
         }
 
@@ -71,7 +81,7 @@ const Sync = {
             localStorage.setItem(Config.STORAGE_KEYS.LAST_SYNC, result.lastSync);
             this.updateSyncStatus('synced');
 
-            console.log('Sync: Data uploaded to cloud');
+            this._log('Data uploaded to cloud');
 
         } catch (error) {
             console.error('Sync error:', error);
@@ -173,7 +183,7 @@ const Sync = {
             timestamp: new Date().toISOString()
         }));
 
-        console.log('Sync: Queued for later (offline)');
+        this._log('Queued for later (offline)');
     },
 
     /**

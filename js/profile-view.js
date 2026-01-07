@@ -16,7 +16,8 @@ window.renderProfileView = function (container, data) {
     const totalEntries = Object.keys(data.logs || {}).length;
     const createdDate = new Date(user.createdAt || Date.now());
     const accountAge = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
-    const role = localStorage.getItem('reign_persona') || 'king';
+    // Use consistent role source from Storage
+    const role = data.settings?.role || 'king';
 
     container.innerHTML = `
         <div class="profile-container">

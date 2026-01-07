@@ -50,15 +50,18 @@ const SidebarComponent = {
      * @param {string} containerId - ID of the container element
      */
     render(containerId = 'sidebar-container') {
-        const container = document.getElementById(containerId);
-        if (!container) {
-            console.error('Sidebar container not found:', containerId);
-            return;
-        }
+        try {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error('Sidebar container not found:', containerId);
+                return;
+            }
 
-        const currentPage = Nav.getCurrentPage();
-        const basePath = window.location.pathname.includes('/app/') ? '../' : '';
-        const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+            // Safe access to Nav - may not be loaded yet
+            const currentPage = typeof Nav !== 'undefined' && Nav.getCurrentPage ? Nav.getCurrentPage() : 'dashboard';
+            const basePath = window.location.pathname.includes('/app/') ? '../' : '';
+            const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+            const landingPage = (typeof UI !== 'undefined' && UI.isQueen && UI.isQueen()) ? 'queen.html' : 'index.html';
 
         let navHTML = '';
 
@@ -72,7 +75,7 @@ const SidebarComponent = {
                 const isActive = item.id === currentPage;
                 const isDisabled = item.badge === 'Soon';
                 const href = item.id === 'dashboard'
-                    ? `${basePath}index.html`
+                    ? `${basePath}${landingPage}`
                     : `${basePath}${item.href}`;
 
                 navHTML += `
@@ -109,6 +112,20 @@ const SidebarComponent = {
                 </div>
             </aside>
         `;
+        } catch (error) {
+            console.error('SidebarComponent.render error:', error);
+            // Show minimal fallback sidebar
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <aside class="sidebar" id="app-sidebar">
+                        <nav class="sidebar-nav">
+                            <a href="/" class="nav-btn">Home</a>
+                        </nav>
+                    </aside>
+                `;
+            }
+        }
     },
 
     /**
@@ -140,10 +157,14 @@ const SidebarComponent = {
      * Update active state based on current page
      */
     updateActiveState() {
-        const currentPage = Nav.getCurrentPage();
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            const target = btn.dataset.target;
-            btn.classList.toggle('active', target === currentPage);
-        });
+        try {
+            const currentPage = typeof Nav !== 'undefined' && Nav.getCurrentPage ? Nav.getCurrentPage() : 'dashboard';
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const target = btn.dataset.target;
+                btn.classList.toggle('active', target === currentPage);
+            });
+        } catch (error) {
+            console.error('SidebarComponent.updateActiveState error:', error);
+        }
     }
 };

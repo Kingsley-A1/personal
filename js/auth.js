@@ -185,6 +185,48 @@ const Auth = {
             // Network error - keep token, might be offline
             return true;
         }
+    },
+
+    /**
+     * Check if session is still valid (not expired)
+     * @returns {Promise<boolean>}
+     */
+    async isSessionValid() {
+        // Check local expiry first
+        const expiry = localStorage.getItem(Config.SESSION.EXPIRY_KEY);
+        if (expiry && Date.now() >= parseInt(expiry)) {
+            return false;
+        }
+        // If no expiry set, assume valid if logged in
+        return this.isLoggedIn();
+    },
+
+    /**
+     * Set current user in storage
+     * @param {Object} user - User data
+     */
+    setUser(user) {
+        localStorage.setItem(Config.STORAGE_KEYS.USER, JSON.stringify(user));
+    },
+
+    /**
+     * Get user initials for avatar display
+     * @returns {string} User initials (1-2 characters)
+     */
+    getInitials() {
+        const user = this.getUser();
+        if (user?.name) {
+            return user.name
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+        }
+        // Return role-based default
+        const data = typeof Storage !== 'undefined' && Storage.getData ? Storage.getData() : {};
+        const role = data.settings?.role || 'king';
+        return role === 'queen' ? 'Q' : 'K';
     }
 };
 

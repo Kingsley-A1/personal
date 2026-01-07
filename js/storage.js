@@ -1,14 +1,14 @@
 /**
- * King Daily - Storage Module
+ * REIGN - Storage Module
  * Handles all data persistence with localStorage
- * NOTE: Uses 'reignData' key to match core.js (consolidated storage)
+ * NOTE: Uses Config.STORAGE_KEYS.DATA key for data consistency
  */
 
 const Storage = {
-    // Use same key as core.js for data consistency
+    // Use same key as Config for data consistency
     STORAGE_KEY: 'reignData',
 
-    // Default data structure (matches core.js getDefaultData)
+    // Default data structure (consolidated with core.js)
     defaultData: {
         logs: {},      // Daily logs keyed by date "YYYY-MM-DD"
         events: [],    // Calendar events
@@ -17,11 +17,33 @@ const Storage = {
         dailyGood: [],
         relationships: [],
         savings: { goals: [], transactions: [] },
+        goals: {
+            vision: "",
+            yearly: [],
+            monthly: [],
+            weekly: [],
+            reviews: [],
+        },
+        focus: {
+            settings: {
+                focusDuration: 25,
+                shortBreak: 5,
+                longBreak: 15,
+                pomodorosUntilLong: 4,
+                soundEnabled: true,
+            },
+            sessions: [],
+            stats: {
+                totalPomodoros: 0,
+                totalFocusMinutes: 0,
+                currentStreak: 0,
+                bestStreak: 0,
+            },
+        },
         settings: {
             theme: 'dark',
             role: 'king',
-            userName: 'King',
-            username: 'King',
+            username: '',  // User's display name (empty = use role title)
             notifications: true,
             soundEnabled: false
         },
@@ -35,103 +57,6 @@ const Storage = {
         }
     },
 
-    // Powerful quotes from tech, philosophy, and psychology
-    WISDOM_QUOTES: [
-        // Tech & Engineering
-        { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
-        { text: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" },
-        { text: "The best way to predict the future is to invent it.", author: "Alan Kay" },
-        { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" },
-        { text: "Talk is cheap. Show me the code.", author: "Linus Torvalds" },
-        { text: "Move fast and break things. Unless you are breaking stuff, you are not moving fast enough.", author: "Mark Zuckerberg" },
-        { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
-        { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-        { text: "In a world of algorithms, hashtags, and followers, know the true importance of human connection.", author: "Brené Brown" },
-        { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
-        { text: "The computer was born to solve problems that did not exist before.", author: "Bill Gates" },
-        { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
-
-        // Philosophy
-        { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" },
-        { text: "The unexamined life is not worth living.", author: "Socrates" },
-        { text: "He who has a why to live can bear almost any how.", author: "Friedrich Nietzsche" },
-        { text: "I think, therefore I am.", author: "René Descartes" },
-        { text: "Man is condemned to be free; because once thrown into the world, he is responsible for everything he does.", author: "Jean-Paul Sartre" },
-        { text: "The only thing I know is that I know nothing.", author: "Socrates" },
-        { text: "Waste no more time arguing about what a good man should be. Be one.", author: "Marcus Aurelius" },
-        { text: "The obstacle is the way.", author: "Marcus Aurelius" },
-        { text: "It is not that we have a short time to live, but that we waste a lot of it.", author: "Seneca" },
-        { text: "No man is free who is not master of himself.", author: "Epictetus" },
-        { text: "You have power over your mind - not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius" },
-        { text: "Luck is what happens when preparation meets opportunity.", author: "Seneca" },
-
-        // Psychology
-        { text: "Between stimulus and response there is a space. In that space is our power to choose our response.", author: "Viktor Frankl" },
-        { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
-        { text: "The curious paradox is that when I accept myself just as I am, then I can change.", author: "Carl Rogers" },
-        { text: "Until you make the unconscious conscious, it will direct your life and you will call it fate.", author: "Carl Jung" },
-        { text: "Knowing yourself is the beginning of all wisdom.", author: "Aristotle" },
-        { text: "The mind is everything. What you think you become.", author: "Buddha" },
-        { text: "Everything can be taken from a man but one thing: the last of the human freedoms—to choose one's attitude.", author: "Viktor Frankl" },
-        { text: "Happiness is not something ready made. It comes from your own actions.", author: "Dalai Lama" },
-        { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
-        { text: "Education is not the learning of facts, but the training of the mind to think.", author: "Albert Einstein" },
-
-        // Success & Growth
-        { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
-        { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
-        { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-        { text: "The man who moves a mountain begins by carrying away small stones.", author: "Confucius" },
-        { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
-        { text: "Discipline equals freedom.", author: "Jocko Willink" },
-        { text: "Hard choices, easy life. Easy choices, hard life.", author: "Jerzy Gregorek" },
-        { text: "The pain of discipline weighs ounces, the pain of regret weighs tons.", author: "Jim Rohn" },
-        { text: "Knowledge is power. Knowledge shared is power multiplied.", author: "Robert Noyce" },
-        { text: "Learn as if you will live forever, live like you will die tomorrow.", author: "Mahatma Gandhi" },
-
-        // Productivity & Focus
-        { text: "Focus is about saying no to the hundred other good ideas.", author: "Steve Jobs" },
-        { text: "Productivity is never an accident. It is always the result of a commitment to excellence.", author: "Paul J. Meyer" },
-        { text: "The key is not to prioritize what's on your schedule, but to schedule your priorities.", author: "Stephen Covey" },
-        { text: "Do the hard jobs first. The easy jobs will take care of themselves.", author: "Dale Carnegie" },
-        { text: "Action is the foundational key to all success.", author: "Pablo Picasso" },
-        { text: "Your time is limited. Don't waste it living someone else's life.", author: "Steve Jobs" },
-        { text: "What gets measured gets managed.", author: "Peter Drucker" },
-        { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
-
-        // Leadership & Influence
-        { text: "A leader is one who knows the way, goes the way, and shows the way.", author: "John C. Maxwell" },
-        { text: "The greatest leader is not the one who does the greatest things, but who gets people to do the greatest things.", author: "Ronald Reagan" },
-        { text: "Leadership is not about being in charge. It's about taking care of those in your charge.", author: "Simon Sinek" },
-        { text: "People don't care how much you know until they know how much you care.", author: "Theodore Roosevelt" },
-
-        // Creativity & Innovation
-        { text: "Creativity is intelligence having fun.", author: "Albert Einstein" },
-        { text: "The chief enemy of creativity is good sense.", author: "Pablo Picasso" },
-        { text: "You can't use up creativity. The more you use, the more you have.", author: "Maya Angelou" },
-        { text: "Imagination is more important than knowledge.", author: "Albert Einstein" },
-
-        // Resilience & Perseverance
-        { text: "Fall seven times, stand up eight.", author: "Japanese Proverb" },
-        { text: "It's not whether you get knocked down, it's whether you get up.", author: "Vince Lombardi" },
-        { text: "Tough times never last, but tough people do.", author: "Robert H. Schuller" },
-        { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
-        { text: "Strength does not come from winning. Your struggles develop your strengths.", author: "Arnold Schwarzenegger" },
-        { text: "Rock bottom became the solid foundation on which I rebuilt my life.", author: "J.K. Rowling" },
-
-        // Mindset & Attitude
-        { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" },
-        { text: "The mind is its own place, and in itself can make a heaven of hell, a hell of heaven.", author: "John Milton" },
-        { text: "Attitude is a little thing that makes a big difference.", author: "Winston Churchill" },
-        { text: "Your attitude, not your aptitude, will determine your altitude.", author: "Zig Ziglar" },
-
-        // Learning & Wisdom
-        { text: "The more I learn, the more I realize how much I don't know.", author: "Albert Einstein" },
-        { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
-        { text: "The capacity to learn is a gift; the ability to learn is a skill; the willingness to learn is a choice.", author: "Brian Herbert" },
-        { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Mahatma Gandhi" }
-    ],
-
     /**
      * Load data from localStorage
      * @returns {Object} The stored data or default structure
@@ -142,12 +67,52 @@ const Storage = {
             if (stored) {
                 const data = JSON.parse(stored);
                 // Merge with defaults to ensure all keys exist
-                return { ...this.defaultData, ...data };
+                return this.mergeWithDefaults(data);
             }
             return { ...this.defaultData };
         } catch (e) {
             console.error('Storage load error:', e);
             return { ...this.defaultData };
+        }
+    },
+
+    /**
+     * Deep merge data with defaults to ensure all keys exist
+     * @param {Object} data - User data
+     * @returns {Object} Merged data
+     */
+    mergeWithDefaults(data) {
+        const merged = { ...this.defaultData };
+        
+        // Copy top-level arrays/objects
+        for (const key of Object.keys(data)) {
+            if (key === 'settings') {
+                // Deep merge settings
+                merged.settings = { ...this.defaultData.settings, ...data.settings };
+                // Handle legacy userName -> username migration
+                if (data.settings?.userName && !data.settings?.username) {
+                    merged.settings.username = data.settings.userName;
+                }
+            } else if (key === 'learning') {
+                merged.learning = { ...this.defaultData.learning, ...data.learning };
+            } else if (key === 'focus') {
+                merged.focus = { 
+                    ...this.defaultData.focus, 
+                    ...data.focus,
+                    settings: { ...this.defaultData.focus.settings, ...(data.focus?.settings || {}) },
+                    stats: { ...this.defaultData.focus.stats, ...(data.focus?.stats || {}) }
+                };
+            } else if (key === 'goals') {
+                merged.goals = { ...this.defaultData.goals, ...data.goals };
+            } else if (key === 'savings') {
+                merged.savings = { ...this.defaultData.savings, ...data.savings };
+            } else {
+                merged[key] = data[key];
+            }
+        }
+        
+        return merged;
+    },;
         }
     },
 

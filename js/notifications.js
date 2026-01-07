@@ -4,9 +4,19 @@
  */
 
 const Notifications = {
+    // Debug mode - set to false in production
+    DEBUG: false,
+
     permission: null,
     morningTimeoutId: null,
     eveningTimeoutId: null,
+
+    /**
+     * Debug log helper
+     */
+    _log(...args) {
+        if (this.DEBUG) console.log('[Notifications]', ...args);
+    },
 
     /**
      * Request notification permission
@@ -115,7 +125,7 @@ const Notifications = {
             this.scheduleMorningReminder();
         }, timeUntil);
 
-        console.log(`Morning reminder scheduled for ${morningTime.toLocaleString()}`);
+        this._log(`Morning reminder scheduled for ${morningTime.toLocaleString()}`);
     },
 
     /**
@@ -161,7 +171,7 @@ const Notifications = {
             this.scheduleEveningReminder();
         }, timeUntil);
 
-        console.log(`Evening reminder scheduled for ${eveningTime.toLocaleString()}`);
+        this._log(`Evening reminder scheduled for ${eveningTime.toLocaleString()}`);
     },
 
     /**
@@ -218,7 +228,7 @@ const Notifications = {
         if (hasPermission) {
             this.scheduleMorningReminder();
             this.scheduleEveningReminder();
-            console.log('Notification system initialized ✓');
+            this._log('Notification system initialized ✓');
         }
     },
 

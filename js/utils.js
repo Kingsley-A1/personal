@@ -92,6 +92,10 @@ const Utils = {
      * @param {string} type - 'gold', 'indigo', 'success', 'danger'
      */
     showToast(message, type = 'gold') {
+        if (typeof Toastify === 'undefined') {
+            console.warn('Toastify not available; toast suppressed:', message);
+            return;
+        }
         const isQueen = document.body.classList.contains('queen-theme');
         const goldGradient = isQueen 
             ? 'linear-gradient(to right, #b76e79, #9a525c)' 

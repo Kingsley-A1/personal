@@ -82,7 +82,7 @@ const app = {
      * Restore sidebar collapsed state from localStorage
      */
     restoreSidebarState() {
-        const isCollapsed = localStorage.getItem('reign_sidebar_collapsed') === 'true';
+        const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
         const sidebar = document.querySelector('.sidebar');
 
         if (sidebar && isCollapsed) {
@@ -120,7 +120,7 @@ const app = {
 
             // Save state to localStorage
             const isCollapsed = sidebar.classList.contains('collapsed');
-            localStorage.setItem('reign_sidebar_collapsed', isCollapsed);
+            localStorage.setItem('sidebar-collapsed', isCollapsed);
         }
     },
 
@@ -1717,4 +1717,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Make app globally available
+// Expose globally (both names used in different HTML/pages)
 window.app = app;
+window.App = app;
