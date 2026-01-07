@@ -42,7 +42,8 @@ describe('Database Module', () => {
             const result = await db.query('SELECT 1 as test');
             expect(result.rows).toBeDefined();
             expect(result.rows.length).toBeGreaterThan(0);
-            expect(result.rows[0].test).toBe(1);
+            // CockroachDB returns strings for integer literals
+            expect(result.rows[0].test).toBe('1');
         });
 
         test('should handle parameterized queries', async () => {

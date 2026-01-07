@@ -16,25 +16,29 @@ const SidebarComponent = {
 
         // Growth Section
         { id: 'divider-growth', type: 'divider', label: 'Growth' },
+        { id: 'focus', label: 'Focus Chamber (Timer)', icon: 'ph-timer', href: 'app/focus.html' },
         { id: 'learning', label: 'Learning Forge', icon: 'ph-graduation-cap', href: 'app/learning.html' },
         { id: 'idea', label: "Today's Idea", icon: 'ph-lightbulb', href: 'app/idea.html' },
-        { id: 'lessons', label: 'Daily Lessons', icon: 'ph-book-open-text', href: 'app/lessons.html' },
-        { id: 'analytics', label: 'Progress', icon: 'ph-chart-line-up', href: 'app/analytics.html' },
+        { id: 'lessons', label: "Today's Lessons", icon: 'ph-book-open-text', href: 'app/lessons.html' },
+        { id: 'analytics', label: 'My Progress', icon: 'ph-chart-line-up', href: 'app/analytics.html' },
 
         // Reflection Section
         { id: 'divider-reflection', type: 'divider', label: 'Reflection' },
         { id: 'dailygood', label: 'The Good in Today', icon: 'ph-heart', href: 'app/dailygood.html' },
         { id: 'archive', label: 'Journal Archive', icon: 'ph-book-bookmark', href: 'app/archive.html' },
-        { id: 'relationships', label: 'Rainy Day People', icon: 'ph-heart-half', href: 'app/relationships.html' },
+        { id: 'relationships', label: 'My Relationships', icon: 'ph-heart-half', href: 'app/relationships.html' },
 
         // Planning Section
         { id: 'divider-planning', type: 'divider', label: 'Planning' },
-        { id: 'events', label: 'Royal Calendar', icon: 'ph-calendar-check', href: 'app/events.html' },
+        { id: 'goals', label: 'Personal Goals', icon: 'ph-target', href: 'app/goals.html' },
+        { id: 'reviews', label: 'Weekly Review', icon: 'ph-calendar-check', href: 'app/reviews.html' },
+        { id: 'events', label: 'Calendar & Events', icon: 'ph-calendar-dots', href: 'app/events.html' },
         { id: 'savings', label: 'Daily Savings', icon: 'ph-piggy-bank', href: 'app/savings.html', badge: 'Soon' },
 
         // System Section
         { id: 'divider-system', type: 'divider', label: '' },
         { id: 'profile', label: 'Profile', icon: 'ph-user-circle', href: 'app/profile.html' },
+        { id: 'docs', label: 'Help & Docs', icon: 'ph-book-open', href: 'app/docs.html' },
         { id: 'about', label: 'About REIGN', icon: 'ph-info', href: 'app/about.html' },
         { id: 'support', label: 'Support', icon: 'ph-hand-heart', href: 'app/support.html' },
         { id: 'notifications', label: 'Notifications', icon: 'ph-bell', href: 'app/notifications.html' },

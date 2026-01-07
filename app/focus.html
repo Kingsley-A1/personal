@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="REIGN Focus Chamber - Pomodoro timer for deep work and focused learning">
+    <title>Royal Focus | REIGN</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reign-pi.vercel.app/app/focus.html">
+    <meta property="og:title" content="Royal Focus | REIGN">
+    <meta property="og:description" content="Deep focus sessions with the Pomodoro technique. Rule your time.">
+    <meta property="og:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Royal Focus | REIGN">
+    <meta name="twitter:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+
+    <style>
+        /* Focus Timer Styles */
+        :root {
+            --focus-red: #ef4444;
+            --focus-green: #10b981;
+            --focus-blue: #3b82f6;
+            --focus-gold: var(--royal-gold);
+            --break-teal: #14b8a6;
+        }
+
+        .focus-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Timer Circle */
+        .timer-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .timer-circle {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--royal-gold-10), transparent 60%),
+                linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+            box-shadow:
+                0 0 60px var(--royal-gold-20),
+                inset 0 0 60px rgba(0, 0, 0, 0.3),
+                0 20px 60px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timer-circle::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg,
+                    var(--focus-gold) var(--progress, 0%),
+                    rgba(255, 255, 255, 0.1) var(--progress, 0%));
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .timer-circle.focusing {
+            animation: focusPulse 2s ease-in-out infinite;
+        }
+
+        .timer-circle.focusing::before {
+            background: conic-gradient(from 0deg,
+                    var(--focus-red) var(--progress, 0%),
+                    rgba(239, 68, 68, 0.2) var(--progress, 0%));
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+        }
+
+        .timer-circle.break::before {
+            background: conic-gradient(from 0deg,
+                    var(--break-teal) var(--progress, 0%),
+                    rgba(20, 184, 166, 0.2) var(--progress, 0%));
+            box-shadow: 0 0 40px rgba(20, 184, 166, 0.4);
+        }
+
+        .timer-circle.complete {
+            animation: celebrationBurst 0.6s ease-out;
+        }
+
+        @keyframes focusPulse {
+
+            0%,
+            100% {
+                box-shadow:
+                    0 0 60px rgba(239, 68, 68, 0.3),
+                    inset 0 0 60px rgba(0, 0, 0, 0.3),
+                    0 20px 60px rgba(0, 0, 0, 0.4);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 80px rgba(239, 68, 68, 0.5),
+                    inset 0 0 60px rgba(0, 0, 0, 0.3),
+                    0 20px 60px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        @keyframes celebrationBurst {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .timer-time {
+            font-family: var(--font-sans);
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -2px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .timer-circle.focusing .timer-time {
+            color: var(--focus-red);
+        }
+
+        .timer-circle.break .timer-time {
+            color: var(--break-teal);
+        }
+
+        .timer-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .timer-circle.focusing .timer-label {
+            color: rgba(239, 68, 68, 0.8);
+        }
+
+        /* Session Link */
+        .session-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            margin: 0 auto 1.5rem;
+            max-width: 300px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .session-link:hover {
+            background: var(--royal-gold-10);
+            border-color: var(--royal-gold-30);
+        }
+
+        .session-link i {
+            color: var(--royal-gold);
+        }
+
+        .session-link span {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .session-link .linked {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Control Buttons */
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .control-btn:hover::before {
+            opacity: 1;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, var(--focus-gold), var(--royal-accent));
+            color: var(--royal-dark);
+            box-shadow: 0 8px 30px var(--royal-gold-40);
+        }
+
+        .control-btn.primary:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 12px 40px var(--royal-gold-50);
+        }
+
+        .control-btn.primary.active {
+            background: linear-gradient(135deg, var(--focus-red), #dc2626);
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
+        }
+
+        .control-btn.secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: #94a3b8;
+        }
+
+        .control-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Pomodoro Indicators */
+        .pomodoro-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .pomodoro-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .pomodoro-dot.completed {
+            background: linear-gradient(135deg, var(--focus-red), #dc2626);
+            border-color: var(--focus-red);
+            color: white;
+            animation: dotComplete 0.5s ease-out;
+        }
+
+        .pomodoro-dot.current {
+            border-color: var(--focus-gold);
+            animation: dotPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes dotComplete {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes dotPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--royal-gold-40);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px transparent;
+            }
+        }
+
+        /* Stats Cards */
+        .focus-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .focus-stat {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .focus-stat:hover {
+            transform: translateY(-2px);
+            border-color: var(--royal-gold-30);
+        }
+
+        .focus-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--royal-gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .focus-stat-label {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+
+        /* Settings Panel */
+        .focus-settings {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .focus-settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .focus-settings-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .focus-settings-title i {
+            color: var(--royal-gold);
+        }
+
+        .focus-settings-content {
+            display: none;
+        }
+
+        .focus-settings.open .focus-settings-content {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .settings-input {
+            width: 80px;
+            padding: 0.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        /* Distraction Log */
+        .distraction-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.75rem;
+            color: #f87171;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .distraction-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .distraction-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Confetti Animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .timer-circle {
+                width: 240px;
+                height: 240px;
+            }
+
+            .timer-time {
+                font-size: 3rem;
+            }
+
+            .control-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 1.25rem;
+            }
+
+            .focus-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .focus-stat {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                text-align: left;
+            }
+
+            .focus-stat-value {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div id="header-container"></div>
+        <div class="main-layout">
+            <div id="sidebar-container"></div>
+            <main class="main-content fade-in" id="main-view">
+                <!-- Page Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                        <i class="ph-fill ph-timer"></i>
+                    </div>
+                    <h1 class="page-hero-title">Royal Focus Chamber</h1>
+                    <p class="page-hero-subtitle">Master your time with focused work sessions. The Pomodoro technique: 25 minutes of intense focus, followed by a 5-minute break. Complete 4 sessions for a longer 15-minute rest.</p>
+                </div>
+
+                <!-- Quick Guide Banner -->
+                <div class="royal-banner" style="background: linear-gradient(135deg, var(--royal-gold-10), var(--royal-gold-10)); border: 1px solid var(--royal-gold-20); border-radius: 1rem; padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+                    <i class="ph-fill ph-lightbulb" style="font-size: 1.5rem; color: var(--royal-gold);"></i>
+                    <div style="flex: 1;">
+                        <strong style="color: var(--royal-gold);">How it works:</strong>
+                        <span style="color: rgba(255,255,255,0.7);"> Start the timer → Stay focused → Timer beeps when done → Take a break → Repeat!</span>
+                    </div>
+                </div>
+
+                <div class="focus-container">
+                    <!-- Session Link -->
+                    <div class="session-link" onclick="openLinkModal()">
+                        <i class="ph-bold ph-link"></i>
+                        <span id="linked-item">Link to Goal or Course</span>
+                    </div>
+
+                    <!-- Timer -->
+                    <div class="timer-wrapper">
+                        <div class="timer-circle" id="timer-circle">
+                            <div class="timer-time" id="timer-display">25:00</div>
+                            <div class="timer-label" id="timer-label">Ready to Focus</div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="timer-controls">
+                        <button class="control-btn secondary" onclick="resetTimer()" title="Reset">
+                            <i class="ph-bold ph-arrow-counter-clockwise"></i>
+                        </button>
+                        <button class="control-btn primary" id="start-btn" onclick="toggleTimer()">
+                            <i class="ph-fill ph-play" id="play-icon"></i>
+                        </button>
+                        <button class="control-btn secondary" onclick="skipSession()" title="Skip">
+                            <i class="ph-bold ph-fast-forward"></i>
+                        </button>
+                    </div>
+
+                    <!-- Pomodoro Dots -->
+                    <div class="pomodoro-dots" id="pomodoro-dots">
+                        <div class="pomodoro-dot current">1</div>
+                        <div class="pomodoro-dot">2</div>
+                        <div class="pomodoro-dot">3</div>
+                        <div class="pomodoro-dot">4</div>
+                    </div>
+
+                    <!-- Distraction Log -->
+                    <button class="distraction-btn" id="distraction-btn" onclick="logDistraction()" disabled>
+                        <i class="ph-bold ph-warning-circle"></i>
+                        Log Distraction
+                    </button>
+
+                    <!-- Today's Stats -->
+                    <div class="focus-stats">
+                        <div class="focus-stat">
+                            <div class="focus-stat-value" id="stat-pomodoros">0</div>
+                            <div class="focus-stat-label">Pomodoros</div>
+                        </div>
+                        <div class="focus-stat">
+                            <div class="focus-stat-value" id="stat-focus-time">0m</div>
+                            <div class="focus-stat-label">Focus Time</div>
+                        </div>
+                        <div class="focus-stat">
+                            <div class="focus-stat-value" id="stat-streak">0</div>
+                            <div class="focus-stat-label">Day Streak</div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="focus-settings" id="focus-settings">
+                        <div class="focus-settings-header" onclick="toggleSettings()">
+                            <span class="focus-settings-title">
+                                <i class="ph-bold ph-sliders"></i>
+                                Timer Settings
+                            </span>
+                            <i class="ph-bold ph-caret-down" id="settings-icon"></i>
+                        </div>
+                        <div class="focus-settings-content">
+                            <div class="settings-row">
+                                <span class="settings-label">Focus Duration (min)</span>
+                                <input type="number" class="settings-input" id="focus-duration" value="25" min="5"
+                                    max="60">
+                            </div>
+                            <div class="settings-row">
+                                <span class="settings-label">Short Break (min)</span>
+                                <input type="number" class="settings-input" id="short-break" value="5" min="1" max="15">
+                            </div>
+                            <div class="settings-row">
+                                <span class="settings-label">Long Break (min)</span>
+                                <input type="number" class="settings-input" id="long-break" value="15" min="10"
+                                    max="30">
+                            </div>
+                            <div class="settings-row">
+                                <span class="settings-label">Sound Effects</span>
+                                <label class="toggle">
+                                    <input type="checkbox" id="sound-enabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <a href="goals.html" class="btn btn-outline btn-block">
+                            <i class="ph-bold ph-target"></i> Goals
+                        </a>
+                        <a href="learning.html" class="btn btn-secondary btn-block">
+                            <i class="ph-bold ph-graduation-cap"></i> Learning
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Confetti Container -->
+        <div class="confetti-container" id="confetti-container"></div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-overlay" onclick="closeModal()"></div>
+            <div class="modal-container">
+                <div class="modal-content" id="modal-content"></div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/core.js"></script>
+    <script src="../js/components/header.js"></script>
+    <script src="../js/components/sidebar.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
+
+    <script>
+        // ==========================================
+        // TIMER STATE
+        // ==========================================
+        let timerState = 'idle'; // idle, focusing, break, paused
+        let timeRemaining = 25 * 60; // seconds
+        let timerInterval = null;
+        let currentPomodoro = 1;
+        let totalPomodoros = 4;
+        let linkedItem = null;
+        let distractions = [];
+        let sessionStart = null;
+
+        // Settings
+        let settings = {
+            focusDuration: 25,
+            shortBreak: 5,
+            longBreak: 15,
+            soundEnabled: true
+        };
+
+        // Today's stats
+        let todayStats = {
+            pomodoros: 0,
+            focusMinutes: 0,
+            date: Storage.getToday()
+        };
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            HeaderComponent.render('header-container', {
+                showBreadcrumb: true,
+                pageTitle: 'Royal Focus',
+                pageIcon: 'ph-timer'
+            });
+            SidebarComponent.render('sidebar-container');
+            FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
+
+            loadFocusData();
+            updateDisplay();
+            updateStats();
+            updatePomodoroDots();
+        });
+
+        // ==========================================
+        // DATA MANAGEMENT
+        // ==========================================
+        function loadFocusData() {
+            const data = Storage.getData();
+
+            // Initialize focus data if not present
+            if (!data.focus) {
+                data.focus = {
+                    settings: { ...settings },
+                    sessions: [],
+                    stats: { totalPomodoros: 0, totalFocusMinutes: 0, currentStreak: 0, bestStreak: 0 }
+                };
+                Storage.saveData(data);
+            }
+
+            settings = { ...settings, ...data.focus.settings };
+
+            // Load today's stats
+            const today = Storage.getToday();
+            const todaySessions = (data.focus.sessions || []).filter(s => s.date === today);
+            todayStats = {
+                pomodoros: todaySessions.filter(s => s.completed).length,
+                focusMinutes: todaySessions.reduce((sum, s) => sum + (s.completed ? s.duration : 0), 0),
+                date: today
+            };
+
+            // Update settings inputs
+            document.getElementById('focus-duration').value = settings.focusDuration;
+            document.getElementById('short-break').value = settings.shortBreak;
+            document.getElementById('long-break').value = settings.longBreak;
+            document.getElementById('sound-enabled').checked = settings.soundEnabled;
+
+            timeRemaining = settings.focusDuration * 60;
+        }
+
+        function saveFocusSession(completed) {
+            const data = Storage.getData();
+            if (!data.focus) data.focus = { settings, sessions: [], stats: {} };
+
+            const session = {
+                id: Utils.generateId(),
+                date: Storage.getToday(),
+                startTime: sessionStart,
+                duration: settings.focusDuration,
+                completed,
+                linkedGoalId: linkedItem?.type === 'goal' ? linkedItem.id : null,
+                linkedCourseId: linkedItem?.type === 'course' ? linkedItem.id : null,
+                distractions: [...distractions]
+            };
+
+            data.focus.sessions.push(session);
+
+            if (completed) {
+                data.focus.stats.totalPomodoros = (data.focus.stats.totalPomodoros || 0) + 1;
+                data.focus.stats.totalFocusMinutes = (data.focus.stats.totalFocusMinutes || 0) + settings.focusDuration;
+            }
+
+            Storage.saveData(data);
+            distractions = [];
+        }
+
+        function saveSettings() {
+            settings.focusDuration = parseInt(document.getElementById('focus-duration').value) || 25;
+            settings.shortBreak = parseInt(document.getElementById('short-break').value) || 5;
+            settings.longBreak = parseInt(document.getElementById('long-break').value) || 15;
+            settings.soundEnabled = document.getElementById('sound-enabled').checked;
+
+            const data = Storage.getData();
+            if (!data.focus) data.focus = { settings: {}, sessions: [], stats: {} };
+            data.focus.settings = settings;
+            Storage.saveData(data);
+
+            if (timerState === 'idle') {
+                timeRemaining = settings.focusDuration * 60;
+                updateDisplay();
+            }
+        }
+
+        // ==========================================
+        // TIMER CONTROLS
+        // ==========================================
+        function toggleTimer() {
+            if (timerState === 'idle' || timerState === 'paused') {
+                startTimer();
+            } else if (timerState === 'focusing' || timerState === 'break') {
+                pauseTimer();
+            }
+        }
+
+        function startTimer() {
+            if (timerState === 'idle') {
+                sessionStart = new Date().toISOString();
+                // Start global timer for cross-page persistence
+                if (typeof FocusTimer !== 'undefined') {
+                    FocusTimer.start(settings.focusDuration);
+                }
+            }
+
+            timerState = timerState === 'break' ? 'break' : 'focusing';
+            updateTimerUI();
+
+            document.getElementById('distraction-btn').disabled = timerState !== 'focusing';
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateDisplay();
+                
+                // Sync with global timer
+                if (typeof FocusTimer !== 'undefined') {
+                    FocusTimer.timeRemaining = timeRemaining;
+                    FocusTimer.save();
+                }
+
+                if (timeRemaining <= 0) {
+                    completeSession();
+                }
+            }, 1000);
+
+            // Update button
+            document.getElementById('start-btn').classList.add('active');
+            document.getElementById('play-icon').className = 'ph-fill ph-pause';
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerState = 'paused';
+            updateTimerUI();
+            
+            // Pause global timer
+            if (typeof FocusTimer !== 'undefined') {
+                FocusTimer.pause();
+            }
+
+            document.getElementById('start-btn').classList.remove('active');
+            document.getElementById('play-icon').className = 'ph-fill ph-play';
+            document.getElementById('timer-label').textContent = 'Paused';
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerState = 'idle';
+            timeRemaining = settings.focusDuration * 60;
+            currentPomodoro = 1;
+            distractions = [];
+            sessionStart = null;
+
+            // Stop global timer
+            if (typeof FocusTimer !== 'undefined') {
+                FocusTimer.stop();
+            }
+
+            updateDisplay();
+            updateTimerUI();
+            updatePomodoroDots();
+
+            document.getElementById('start-btn').classList.remove('active');
+            document.getElementById('play-icon').className = 'ph-fill ph-play';
+            document.getElementById('timer-label').textContent = 'Ready to Focus';
+            document.getElementById('distraction-btn').disabled = true;
+        }
+
+        function skipSession() {
+            if (timerState === 'idle') return;
+
+            if (timerState === 'focusing') {
+                saveFocusSession(false);
+            }
+
+            completeSession();
+        }
+
+        function completeSession() {
+            clearInterval(timerInterval);
+
+            const timerCircle = document.getElementById('timer-circle');
+            timerCircle.classList.add('complete');
+            setTimeout(() => timerCircle.classList.remove('complete'), 600);
+
+            if (timerState === 'focusing') {
+                // Completed a focus session
+                saveFocusSession(true);
+                todayStats.pomodoros++;
+                todayStats.focusMinutes += settings.focusDuration;
+                updateStats();
+
+                playSound('complete');
+                showCelebration();
+
+                // Check if time for long break
+                if (currentPomodoro >= totalPomodoros) {
+                    // Long break
+                    timerState = 'break';
+                    timeRemaining = settings.longBreak * 60;
+                    currentPomodoro = 1;
+                    Utils.showToast('🎉 4 pomodoros complete! Take a long break.', 'success');
+                    
+                    // Update global timer to break mode
+                    if (typeof FocusTimer !== 'undefined') {
+                        FocusTimer.state = 'break';
+                        FocusTimer.timeRemaining = timeRemaining;
+                        FocusTimer.totalDuration = timeRemaining;
+                        FocusTimer.save();
+                    }
+                } else {
+                    // Short break
+                    timerState = 'break';
+                    timeRemaining = settings.shortBreak * 60;
+                    currentPomodoro++;
+                    Utils.showToast('✅ Pomodoro complete! Take a short break.', 'gold');
+                    
+                    // Update global timer to break mode
+                    if (typeof FocusTimer !== 'undefined') {
+                        FocusTimer.state = 'break';
+                        FocusTimer.timeRemaining = timeRemaining;
+                        FocusTimer.totalDuration = timeRemaining;
+                        FocusTimer.save();
+                    }
+                }
+            } else if (timerState === 'break') {
+                // Break complete
+                timerState = 'idle';
+                timeRemaining = settings.focusDuration * 60;
+                playSound('break-end');
+                Utils.showToast('Break over! Ready for the next focus session? 🎯', 'info');
+                
+                // Stop global timer
+                if (typeof FocusTimer !== 'undefined') {
+                    FocusTimer.stop();
+                }
+            }
+
+            updateDisplay();
+            updateTimerUI();
+            updatePomodoroDots();
+
+            document.getElementById('start-btn').classList.remove('active');
+            document.getElementById('play-icon').className = 'ph-fill ph-play';
+            document.getElementById('distraction-btn').disabled = true;
+        }
+
+        // ==========================================
+        // UI UPDATES
+        // ==========================================
+        function updateDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer-display').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Update progress ring
+            const totalTime = timerState === 'break'
+                ? (currentPomodoro === 1 ? settings.longBreak : settings.shortBreak) * 60
+                : settings.focusDuration * 60;
+            const progress = ((totalTime - timeRemaining) / totalTime) * 100;
+            document.getElementById('timer-circle').style.setProperty('--progress', `${progress}%`);
+        }
+
+        function updateTimerUI() {
+            const timerCircle = document.getElementById('timer-circle');
+            const timerLabel = document.getElementById('timer-label');
+
+            timerCircle.classList.remove('focusing', 'break');
+
+            switch (timerState) {
+                case 'focusing':
+                    timerCircle.classList.add('focusing');
+                    timerLabel.textContent = 'Stay Focused';
+                    break;
+                case 'break':
+                    timerCircle.classList.add('break');
+                    timerLabel.textContent = 'Recharge Your Mind';
+                    break;
+                case 'idle':
+                    timerLabel.textContent = 'Ready to Focus';
+                    break;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-pomodoros').textContent = todayStats.pomodoros;
+            document.getElementById('stat-focus-time').textContent =
+                todayStats.focusMinutes >= 60
+                    ? `${Math.floor(todayStats.focusMinutes / 60)}h ${todayStats.focusMinutes % 60}m`
+                    : `${todayStats.focusMinutes}m`;
+
+            // Calculate streak from data
+            const data = Storage.getData();
+            const streak = data.focus?.stats?.currentStreak || 0;
+            document.getElementById('stat-streak').textContent = streak;
+        }
+
+        function updatePomodoroDots() {
+            const container = document.getElementById('pomodoro-dots');
+            let html = '';
+
+            for (let i = 1; i <= totalPomodoros; i++) {
+                const isCompleted = i < currentPomodoro || (timerState === 'break' && i === currentPomodoro - 1);
+                const isCurrent = i === currentPomodoro && timerState !== 'break';
+
+                html += `
+                    <div class="pomodoro-dot ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+                        ${isCompleted ? '<i class="ph-bold ph-check"></i>' : i}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ==========================================
+        // LINKING
+        // ==========================================
+        function openLinkModal() {
+            const data = Storage.getData();
+            const goals = (data.goals?.weekly || []).filter(g => g.status === 'active');
+            const courses = (data.learning?.courses || []).filter(c => c.status === 'active');
+
+            let goalsHTML = goals.map(g => `
+                <div class="link-option" onclick="linkItem('goal', '${g.id}', '${Utils.sanitize(g.title)}')">
+                    <i class="ph-duotone ph-target" style="color: var(--royal-gold);"></i>
+                    <span>${Utils.sanitize(g.title)}</span>
+                </div>
+            `).join('');
+
+            let coursesHTML = courses.map(c => `
+                <div class="link-option" onclick="linkItem('course', '${c.id}', '${Utils.sanitize(c.title)}')">
+                    <i class="ph-duotone ph-graduation-cap" style="color: var(--info);"></i>
+                    <span>${Utils.sanitize(c.title)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        <i class="ph-duotone ph-link" style="color: var(--royal-gold);"></i>
+                        Link Focus Session
+                    </h2>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ${linkedItem ? `
+                        <button class="btn btn-outline btn-block mb-4" onclick="unlinkItem()">
+                            <i class="ph-bold ph-x"></i> Remove Link
+                        </button>
+                    ` : ''}
+
+                    ${goals.length > 0 ? `
+                        <h4 style="margin-bottom: 0.75rem; color: #94a3b8;">Weekly Goals</h4>
+                        <div class="link-options mb-4">
+                            ${goalsHTML}
+                        </div>
+                    ` : ''}
+
+                    ${courses.length > 0 ? `
+                        <h4 style="margin-bottom: 0.75rem; color: #94a3b8;">Active Courses</h4>
+                        <div class="link-options">
+                            ${coursesHTML}
+                        </div>
+                    ` : ''}
+
+                    ${goals.length === 0 && courses.length === 0 ? `
+                        <div class="empty-state" style="padding: 2rem; text-align: center;">
+                            <i class="ph-duotone ph-link-break" style="font-size: 3rem; color: #64748b;"></i>
+                            <p style="color: #94a3b8; margin-top: 1rem;">No active goals or courses to link.</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function linkItem(type, id, title) {
+            linkedItem = { type, id, title };
+            document.getElementById('linked-item').innerHTML = `
+                <span class="linked">${title}</span>
+            `;
+            closeModal();
+            Utils.showToast(`Linked to: ${title}`, 'gold');
+        }
+
+        function unlinkItem() {
+            linkedItem = null;
+            document.getElementById('linked-item').textContent = 'Link to Goal or Course';
+            closeModal();
+        }
+
+        // ==========================================
+        // DISTRACTIONS
+        // ==========================================
+        function logDistraction() {
+            const options = ['Email', 'Phone', 'Social Media', 'Colleague', 'Hunger', 'Other'];
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        <i class="ph-duotone ph-warning-circle" style="color: var(--danger);"></i>
+                        Log Distraction
+                    </h2>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: #94a3b8; margin-bottom: 1rem;">What pulled your attention away?</p>
+                    <div class="link-options">
+                        ${options.map(opt => `
+                            <div class="link-option" onclick="addDistraction('${opt}')">
+                                <span>${opt}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function addDistraction(type) {
+            distractions.push(type);
+            closeModal();
+            Utils.showToast(`Logged: ${type}. Now refocus! 💪`, 'info');
+        }
+
+        // ==========================================
+        // SETTINGS
+        // ==========================================
+        function toggleSettings() {
+            const panel = document.getElementById('focus-settings');
+            const icon = document.getElementById('settings-icon');
+
+            panel.classList.toggle('open');
+            icon.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : '';
+        }
+
+        // Listen for settings changes
+        document.addEventListener('DOMContentLoaded', () => {
+            ['focus-duration', 'short-break', 'long-break', 'sound-enabled'].forEach(id => {
+                document.getElementById(id).addEventListener('change', saveSettings);
+            });
+        });
+
+        // ==========================================
+        // SOUND & CELEBRATION
+        // ==========================================
+        function playSound(type) {
+            if (!settings.soundEnabled) return;
+
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'complete') {
+                // Celebration tone
+                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            } else if (type === 'break-end') {
+                // Gentle reminder
+                oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        function showCelebration() {
+            const container = document.getElementById('confetti-container');
+            const isQueen = document.body.classList.contains('queen-theme');
+            const goldColor = isQueen ? '#b76e79' : '#D4AF37';
+            const colors = [goldColor, '#ef4444', '#10b981', '#3b82f6', '#8b5cf6'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `confettiFall ${1 + Math.random()}s ease-out forwards`;
+                confetti.style.animationDelay = `${Math.random() * 0.3}s`;
+                container.appendChild(confetti);
+            }
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 2000);
+        }
+
+        // Add confetti animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes confettiFall {
+                0% {
+                    opacity: 1;
+                    top: -10px;
+                    transform: translateX(0) rotate(0deg);
+                }
+                100% {
+                    opacity: 0;
+                    top: 100vh;
+                    transform: translateX(${Math.random() > 0.5 ? '' : '-'}100px) rotate(720deg);
+                }
+            }
+            
+            .link-options {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .link-option {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.875rem 1rem;
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                border-radius: 0.75rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .link-option:hover {
+                background: var(--royal-gold-10);
+                border-color: var(--royal-gold-30);
+            }
+            
+            .link-option i {
+                font-size: 1.25rem;
+            }
+            
+            .link-option span {
+                color: white;
+                font-weight: 500;
+            }
+
+            .toggle {
+                position: relative;
+                width: 48px;
+                height: 24px;
+            }
+
+            .toggle input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .toggle-slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(255, 255, 255, 0.1);
+                transition: 0.3s;
+                border-radius: 24px;
+            }
+
+            .toggle-slider::before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: 0.3s;
+                border-radius: 50%;
+            }
+
+            .toggle input:checked + .toggle-slider {
+                background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
+            }
+
+            .toggle input:checked + .toggle-slider::before {
+                transform: translateX(24px);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ==========================================
+        // MODAL
+        // ==========================================
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

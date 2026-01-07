@@ -1,0 +1,904 @@
+/* ==========================================
+   REIGN - Mobile-First Responsive CSS
+   ==========================================
+   Ultra-compact, app-like mobile experience
+   Supports screens as small as 320px
+   ========================================== */
+
+/* ==========================================
+   MOBILE CSS VARIABLES
+   ========================================== */
+:root {
+    --mobile-nav-height: 56px;
+    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-touch-min: 44px;
+    --mobile-spacing-xs: 0.375rem;
+    --mobile-spacing-sm: 0.5rem;
+    --mobile-spacing-md: 0.75rem;
+    --mobile-spacing-lg: 1rem;
+    --mobile-radius: 0.625rem;
+}
+
+/* ==========================================
+   MOBILE NAVIGATION - COMPACT 56px
+   ========================================== */
+@media (max-width: 767px) {
+    .mobile-nav {
+        height: var(--mobile-nav-height) !important;
+        padding: 0 0.25rem !important;
+        gap: 0;
+    }
+
+    .mobile-nav-btn,
+    .bottom-nav-btn {
+        flex: 1;
+        max-width: 72px;
+        padding: 0.375rem 0.25rem !important;
+        min-height: var(--mobile-touch-min);
+        gap: 0.125rem !important;
+    }
+
+    .mobile-nav-btn i,
+    .bottom-nav-btn i {
+        font-size: 1.2rem !important;
+    }
+
+    .mobile-nav-btn span,
+    .bottom-nav-btn span {
+        font-size: 0.5rem !important;
+        letter-spacing: 0.05em !important;
+    }
+
+    /* FAB positioning adjustment */
+    .fab {
+        bottom: calc(var(--mobile-nav-height) + 12px + var(--mobile-safe-bottom)) !important;
+        right: 12px !important;
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.25rem !important;
+    }
+
+    /* Main content padding adjustment */
+    .main-content {
+        padding: 0.75rem !important;
+        padding-bottom: calc(var(--mobile-nav-height) + 1.5rem + var(--mobile-safe-bottom)) !important;
+    }
+}
+
+/* ==========================================
+   ULTRA-SMALL DEVICES (320px - 359px)
+   iPhone SE 1st gen, Galaxy S Mini, etc.
+   ========================================== */
+@media (max-width: 359px) {
+
+    /* Header ultra-compact */
+    .header {
+        height: 52px !important;
+        padding: 0 0.5rem !important;
+    }
+
+    .header-logo {
+        height: 28px !important;
+        width: 28px !important;
+    }
+
+    .header-title,
+    .header-brand h1 {
+        font-size: 0.9375rem !important;
+    }
+
+    .header-time {
+        display: none !important;
+    }
+
+    /* Page hero ultra-compact */
+    .page-hero {
+        padding: 0.875rem !important;
+        margin-bottom: 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    .page-hero-icon {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        font-size: 1.125rem !important;
+        margin-bottom: 0.5rem !important;
+        border-radius: 0.5rem !important;
+    }
+
+    .page-hero-title {
+        font-size: 1.125rem !important;
+    }
+
+    .page-hero-subtitle {
+        font-size: 0.75rem !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Cards ultra-compact */
+    .glass-card {
+        padding: 0.625rem !important;
+        border-radius: 0.625rem !important;
+    }
+
+    .glass-card.p-6 {
+        padding: 0.75rem !important;
+    }
+
+    /* Typography scale down */
+    h1,
+    .page-title {
+        font-size: 1.25rem !important;
+    }
+
+    h2 {
+        font-size: 1rem !important;
+    }
+
+    h3 {
+        font-size: 0.875rem !important;
+    }
+
+    /* Task/list items compact */
+    .list-item {
+        padding: 0.625rem !important;
+        gap: 0.5rem !important;
+    }
+
+    .list-item-title {
+        font-size: 0.8125rem !important;
+    }
+
+    .list-item-meta {
+        font-size: 0.625rem !important;
+    }
+
+    /* Buttons compact */
+    .btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.6875rem !important;
+        gap: 0.25rem !important;
+    }
+
+    .btn-lg {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .btn i {
+        font-size: 0.875rem !important;
+    }
+
+    /* Form inputs compact but touch-friendly */
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 0.625rem 0.75rem !important;
+        font-size: 0.875rem !important;
+        min-height: var(--mobile-touch-min) !important;
+    }
+
+    .form-label {
+        font-size: 0.625rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    /* Grid single column */
+    .grid-2,
+    .grid-3,
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Dashboard cards compact */
+    .dashboard-card {
+        min-height: 100px !important;
+        padding: 0.875rem 0.75rem !important;
+    }
+
+    .dashboard-card-icon {
+        width: 40px !important;
+        height: 40px !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .dashboard-card-icon i {
+        font-size: 1.375rem !important;
+    }
+
+    .dashboard-card-title {
+        font-size: 0.8125rem !important;
+    }
+
+    .dashboard-card-desc {
+        font-size: 0.6875rem !important;
+    }
+
+    /* Stat cards compact */
+    .stat-card {
+        padding: 0.75rem !important;
+    }
+
+    .stat-value {
+        font-size: 1.25rem !important;
+    }
+
+    .stat-label {
+        font-size: 0.5625rem !important;
+    }
+
+    /* Progress bars compact */
+    .progress-header {
+        margin-bottom: 0.25rem !important;
+    }
+
+    .progress-label,
+    .progress-value {
+        font-size: 0.625rem !important;
+    }
+
+    .progress-bar {
+        height: 6px !important;
+    }
+}
+
+/* ==========================================
+   SMALL MOBILE (360px - 479px)
+   Standard small phones
+   ========================================== */
+@media (min-width: 360px) and (max-width: 479px) {
+    .header {
+        height: 56px !important;
+        padding: 0 0.75rem !important;
+    }
+
+    .header-logo {
+        height: 32px !important;
+        width: 32px !important;
+    }
+
+    .page-hero {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .page-hero-icon {
+        width: 3rem !important;
+        height: 3rem !important;
+        font-size: 1.25rem !important;
+        margin-bottom: 0.625rem !important;
+    }
+
+    .page-hero-title {
+        font-size: 1.25rem !important;
+    }
+
+    .page-hero-subtitle {
+        font-size: 0.8125rem !important;
+    }
+
+    .glass-card.p-6 {
+        padding: 1rem !important;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.625rem !important;
+    }
+
+    .dashboard-card {
+        min-height: 110px !important;
+        padding: 1rem 0.75rem !important;
+    }
+}
+
+/* ==========================================
+   STANDARD MOBILE (480px - 767px)
+   Larger phones and small tablets portrait
+   ========================================== */
+@media (min-width: 480px) and (max-width: 767px) {
+    .page-hero {
+        padding: 1.25rem !important;
+    }
+
+    .page-hero-icon {
+        width: 3.5rem !important;
+        height: 3.5rem !important;
+    }
+
+    .page-hero-title {
+        font-size: 1.5rem !important;
+    }
+
+    .glass-card.p-6 {
+        padding: 1.25rem !important;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ==========================================
+   BOTTOM SHEET MODALS
+   Native app-like modal behavior
+   ========================================== */
+@media (max-width: 640px) {
+    .modal {
+        align-items: flex-end !important;
+    }
+
+    .modal-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: flex-end !important;
+    }
+
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        max-height: 90dvh !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        border-left: none !important;
+        border-top: 3px solid var(--royal-gold) !important;
+        animation: slideUpModal 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important;
+    }
+
+    .modal.active .modal-overlay {
+        animation: fadeInOverlay 0.25s ease-out !important;
+    }
+
+    /* Modal drag handle indicator */
+    .modal-header::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+    }
+
+    .modal-header {
+        position: relative;
+        padding-top: 1.5rem !important;
+    }
+
+    .modal-body {
+        padding: 1rem 1.25rem 2rem !important;
+        padding-bottom: calc(2rem + var(--mobile-safe-bottom)) !important;
+    }
+
+    .modal-title {
+        font-size: 1.125rem !important;
+    }
+
+    /* More menu as bottom sheet */
+    .more-menu {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        max-height: 85vh !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important;
+        overflow-y: auto !important;
+        padding-bottom: calc(1.5rem + var(--mobile-safe-bottom)) !important;
+    }
+
+    .more-menu.show {
+        transform: translateY(0) !important;
+    }
+
+    .more-menu-header {
+        position: sticky;
+        top: 0;
+        background: inherit;
+        z-index: 1;
+        padding-top: 1.25rem;
+    }
+
+    .more-menu-header::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+    }
+
+    .more-menu-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.5rem !important;
+        padding: 0 0.75rem !important;
+    }
+
+    .more-menu-item {
+        padding: 0.875rem 0.5rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    .more-menu-item i {
+        font-size: 1.375rem !important;
+    }
+
+    .more-menu-item span {
+        font-size: 0.625rem !important;
+    }
+}
+
+@keyframes slideUpModal {
+    from {
+        transform: translateY(100%);
+        opacity: 0.8;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   COMPACT BUTTON VARIANTS
+   ========================================== */
+.btn-compact {
+    padding: 0.375rem 0.625rem !important;
+    font-size: 0.6875rem !important;
+    gap: 0.25rem !important;
+    border-radius: 0.375rem !important;
+}
+
+.btn-compact i {
+    font-size: 0.875rem !important;
+}
+
+.btn-icon-sm {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 0.5rem !important;
+}
+
+.btn-icon-sm i {
+    font-size: 1rem !important;
+}
+
+/* Touch-friendly icon buttons (maintains 44px touch area) */
+.btn-touch {
+    position: relative;
+    min-width: var(--mobile-touch-min);
+    min-height: var(--mobile-touch-min);
+}
+
+/* ==========================================
+   COMPACT CARDS
+   ========================================== */
+.card-compact {
+    padding: 0.75rem !important;
+    border-radius: 0.625rem !important;
+}
+
+.card-compact .card-title {
+    font-size: 0.875rem !important;
+}
+
+.card-compact .card-desc {
+    font-size: 0.75rem !important;
+}
+
+/* ==========================================
+   MOBILE QUOTE CONTAINER
+   ========================================== */
+@media (max-width: 479px) {
+    .quote-container {
+        padding: 1rem !important;
+        margin-top: 1rem !important;
+    }
+
+    .quote-text {
+        font-size: 0.8125rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .quote-author {
+        font-size: 0.75rem !important;
+        margin-top: 0.5rem !important;
+    }
+
+    .quote-container .ph-quotes {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE EMPTY STATES
+   ========================================== */
+@media (max-width: 479px) {
+    .empty-state {
+        padding: 2rem 1rem !important;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .empty-state h3 {
+        font-size: 1rem !important;
+    }
+
+    .empty-state p {
+        font-size: 0.8125rem !important;
+    }
+
+    .empty-state .btn {
+        margin-top: 1rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE TASK CARDS & LIST ITEMS
+   ========================================== */
+@media (max-width: 479px) {
+    .task-card {
+        padding: 0.75rem !important;
+        gap: 0.625rem !important;
+    }
+
+    .task-checkbox {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .task-title {
+        font-size: 0.8125rem !important;
+    }
+
+    .task-meta {
+        gap: 0.5rem !important;
+    }
+
+    .task-badge {
+        font-size: 0.5625rem !important;
+        padding: 0.125rem 0.375rem !important;
+    }
+
+    .task-time {
+        font-size: 0.625rem !important;
+    }
+
+    /* Always show task actions on mobile */
+    .task-actions {
+        opacity: 1 !important;
+    }
+
+    .task-action-btn {
+        padding: 0.375rem !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+    }
+}
+
+/* ==========================================
+   MOBILE FORM GRIDS
+   ========================================== */
+@media (max-width: 479px) {
+    .form-group {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .grid.grid-2.gap-4 {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    /* Full width buttons in modals */
+    .modal-body .btn-block,
+    .modal-body .btn-lg {
+        width: 100% !important;
+    }
+}
+
+/* ==========================================
+   MOBILE SIDEBAR (SLIDE-OUT OPTIMIZATION)
+   ========================================== */
+@media (max-width: 767px) {
+    .sidebar.open {
+        width: 280px !important;
+        max-width: 85vw !important;
+    }
+
+    .sidebar-nav {
+        padding: 0.75rem !important;
+    }
+
+    .nav-btn {
+        padding: 0.625rem 0.75rem !important;
+        font-size: 0.8125rem !important;
+        border-radius: 0.625rem !important;
+    }
+
+    .nav-btn i {
+        font-size: 1.125rem !important;
+    }
+
+    .nav-section-label {
+        font-size: 0.5625rem !important;
+        padding: 0.5rem 0.5rem !important;
+    }
+
+    .sidebar-footer {
+        padding: 0.75rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE STAT/ANALYTICS CARDS
+   ========================================== */
+@media (max-width: 479px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+
+    .stat-card-icon {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE EVENT/RELATIONSHIP CARDS
+   ========================================== */
+@media (max-width: 479px) {
+    .event-card {
+        padding: 0.75rem !important;
+        padding-left: 1rem !important;
+    }
+
+    .event-title {
+        font-size: 0.9375rem !important;
+    }
+
+    .event-date {
+        font-size: 0.5625rem !important;
+    }
+
+    .event-type {
+        font-size: 0.5625rem !important;
+        padding: 0.125rem 0.375rem !important;
+    }
+
+    /* Always show event actions on touch */
+    .event-actions {
+        opacity: 1 !important;
+    }
+}
+
+/* ==========================================
+   MOBILE LEARNING MODULE
+   ========================================== */
+@media (max-width: 479px) {
+    .course-card {
+        padding: 0.875rem !important;
+        padding-left: 1rem !important;
+    }
+
+    .course-title {
+        font-size: 0.9375rem !important;
+    }
+
+    .course-pledge {
+        font-size: 0.6875rem !important;
+    }
+
+    .course-stats {
+        font-size: 0.625rem !important;
+        gap: 0.625rem !important;
+    }
+
+    .heatmap-cell {
+        width: 10px !important;
+        height: 10px !important;
+    }
+}
+
+/* ==========================================
+   MOBILE SETTINGS/PROFILE
+   ========================================== */
+@media (max-width: 479px) {
+    .settings-header {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .settings-avatar-img {
+        width: 64px !important;
+        height: 64px !important;
+    }
+
+    .settings-avatar-img span {
+        font-size: 1.375rem !important;
+    }
+
+    .settings-user-name {
+        font-size: 1.25rem !important;
+    }
+
+    .settings-user-email {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE PWA INSTALL BANNER
+   ========================================== */
+@media (max-width: 479px) {
+    .pwa-install-banner {
+        bottom: calc(var(--mobile-nav-height) + 8px + var(--mobile-safe-bottom)) !important;
+        padding: 1rem !important;
+        border-radius: 0.875rem !important;
+    }
+
+    .pwa-install-icon {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 10px !important;
+    }
+
+    .pwa-install-title {
+        font-size: 0.9375rem !important;
+    }
+
+    .pwa-install-desc {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .pwa-install-btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.6875rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE ROLE SELECTION MODAL
+   ========================================== */
+@media (max-width: 479px) {
+    .role-modal-content {
+        padding: 1.5rem 1rem !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+    }
+
+    .role-modal-header h2 {
+        font-size: 1.375rem !important;
+    }
+
+    .role-cards-container {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .role-card {
+        padding: 1.25rem !important;
+        flex-direction: row !important;
+        text-align: left !important;
+        gap: 1rem !important;
+    }
+
+    .role-card-icon {
+        font-size: 2rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    .role-card h3 {
+        font-size: 1.125rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .role-card p {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ==========================================
+   MOBILE TOUCH FEEDBACK
+   ========================================== */
+@media (max-width: 767px) {
+
+    /* Add subtle scale feedback on tap */
+    .btn:active,
+    .dashboard-card:active,
+    .nav-btn:active,
+    .mobile-nav-btn:active,
+    .bottom-nav-btn:active,
+    .list-item:active,
+    .task-card:active,
+    .event-card:active,
+    .course-card:active,
+    .more-menu-item:active {
+        transform: scale(0.97) !important;
+        transition: transform 0.1s ease !important;
+    }
+
+    /* Reset transform for FAB */
+    .fab:active {
+        transform: scale(0.95) !important;
+    }
+}
+
+/* ==========================================
+   MOBILE SAFE AREAS (NOTCH PHONES)
+   ========================================== */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .mobile-nav {
+        padding-bottom: var(--mobile-safe-bottom) !important;
+        height: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom)) !important;
+    }
+
+    .main-content {
+        padding-bottom: calc(var(--mobile-nav-height) + 1.5rem + var(--mobile-safe-bottom)) !important;
+    }
+}
+
+/* ==========================================
+   HIDE NON-ESSENTIAL ELEMENTS ON SMALL SCREENS
+   ========================================== */
+@media (max-width: 359px) {
+    .hidden-ultra-small {
+        display: none !important;
+    }
+}
+
+@media (max-width: 479px) {
+    .hidden-small-mobile {
+        display: none !important;
+    }
+}
+
+/* ==========================================
+   PRINT STYLES (MINIMAL MOBILE PRINT)
+   ========================================== */
+@media print {
+
+    .mobile-nav,
+    .fab,
+    .sidebar,
+    .pwa-install-banner {
+        display: none !important;
+    }
+
+    .main-content {
+        padding: 0 !important;
+    }
+}

@@ -7,6 +7,15 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const auth = require('../lib/auth');
+const {
+    registerValidation,
+    loginValidation,
+    passwordChangeValidation,
+    profileUpdateValidation,
+    passwordResetRequestValidation,
+    passwordResetValidation,
+    securityQuestionValidation
+} = require('../middleware/validators');
 
 // Configure multer for avatar uploads (memory storage)
 const upload = multer({
@@ -26,24 +35,11 @@ const upload = multer({
  * POST /api/auth/register
  * Create a new user account
  */
-router.post('/register', async (req, res) => {
+router.post('/register', registerValidation, async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Validation
-        if (!name || !email || !password) {
-            return res.status(400).json({ error: 'Name, email, and password are required' });
-        }
-
-        if (password.length < 6) {
-            return res.status(400).json({ error: 'Password must be at least 6 characters' });
-        }
-
-        if (!email.includes('@') && !/^\+?[0-9\s-]{10,}$/.test(email)) {
-            return res.status(400).json({ error: 'Invalid email or phone number' });
-        }
-
-        // Create user
+        // Create user (validation already done by middleware)
         const user = await auth.createUser({ name, email, password });
 
         // Generate token
@@ -51,16 +47,17 @@ router.post('/register', async (req, res) => {
 
 
         res.status(201).json({
+            success: true,
             message: 'Account created successfully',
             user,
             token
         });
     } catch (error) {
-        if (error.message === 'Email already registered') {
-            return res.status(409).json({ error: error.message });
+        if (error.message === 'Account already registered' || error.message === 'Email already registered') {
+            return res.status(409).json({ success: false, error: error.message });
         }
         console.error('Register error:', error);
-        res.status(500).json({ error: 'Failed to create account' });
+        res.status(500).json({ success: false, error: 'Failed to create account' });
     }
 });
 
@@ -70,25 +67,20 @@ router.post('/register', async (req, res) => {
  * 
  * Body: { email: string, password: string, rememberMe?: boolean }
  */
-router.post('/login', async (req, res) => {
+router.post('/login', loginValidation, async (req, res) => {
     try {
         const { email, password, rememberMe } = req.body;
 
-        // Validation
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
-        }
-
-        // Find user (await required - async database lookup)
+        // Find user (validation done by middleware)
         const user = await auth.findUserByEmail(email);
         if (!user) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
 
         // Verify password
         const isValid = await auth.verifyPassword(password, user.password);
         if (!isValid) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
 
         // Generate token with conditional expiry (10d for rememberMe, 1d default)
@@ -98,13 +90,14 @@ router.post('/login', async (req, res) => {
         const { password: _, ...safeUser } = user;
 
         res.json({
+            success: true,
             message: 'Login successful',
             user: safeUser,
             token
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'Login failed' });
+        res.status(500).json({ success: false, error: 'Login failed' });
     }
 });
 
@@ -121,7 +114,7 @@ router.get('/profile', auth.authMiddleware, (req, res) => {
  * PUT /api/auth/profile
  * Update user profile (requires auth)
  */
-router.put('/profile', auth.authMiddleware, async (req, res) => {
+router.put('/profile', auth.authMiddleware, profileUpdateValidation, async (req, res) => {
     try {
         const { name } = req.body;
         const updates = {};
@@ -197,39 +190,30 @@ router.delete('/avatar', auth.authMiddleware, async (req, res) => {
  * PUT /api/auth/password
  * Change user password (requires auth)
  */
-router.put('/password', auth.authMiddleware, async (req, res) => {
+router.put('/password', auth.authMiddleware, passwordChangeValidation, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
 
-        if (!currentPassword || !newPassword) {
-            return res.status(400).json({ error: 'Current and new password are required' });
-        }
-
-        if (newPassword.length < 6) {
-            return res.status(400).json({ error: 'New password must be at least 6 characters' });
-        }
-
-        // Get full user with password (await required - async database lookup)
+        // Get full user with password (validation done by middleware)
         const fullUser = await auth.findUserById(req.user.id, true);
         if (!fullUser) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ success: false, error: 'User not found' });
         }
 
         // Verify current password
         const isValid = await auth.verifyPassword(currentPassword, fullUser.password);
         if (!isValid) {
-            return res.status(401).json({ error: 'Current password is incorrect' });
+            return res.status(401).json({ success: false, error: 'Current password is incorrect' });
         }
 
-        // Hash new password and update (await required - async database update)
-        const hashedPassword = await auth.hashPassword(newPassword);
-        await auth.updateUser(req.user.id, { password: hashedPassword });
+        // Update password (updateUser will hash it internally)
+        await auth.updateUser(req.user.id, { password: newPassword });
 
 
-        res.json({ message: 'Password updated successfully' });
+        res.json({ success: true, message: 'Password updated successfully' });
     } catch (error) {
         console.error('Password change error:', error);
-        res.status(500).json({ error: 'Failed to change password' });
+        res.status(500).json({ success: false, error: 'Failed to change password' });
     }
 });
 

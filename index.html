@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/enhancements.css">
     <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/mobile.css">
 
     <!-- Preload Critical Resources for Performance -->
     <link rel="preload" href="js/core.js" as="script">
@@ -227,177 +228,15 @@
 </head>
 
 <body>
-    <!-- PWA Install Banner -->
-    <div id="pwa-install-banner" class="pwa-install-banner">
-        <div class="pwa-banner-content">
-            <i class="ph-fill ph-crown"></i>
-            <div class="pwa-banner-text">
-                <strong>Install REIGN</strong>
-                <span>Add to home screen for the best experience</span>
-            </div>
-        </div>
-        <div class="pwa-banner-actions">
-            <button onclick="installPWA()" class="pwa-install-btn">Install</button>
-            <button onclick="hideInstallBanner()" class="pwa-dismiss-btn">
-                <i class="ph-bold ph-x"></i>
-            </button>
-        </div>
-    </div>
 
     <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <button class="mobile-menu-btn" onclick="app.toggleSidebar()" title="Menu">
-                <i class="ph-bold ph-list"></i>
-            </button>
-            <div class="header-brand" onclick="app.navigate('dashboard')">
-                <img src="icons/icon-192.png" alt="REIGN" class="header-logo">
-                <h1 class="header-title">REIGN</h1>
-                <p class="tagline hidden-mobile">Rule Your Day</p>
-            </div>
-
-            <div class="header-actions">
-                <!-- Streak Badge (visible when learning streak > 0) -->
-                <div id="streak-badge" class="streak-badge hidden" onclick="app.navigate('learning')"
-                    title="Learning Streak">
-                    <i class="ph-fill ph-fire"></i>
-                    <span id="streak-count">0</span>
-                </div>
-
-                <!-- Notifications (shown when logged in) -->
-                <a href="app/notifications.html" id="notifications-btn"
-                    class="icon-btn notification-btn hidden hidden-mobile" title="Notifications">
-                    <i class="ph-bold ph-bell"></i>
-                    <span id="notification-badge" class="notification-dot hidden"></span>
-                </a>
-
-                <!-- User Profile (shown when logged in) -->
-                <div id="user-profile" class="user-profile hidden">
-                    <a href="app/profile.html" class="user-avatar" title="Profile">
-                        <span id="user-initials">KD</span>
-                        <img id="user-avatar-img" src="" alt="" style="display: none;">
-                    </a>
-                    <span id="sync-status" class="sync-status" title="Sync Status"></span>
-                </div>
-
-                <!-- Guest Prompt (shown when not logged in) -->
-                <a href="auth.html" id="guest-prompt" class="guest-prompt">
-                    <i class="ph-bold ph-sign-in"></i>
-                    <span>Log In</span>
-                </a>
-
-                <div class="header-time hidden-mobile">
-                    <p class="date" id="current-date">Today</p>
-                    <p class="time" id="current-time">00:00</p>
-                </div>
-
-                <div class="header-buttons hidden-mobile">
-                    <button onclick="app.exportData()" class="icon-btn" title="Export Backup">
-                        <i class="ph-bold ph-download-simple"></i>
-                    </button>
-                    <label class="icon-btn" title="Import Backup" style="cursor: pointer;">
-                        <i class="ph-bold ph-upload-simple"></i>
-                        <input type="file" accept=".json" style="display: none;" onchange="app.importData(this)">
-                    </label>
-                    <button onclick="app.resetData()" class="icon-btn danger" title="Reset All Data">
-                        <i class="ph-bold ph-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
+        <!-- Header (rendered by HeaderComponent) -->
+        <div id="header-container"></div>
 
         <!-- Main Layout -->
         <div class="main-layout">
-            <!-- Sidebar Overlay (Mobile) -->
-            <div class="sidebar-overlay" onclick="app.toggleSidebar()"></div>
-
-            <!-- Sidebar (Desktop) -->
-            <aside class="sidebar">
-                <nav class="sidebar-nav">
-                    <a href="index.html" class="nav-btn active" data-target="dashboard">
-                        <i class="ph-duotone ph-crown"></i>
-                        <span>The Throne</span>
-                    </a>
-                    <a href="app/morning.html" class="nav-btn" data-target="morning">
-                        <i class="ph-duotone ph-sun-horizon"></i>
-                        <span>Morning Protocol</span>
-                    </a>
-                    <a href="app/evening.html" class="nav-btn" data-target="evening">
-                        <i class="ph-duotone ph-moon-stars"></i>
-                        <span>Evening Report</span>
-                    </a>
-
-                    <!-- Growth & Learning Section -->
-                    <div class="nav-divider"></div>
-                    <p class="nav-section-label">Growth</p>
-
-                    <a href="app/learning.html" class="nav-btn" data-target="learning">
-                        <i class="ph-duotone ph-graduation-cap"></i>
-                        <span>Learning Forge</span>
-                    </a>
-                    <a href="app/idea.html" class="nav-btn" data-target="idea">
-                        <i class="ph-duotone ph-lightbulb"></i>
-                        <span>Today's Idea</span>
-                    </a>
-                    <a href="app/lessons.html" class="nav-btn" data-target="lessons">
-                        <i class="ph-duotone ph-book-open-text"></i>
-                        <span>Daily Lessons</span>
-                    </a>
-
-                    <!-- Reflection Section -->
-                    <div class="nav-divider"></div>
-                    <p class="nav-section-label">Reflection</p>
-
-                    <a href="app/dailygood.html" class="nav-btn" data-target="dailygood">
-                        <i class="ph-duotone ph-heart"></i>
-                        <span>The Good in Today</span>
-                    </a>
-                    <a href="app/archive.html" class="nav-btn" data-target="archive">
-                        <i class="ph-duotone ph-book-bookmark"></i>
-                        <span>Journal Archive</span>
-                    </a>
-                    <a href="app/relationships.html" class="nav-btn" data-target="relationships">
-                        <i class="ph-duotone ph-heart-half"></i>
-                        <span>Rainy Day People</span>
-                    </a>
-
-                    <!-- Planning Section -->
-                    <div class="nav-divider"></div>
-                    <p class="nav-section-label">Planning</p>
-
-                    <a href="app/events.html" class="nav-btn" data-target="events">
-                        <i class="ph-duotone ph-calendar-check"></i>
-                        <span>Royal Calendar</span>
-                    </a>
-                    <a href="#" class="nav-btn disabled" data-target="savings">
-                        <i class="ph-duotone ph-piggy-bank"></i>
-                        <span>Daily Savings</span>
-                        <span class="nav-badge coming-soon">Soon</span>
-                    </a>
-
-                    <!-- System Section -->
-                    <div class="nav-divider"></div>
-
-                    <a href="app/analytics.html" class="nav-btn" data-target="analytics">
-                        <i class="ph-duotone ph-chart-line-up"></i>
-                        <span>Progress</span>
-                    </a>
-                    <a href="app/notifications.html" class="nav-btn" data-target="notifications">
-                        <i class="ph-duotone ph-bell"></i>
-                        <span>Notifications</span>
-                    </a>
-                    <a href="app/settings.html" class="nav-btn" data-target="settings">
-                        <i class="ph-duotone ph-gear-six"></i>
-                        <span>Settings</span>
-                    </a>
-                </nav>
-            </aside>
-
-            <!-- Desktop Sidebar Toggle -->
-            <button class="sidebar-toggle-desktop" onclick="app.toggleSidebarDesktop()" title="Toggle Sidebar"
-                aria-label="Toggle sidebar">
-                <i class="ph-bold ph-caret-left"></i>
-            </button>
+            <!-- Sidebar (rendered by SidebarComponent) -->
+            <div id="sidebar-container"></div>
 
             <!-- Content Area -->
             <main class="main-content fade-in" id="main-view">
@@ -409,9 +248,12 @@
         <div id="footer-container"></div>
 
         <!-- Modal Container -->
-        <div id="modal" class="modal-overlay">
-            <div class="modal-content glass-card">
-                <!-- Modal content injected dynamically -->
+        <div id="modal" class="modal">
+            <div class="modal-overlay" onclick="UI.closeModal()"></div>
+            <div class="modal-container">
+                <div class="modal-content" id="modal-content">
+                    <!-- Modal content injected dynamically -->
+                </div>
             </div>
         </div>
     </div>
@@ -448,10 +290,10 @@
     </div>
 
     <!-- Application Scripts -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/core.js"></script>
+    <script src="js/components/header.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/components/footer.js"></script>
     <script src="js/sync.js"></script>
     <script src="js/router.js"></script>
     <script src="js/charts.js"></script>
@@ -459,7 +301,6 @@
     <script src="js/notifications.js"></script>
     <script src="js/components/loading.js"></script>
     <script src="js/role-modal.js"></script>
-    <script src="js/components/footer.js"></script>
     <script src="js/views.js"></script>
     <script src="js/app.js"></script>
 
@@ -467,63 +308,44 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Check session expiry first
-            if (Config.isLoggedIn() && !Config.isSessionValid()) {
-                // Session expired - clear auth and redirect
-                Config.clearAuth();
-                sessionStorage.setItem('reign_session_expired', 'true');
-                window.location.href = 'auth.html';
-                return;
+            if (typeof CONFIG !== 'undefined' && Auth.isLoggedIn()) {
+                const token = CONFIG.getAuthToken();
+                // Simple session check - the Auth module handles expiry
             }
 
-            // Initialize sync module
-            Sync.init();
-
-            // Render footer component for mobile nav
+            // Render shared components (same as all /app pages)
+            if (typeof HeaderComponent !== 'undefined') {
+                HeaderComponent.render('header-container', {
+                    pageTitle: 'The Throne',
+                    pageIcon: 'ph-crown'
+                });
+            }
+            if (typeof SidebarComponent !== 'undefined') {
+                SidebarComponent.render('sidebar-container');
+            }
             if (typeof FooterComponent !== 'undefined') {
                 FooterComponent.render('footer-container');
             }
 
-            // Update UI based on auth status
-            const updateAuthUI = () => {
-                const user = Auth.getUser();
-                const profileEl = document.getElementById('user-profile');
-                const guestEl = document.getElementById('guest-prompt');
-                const notificationsBtn = document.getElementById('notifications-btn');
-                const initialsEl = document.getElementById('user-initials');
-                const avatarImg = document.getElementById('user-avatar-img');
+            // Initialize sync module
+            if (typeof Sync !== 'undefined') {
+                Sync.init();
+            }
 
-                if (user) {
-                    profileEl.classList.remove('hidden');
-                    guestEl.classList.add('hidden');
-                    if (notificationsBtn) {
-                        notificationsBtn.classList.remove('hidden');
-                    }
-                    initialsEl.textContent = user.initials || 'U';
+            // Apply role theme
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
 
-                    if (user.avatar) {
-                        if (user.avatar.startsWith('data:')) {
-                            avatarImg.src = user.avatar;
-                        } else {
-                            avatarImg.src = `${Config.API_URL.replace('/api', '')}/avatars/${user.avatar}`;
-                        }
-                        avatarImg.style.display = 'block';
-                        initialsEl.style.display = 'none';
-                    } else {
-                        avatarImg.style.display = 'none';
-                        initialsEl.style.display = 'block';
-                    }
-                } else {
-                    profileEl.classList.add('hidden');
-                    guestEl.classList.remove('hidden');
-                    if (notificationsBtn) {
-                        notificationsBtn.classList.add('hidden');
-                    }
-                }
-            };
-
-            updateAuthUI();
+            // Initialize the App (renders dashboard content)
+            if (typeof App !== 'undefined') {
+                App.init();
+            }
         });
     </script>
+
+    <!-- Share Prompt Component -->
+    <script src="js/components/share-prompt.js"></script>
 
     <!-- Feedback Modal -->
     <script src="js/components/feedback-modal.js"></script>

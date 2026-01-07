@@ -4,115 +4,116 @@
 
 /* King Theme - Default/Colored Icons */
 .nav-btn[data-target="dashboard"] i {
-    color: #D4AF37;
+  color: #d4af37;
 }
 
 .nav-btn[data-target="morning"] i {
-    color: #f97316;
+  color: #f97316;
 }
 
 .nav-btn[data-target="evening"] i {
-    color: #6366f1;
+  color: #6366f1;
 }
 
 .nav-btn[data-target="learning"] i {
-    color: #10b981;
+  color: #10b981;
 }
 
 .nav-btn[data-target="idea"] i {
-    color: #eab308;
+  color: #eab308;
 }
 
 .nav-btn[data-target="lessons"] i {
-    color: #3b82f6;
+  color: #60a5fa;
+  text-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
 }
 
 .nav-btn[data-target="dailygood"] i {
-    color: #ec4899;
+  color: #ec4899;
 }
 
 .nav-btn[data-target="archive"] i {
-    color: #8b5cf6;
+  color: #8b5cf6;
 }
 
 .nav-btn[data-target="relationships"] i {
-    color: #f43f5e;
+  color: #f43f5e;
 }
 
 .nav-btn[data-target="events"] i {
-    color: #06b6d4;
+  color: #06b6d4;
 }
 
 .nav-btn[data-target="notifications"] i {
-    color: #f59e0b;
+  color: #f59e0b;
 }
 
 .nav-btn[data-target="settings"] i {
-    color: #64748b;
+  color: #64748b;
 }
 
 .nav-btn[data-target="savings"] i {
-    color: #94a3b8;
+  color: #94a3b8;
 }
 
 /* Queen Theme - Softer color variants */
 .queen-theme .nav-btn[data-target="dashboard"] i {
-    color: #b76e79;
+  color: #b76e79;
 }
 
 .queen-theme .nav-btn[data-target="morning"] i {
-    color: #e9967a;
+  color: #e9967a;
 }
 
 .queen-theme .nav-btn[data-target="evening"] i {
-    color: #9370db;
+  color: #9370db;
 }
 
 .queen-theme .nav-btn[data-target="learning"] i {
-    color: #8fbc8f;
+  color: #8fbc8f;
 }
 
 .queen-theme .nav-btn[data-target="idea"] i {
-    color: #daa520;
+  color: #daa520;
 }
 
 .queen-theme .nav-btn[data-target="lessons"] i {
-    color: #6495ed;
+  color: #6495ed;
 }
 
 .queen-theme .nav-btn[data-target="dailygood"] i {
-    color: #db7093;
+  color: #db7093;
 }
 
 .queen-theme .nav-btn[data-target="archive"] i {
-    color: #ba55d3;
+  color: #ba55d3;
 }
 
 .queen-theme .nav-btn[data-target="relationships"] i {
-    color: #fa8072;
+  color: #fa8072;
 }
 
 .queen-theme .nav-btn[data-target="events"] i {
-    color: #5f9ea0;
+  color: #5f9ea0;
 }
 
 .queen-theme .nav-btn[data-target="notifications"] i {
-    color: #daa520;
+  color: #daa520;
 }
 
 .queen-theme .nav-btn[data-target="settings"] i {
-    color: #778899;
+  color: #778899;
 }
 
 /* Active state icons brightness boost */
 .nav-btn.active i {
-    filter: brightness(1.2);
+  filter: brightness(1.2);
 }
 
 /* Hover effect for icons */
 .nav-btn:hover i {
-    transform: scale(1.1);
-    transition: transform 0.2s ease;
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
 }
 
 /* ==========================================
@@ -120,44 +121,52 @@
    ========================================== */
 
 .sidebar-toggle-desktop {
-    display: none;
-    position: fixed;
-    top: 76px;
-    left: 260px;
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, rgba(21, 27, 43, 0.95), rgba(11, 15, 25, 0.9));
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 100;
-    transition: left 0.3s ease, transform 0.2s ease;
-    color: var(--royal-gold);
-    font-size: 1rem;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  display: none;
+  position: fixed;
+  top: 76px;
+  left: 260px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(
+    135deg,
+    rgba(21, 27, 43, 0.95),
+    rgba(11, 15, 25, 0.9)
+  );
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 100;
+  transition: left 0.3s ease, transform 0.2s ease;
+  color: var(--royal-gold);
+  font-size: 1rem;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-toggle-desktop:hover {
-    transform: scale(1.1);
-    background: linear-gradient(135deg, rgba(31, 37, 53, 0.95), rgba(21, 25, 35, 0.9));
-    border-color: rgba(212, 175, 55, 0.4);
+  transform: scale(1.1);
+  background: linear-gradient(
+    135deg,
+    rgba(31, 37, 53, 0.95),
+    rgba(21, 25, 35, 0.9)
+  );
+  border-color: rgba(212, 175, 55, 0.4);
 }
 
-.sidebar.collapsed+.sidebar-toggle-desktop {
-    left: 72px;
+.sidebar.collapsed + .sidebar-toggle-desktop {
+  left: 72px;
 }
 
 @media (min-width: 768px) {
-    .sidebar-toggle-desktop {
-        display: flex;
-    }
+  .sidebar-toggle-desktop {
+    display: flex;
+  }
 }
 
 /* Sidebar toggle icon rotation */
-.sidebar.collapsed+.sidebar-toggle-desktop i {
-    transform: rotate(180deg);
+.sidebar.collapsed + .sidebar-toggle-desktop i {
+  transform: rotate(180deg);
 }
 
 /* ==========================================
@@ -166,130 +175,134 @@
 
 /* Loading Overlay */
 .loading-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(11, 15, 25, 0.95);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .loading-overlay.visible {
-    opacity: 1;
-    pointer-events: all;
+  opacity: 1;
+  pointer-events: all;
 }
 
 .loading-content {
-    text-align: center;
+  text-align: center;
 }
 
 /* Spinning Crown Loader */
 .loading-spinner {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 1rem;
-    animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
 }
 
 .loading-spinner i {
-    font-size: 4rem;
-    background: linear-gradient(135deg, #D4AF37, #F4D03F, #C5A028);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+  font-size: 4rem;
+  background: linear-gradient(135deg, #d4af37, #f4d03f, #c5a028);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 }
 
 .queen-theme .loading-spinner i {
-    background: linear-gradient(135deg, #b76e79, #c5828c, #9a525c);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 20px rgba(183, 110, 121, 0.5));
+  background: linear-gradient(135deg, #b76e79, #c5828c, #9a525c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(183, 110, 121, 0.5));
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg) scale(1);
-    }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
 
-    50% {
-        transform: rotate(180deg) scale(1.1);
-    }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
 
-    100% {
-        transform: rotate(360deg) scale(1);
-    }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 .loading-message {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.875rem;
-    margin: 0;
-    animation: pulse 2s ease-in-out infinite;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  margin: 0;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
 
-    0%,
-    100% {
-        opacity: 0.6;
-    }
-
-    50% {
-        opacity: 1;
-    }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Loading Bar */
 .loading-bar {
-    width: 200px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    overflow: hidden;
-    margin: 0 auto 1rem;
+  width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 auto 1rem;
 }
 
 .loading-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #D4AF37, #F4D03F, #C5A028, #D4AF37);
-    background-size: 200% 100%;
-    animation: loading-bar-animate 1.5s ease-in-out infinite;
+  height: 100%;
+  background: linear-gradient(90deg, #d4af37, #f4d03f, #c5a028, #d4af37);
+  background-size: 200% 100%;
+  animation: loading-bar-animate 1.5s ease-in-out infinite;
 }
 
 @keyframes loading-bar-animate {
-    0% {
-        transform: translateX(-100%);
-    }
+  0% {
+    transform: translateX(-100%);
+  }
 
-    100% {
-        transform: translateX(100%);
-    }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Loading Skeleton */
 .loading-skeleton-state {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(90deg, rgba(212, 175, 55, 0.05), rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
-    background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.05),
+    rgba(212, 175, 55, 0.1),
+    rgba(212, 175, 55, 0.05)
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
 @keyframes skeleton-shimmer {
-    0% {
-        background-position: -200% 0;
-    }
+  0% {
+    background-position: -200% 0;
+  }
 
-    100% {
-        background-position: 200% 0;
-    }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* ==========================================
@@ -297,233 +310,248 @@
    ========================================== */
 
 .role-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    padding: 1rem;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  padding: 1rem;
 }
 
 .role-modal-overlay.visible {
-    opacity: 1;
+  opacity: 1;
 }
 
 .role-modal-content {
-    position: relative;
-    background: linear-gradient(145deg, rgba(21, 27, 43, 0.98), rgba(11, 15, 25, 0.95));
-    border: 2px solid rgba(212, 175, 55, 0.2);
-    border-radius: 1.5rem;
-    padding: 2.5rem 2rem;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    animation: modal-slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(21, 27, 43, 0.98),
+    rgba(11, 15, 25, 0.95)
+  );
+  border: 2px solid rgba(212, 175, 55, 0.2);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: modal-slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes modal-slide-up {
-    from {
-        transform: translateY(30px);
-        opacity: 0;
-    }
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
 
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .role-modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: rgba(255, 255, 255, 0.6);
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .role-modal-close:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: rotate(90deg);
 }
 
 .role-modal-header {
-    text-align: center;
-    margin-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .role-modal-header i {
-    animation: float 3s ease-in-out infinite;
-    display: block;
-    margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+  display: block;
+  margin-bottom: 1rem;
 }
 
 @keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
 
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .role-modal-header h2 {
-    font-family: var(--font-serif);
-    font-size: 2rem;
-    margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, #D4AF37, #F4D03F);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #d4af37, #f4d03f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .role-modal-header p {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
 }
 
 .role-cards-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .role-card {
-    position: relative;
-    background: linear-gradient(145deg, rgba(31, 37, 53, 0.8), rgba(21, 27, 43, 0.6));
-    border: 2px solid transparent;
-    border-radius: 1rem;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    overflow: hidden;
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(31, 37, 53, 0.8),
+    rgba(21, 27, 43, 0.6)
+  );
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
 }
 
 .role-card-gradient {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .king-card {
-    border-color: rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.2);
 }
 
 .king-card .role-card-gradient {
-    background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15), transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(212, 175, 55, 0.15),
+    transparent 70%
+  );
 }
 
 .king-card:hover {
-    border-color: #D4AF37;
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+  border-color: #d4af37;
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
 }
 
 .king-card:hover .role-card-gradient {
-    opacity: 1;
+  opacity: 1;
 }
 
 .queen-card {
-    border-color: rgba(183, 110, 121, 0.2);
+  border-color: rgba(183, 110, 121, 0.2);
 }
 
 .queen-card .role-card-gradient {
-    background: radial-gradient(circle at center, rgba(183, 110, 121, 0.15), transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(183, 110, 121, 0.15),
+    transparent 70%
+  );
 }
 
 .queen-card:hover {
-    border-color: #b76e79;
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(183, 110, 121, 0.3);
+  border-color: #b76e79;
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(183, 110, 121, 0.3);
 }
 
 .queen-card:hover .role-card-gradient {
-    opacity: 1;
+  opacity: 1;
 }
 
 .role-card-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
 .king-card .role-card-icon i {
-    color: #D4AF37;
+  color: #d4af37;
 }
 
 .queen-card .role-card-icon i {
-    color: #b76e79;
+  color: #b76e79;
 }
 
 .role-card h3 {
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
-    margin: 0 0 0.5rem 0;
-    color: white;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
+  color: white;
 }
 
 .role-card p {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0;
-    line-height: 1.5;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.5;
 }
 
 .role-modal-dismiss-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.5rem;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.875rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
 }
 
 .role-modal-dismiss-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.8);
-    border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Mobile Responsive */
 @media (max-width: 640px) {
-    .role-modal-content {
-        padding: 2rem 1.5rem;
-    }
+  .role-modal-content {
+    padding: 2rem 1.5rem;
+  }
 
-    .role-modal-header h2 {
-        font-size: 1.5rem;
-    }
+  .role-modal-header h2 {
+    font-size: 1.5rem;
+  }
 
-    .role-cards-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
+  .role-cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 
-    .role-card {
-        padding: 1.5rem 1rem;
-    }
+  .role-card {
+    padding: 1.5rem 1rem;
+  }
 }

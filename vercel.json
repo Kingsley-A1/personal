@@ -3,7 +3,7 @@
     "buildCommand": null,
     "outputDirectory": null,
     "installCommand": null,
-    "cleanUrls": false,
+    "cleanUrls": true,
     "trailingSlash": false,
     "headers": [
         {
@@ -49,15 +49,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://reign-nz5m.onrender.com/api/:path*"
-        },
-        {
-            "source": "/app/:page",
-            "destination": "/app/:page.html"
-        },
-        {
-            "source": "/:page",
-            "destination": "/:page.html"
+            "destination": "https://reign-api.onrender.com/api/:path*"
         }
     ]
 }

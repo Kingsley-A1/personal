@@ -13,6 +13,12 @@ const authRoutes = require('../routes/auth');
 const auth = require('../lib/auth');
 const db = require('../lib/database');
 
+// Test utilities
+const testUtils = {
+    generateTestEmail: () => `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}@test.com`,
+    sleep: (ms) => new Promise(resolve => setTimeout(resolve, ms))
+};
+
 // Create test app
 const app = express();
 app.use(express.json());
@@ -34,7 +40,7 @@ describe('Auth Routes', () => {
     describe('POST /api/auth/register', () => {
 
         test('should register a new user successfully', async () => {
-            testUser.email = global.testUtils.generateTestEmail();
+            testUser.email = testUtils.generateTestEmail();
 
             const res = await request(app)
                 .post('/api/auth/register')
@@ -54,12 +60,13 @@ describe('Auth Routes', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .send({
-                    email: global.testUtils.generateTestEmail(),
-                    password: 'Test123!'
+                    email: testUtils.generateTestEmail(),
+                    password: 'TestPass123!'
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('required');
+            expect(res.body.success).toBe(false);
+            expect(res.body.details).toBeDefined();
         });
 
         test('should reject registration without email', async () => {
@@ -67,11 +74,12 @@ describe('Auth Routes', () => {
                 .post('/api/auth/register')
                 .send({
                     name: 'Test',
-                    password: 'Test123!'
+                    password: 'TestPass123!'
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('required');
+            expect(res.body.success).toBe(false);
+            expect(res.body.details).toBeDefined();
         });
 
         test('should reject registration with short password', async () => {
@@ -79,12 +87,15 @@ describe('Auth Routes', () => {
                 .post('/api/auth/register')
                 .send({
                     name: 'Test',
-                    email: global.testUtils.generateTestEmail(),
+                    email: testUtils.generateTestEmail(),
                     password: '123'
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('6 characters');
+            expect(res.body.success).toBe(false);
+            expect(res.body.details).toBeDefined();
+            // Validator requires 8 characters minimum
+            expect(res.body.details.some(d => d.field === 'password')).toBe(true);
         });
 
         test('should reject registration with invalid email', async () => {
@@ -93,25 +104,26 @@ describe('Auth Routes', () => {
                 .send({
                     name: 'Test',
                     email: 'invalid-email',
-                    password: 'Test123!'
+                    password: 'TestPass123!'
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('Invalid email');
+            expect(res.body.success).toBe(false);
+            expect(res.body.details.some(d => d.field === 'email')).toBe(true);
         });
 
         test('should reject duplicate email registration', async () => {
-            const email = global.testUtils.generateTestEmail();
+            const email = testUtils.generateTestEmail();
 
             // First registration
             await request(app)
                 .post('/api/auth/register')
-                .send({ name: 'User 1', email, password: 'Test123!' });
+                .send({ name: 'User 1', email, password: 'TestPass123!' });
 
             // Duplicate registration
             const res = await request(app)
                 .post('/api/auth/register')
-                .send({ name: 'User 2', email, password: 'Test456!' });
+                .send({ name: 'User 2', email, password: 'TestPass456!' });
 
             expect(res.status).toBe(409);
             expect(res.body.error).toContain('already registered');
@@ -127,7 +139,7 @@ describe('Auth Routes', () => {
 
         beforeAll(async () => {
             // Create a user to login with
-            registeredEmail = global.testUtils.generateTestEmail();
+            registeredEmail = testUtils.generateTestEmail();
             await request(app)
                 .post('/api/auth/register')
                 .send({
@@ -183,7 +195,8 @@ describe('Auth Routes', () => {
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('required');
+            expect(res.body.success).toBe(false);
+            expect(res.body.details).toBeDefined();
         });
     });
 
@@ -196,7 +209,7 @@ describe('Auth Routes', () => {
 
         beforeAll(async () => {
             // Create and login user
-            const email = global.testUtils.generateTestEmail();
+            const email = testUtils.generateTestEmail();
             const registerRes = await request(app)
                 .post('/api/auth/register')
                 .send({
@@ -241,7 +254,7 @@ describe('Auth Routes', () => {
         let authToken;
 
         beforeAll(async () => {
-            const email = global.testUtils.generateTestEmail();
+            const email = testUtils.generateTestEmail();
             const registerRes = await request(app)
                 .post('/api/auth/register')
                 .send({
@@ -269,7 +282,7 @@ describe('Auth Routes', () => {
 
     describe('PUT /api/auth/password', () => {
         let authToken;
-        const email = global.testUtils.generateTestEmail();
+        const email = testUtils.generateTestEmail();
 
         beforeAll(async () => {
             const registerRes = await request(app)
@@ -325,7 +338,8 @@ describe('Auth Routes', () => {
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('6 characters');
+            expect(res.body.success).toBe(false);
+            expect(res.body.details).toBeDefined();
         });
     });
 

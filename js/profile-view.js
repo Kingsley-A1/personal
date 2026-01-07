@@ -8,7 +8,7 @@ window.renderProfileView = function (container, data) {
     const user = Auth.getUser();
 
     if (!user) {
-        window.location.href = 'auth.html';
+        window.location.href = '../auth.html';
         return;
     }
 

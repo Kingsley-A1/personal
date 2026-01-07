@@ -3,6 +3,33 @@
  * Coordinates all modules and handles user interactions
  */
 
+// ==========================================
+// GLOBAL ERROR BOUNDARY
+// ==========================================
+window.onerror = function(message, source, lineno, colno, error) {
+    console.error('Global error:', { message, source, lineno, colno, error });
+    
+    // Show user-friendly error message
+    if (typeof Utils !== 'undefined' && Utils.showToast) {
+        Utils.showToast('Something went wrong. Please refresh the page.', 'danger');
+    }
+    
+    // Don't prevent default error handling in development
+    return false;
+};
+
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
+    
+    // Show user-friendly error message
+    if (typeof Utils !== 'undefined' && Utils.showToast) {
+        Utils.showToast('An operation failed. Please try again.', 'warning');
+    }
+});
+
+// ==========================================
+// APPLICATION CONTROLLER
+// ==========================================
 const app = {
     data: null,
 
@@ -10,30 +37,45 @@ const app = {
      * Initialize the application
      */
     init() {
-        // Load stored data
-        this.data = Storage.load();
+        try {
+            // Load stored data
+            this.data = Storage.getData();
 
-        // Apply saved settings (theme, etc.)
-        this.applySettings();
+            // Apply saved settings (theme, etc.)
+            this.applySettings();
 
-        // Initialize time display
-        Utils.updateHeaderTime();
-        setInterval(() => Utils.updateHeaderTime(), 60000);
+            // Initialize time display
+            Utils.updateHeaderTime();
+            setInterval(() => Utils.updateHeaderTime(), 60000);
 
-        // Initialize Chart.js defaults
-        Charts.init();
+            // Initialize Chart.js defaults
+            Charts.init();
 
-        // Update streak badge
-        this.updateStreakBadge();
-        Storage.updateNotificationBadge();
+            // Update streak badge
+            this.updateStreakBadge();
+            Storage.updateNotificationBadge();
 
-        // Navigate to dashboard
-        this.navigate('dashboard');
+            // Navigate to dashboard
+            this.navigate('dashboard');
 
-        // Restore sidebar state
-        this.restoreSidebarState();
+            // Restore sidebar state
+            this.restoreSidebarState();
 
-        console.log('Reign initialized successfully.');
+            // Validate session if logged in
+            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+                Auth.isSessionValid().then(isValid => {
+                    if (!isValid) {
+                        Utils.showToast('Session expired. Please log in again.', 'warning');
+                        Auth.logout();
+                    }
+                }).catch(() => {
+                    // Silently fail - user can continue offline
+                });
+            }
+        } catch (error) {
+            console.error('App initialization error:', error);
+            Utils.showToast('Failed to initialize app. Please refresh.', 'danger');
+        }
     },
 
     /**

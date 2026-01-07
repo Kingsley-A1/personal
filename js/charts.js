@@ -7,6 +7,25 @@ const Charts = {
     instances: {},
 
     /**
+     * Get theme-aware gold color
+     * @returns {string} Gold color based on current theme
+     */
+    getGoldColor() {
+        return document.body.classList.contains('queen-theme') ? '#b76e79' : '#D4AF37';
+    },
+
+    /**
+     * Get theme-aware gold RGBA
+     * @param {number} opacity - Opacity value 0-1
+     * @returns {string} RGBA color
+     */
+    getGoldRGBA(opacity = 0.1) {
+        return document.body.classList.contains('queen-theme') 
+            ? `rgba(183, 110, 121, ${opacity})` 
+            : `rgba(212, 175, 55, ${opacity})`;
+    },
+
+    /**
      * Initialize Chart.js defaults
      */
     init() {
@@ -39,6 +58,9 @@ const Charts = {
         const labels = data.map(d => d.label);
         const hours = data.map(d => d.hours);
 
+        const goldColor = this.getGoldColor();
+        const goldBg = this.getGoldRGBA(0.1);
+
         this.instances.focus = new Chart(canvas, {
             type: 'line',
             data: {
@@ -46,12 +68,12 @@ const Charts = {
                 datasets: [{
                     label: 'Planned Hours',
                     data: hours,
-                    borderColor: '#D4AF37',
-                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    borderColor: goldColor,
+                    backgroundColor: goldBg,
                     fill: true,
                     tension: 0.4,
                     pointBackgroundColor: '#fff',
-                    pointBorderColor: '#D4AF37',
+                    pointBorderColor: goldColor,
                     pointRadius: 4,
                     pointHoverRadius: 6
                 }]
@@ -63,7 +85,7 @@ const Charts = {
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: '#1e293b',
-                        titleColor: '#D4AF37',
+                        titleColor: goldColor,
                         bodyColor: '#e2e8f0',
                         borderColor: '#334155',
                         borderWidth: 1,
@@ -104,13 +126,15 @@ const Charts = {
             Math.max(0, (analytics.totalDays * 2) - analytics.morningCount - analytics.eveningCount)
         ];
 
+        const goldColor = this.getGoldColor();
+
         this.instances.discipline = new Chart(canvas, {
             type: 'doughnut',
             data: {
                 labels: ['Morning', 'Evening', 'Missed'],
                 datasets: [{
                     data,
-                    backgroundColor: ['#D4AF37', '#4f46e5', '#1e293b'],
+                    backgroundColor: [goldColor, '#4f46e5', '#1e293b'],
                     borderWidth: 0,
                     hoverOffset: 8
                 }]
@@ -207,8 +231,9 @@ const Charts = {
         const labels = Object.keys(categoryHours).filter(k => categoryHours[k] > 0);
         const data = labels.map(k => categoryHours[k]);
 
+        const goldColor = this.getGoldColor();
         const colors = [
-            '#D4AF37', // Deep Work
+            goldColor, // Deep Work
             '#10b981', // Strategy
             '#3b82f6', // Meeting
             '#8b5cf6', // Learning

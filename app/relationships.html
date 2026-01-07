@@ -1,282 +1,365 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="REIGN Rainy Day People - Your support network for tough times">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta
+      name="description"
+      content="REIGN Rainy Day People - Your support network for tough times"
+    />
     <title>Rainy Day People | REIGN</title>
 
     <!-- PWA -->
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#D4AF37">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="../icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#0B0F19" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="../icons/icon-192.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../icons/icon-192.png"
+    />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://reign-pi.vercel.app/app/relationships.html">
-    <meta property="og:title" content="Rainy Day People | REIGN">
-    <meta property="og:description" content="The people who support you when life gets tough.">
-    <meta property="og:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://reign-pi.vercel.app/app/relationships.html"
+    />
+    <meta property="og:title" content="Rainy Day People | REIGN" />
+    <meta
+      property="og:description"
+      content="The people who support you when life gets tough."
+    />
+    <meta
+      property="og:image"
+      content="https://reign-pi.vercel.app/icons/og-cover.jpg"
+    />
 
     <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/enhancements.css" />
+    <link rel="stylesheet" href="../css/mobile.css" />
 
     <style>
+      .rel-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      @media (max-width: 768px) {
         .rel-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+          grid-template-columns: repeat(2, 1fr);
         }
+      }
 
-        @media (max-width: 768px) {
-            .rel-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+      .rel-stat-card {
+        text-align: center;
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-        .rel-stat-card {
-            text-align: center;
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+      .rel-stat-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--royal-gold-30);
+      }
 
-        .rel-stat-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(212, 175, 55, 0.3);
-        }
+      .rel-stat-card i {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+      }
 
-        .rel-stat-card i {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-        }
+      .rel-stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: white;
+      }
 
-        .rel-stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: white;
-        }
+      .rel-stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
 
-        .rel-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
+      .classification-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
 
-        .classification-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
+      .classification-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid;
+      }
 
-        .classification-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid;
-        }
+      .classification-btn:hover {
+        transform: translateY(-1px);
+      }
 
-        .classification-btn:hover {
-            transform: translateY(-1px);
-        }
+      .classification-btn.active {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
 
-        .classification-btn.active {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+      .rel-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-        .rel-card {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+      .rel-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
 
-        .rel-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
+      .rel-avatar {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
 
-        .rel-avatar {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
+      .rel-info {
+        flex: 1;
+        min-width: 0;
+      }
 
-        .rel-info {
-            flex: 1;
-            min-width: 0;
-        }
+      .rel-name {
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
 
-        .rel-name {
-            font-weight: 600;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
+      .rel-purpose {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        text-transform: capitalize;
+      }
 
-        .rel-purpose {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            text-transform: capitalize;
-        }
-
-        .rel-classification-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.625rem;
-            border-radius: 9999px;
-            font-size: 0.6875rem;
-            font-weight: 600;
-            margin-top: 0.5rem;
-        }
+      .rel-classification-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 9999px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="app-container">
-        <div id="header-container"></div>
-        <div class="main-layout">
-            <div id="sidebar-container"></div>
-            <main class="main-content fade-in" id="main-view">
-                <!-- Page Hero -->
-                <div class="page-hero">
-                    <div class="page-hero-icon" style="background: linear-gradient(135deg, #ec4899, #d946ef);">
-                        <i class="ph-fill ph-heart-half"></i>
-                    </div>
-                    <h1 class="page-hero-title">Rainy Day People</h1>
-                    <p class="page-hero-subtitle">The people in your corner when life gets tough. Nurture these precious
-                        connections.</p>
-                </div>
-
-                <!-- Stats -->
-                <div class="rel-stats">
-                    <div class="rel-stat-card glass-card" onclick="filterRelationships('all')">
-                        <i class="ph-duotone ph-users" style="color: var(--royal-gold);"></i>
-                        <div class="rel-stat-value" id="stat-total">-</div>
-                        <div class="rel-stat-label">Total</div>
-                    </div>
-                    <div class="rel-stat-card glass-card" onclick="filterRelationships('partner')">
-                        <i class="ph-duotone ph-heart" style="color: #ef4444;"></i>
-                        <div class="rel-stat-value" id="stat-partners">-</div>
-                        <div class="rel-stat-label">Partners</div>
-                    </div>
-                    <div class="rel-stat-card glass-card" onclick="filterRelationships('friend')">
-                        <i class="ph-duotone ph-hand-heart" style="color: #8b5cf6;"></i>
-                        <div class="rel-stat-value" id="stat-friends">-</div>
-                        <div class="rel-stat-label">Friends</div>
-                    </div>
-                    <div class="rel-stat-card glass-card" onclick="filterRelationships('favorite')">
-                        <i class="ph-fill ph-star" style="color: #f59e0b;"></i>
-                        <div class="rel-stat-value" id="stat-favorites">-</div>
-                        <div class="rel-stat-label">Favorites</div>
-                    </div>
-                </div>
-
-                <!-- Classification Filters -->
-                <div class="classification-filters">
-                    <span style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem 0;">By Impact:</span>
-                    <button class="classification-btn" data-class="burden_bearer"
-                        style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #10b981;"
-                        onclick="filterByClassification('burden_bearer')">
-                        🤝 Burden Bearers
-                    </button>
-                    <button class="classification-btn" data-class="divine_connector"
-                        style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #8b5cf6;"
-                        onclick="filterByClassification('divine_connector')">
-                        ✨ Divine Connectors
-                    </button>
-                    <button class="classification-btn" data-class="influential"
-                        style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b;"
-                        onclick="filterByClassification('influential')">
-                        👑 Influential
-                    </button>
-                    <button class="classification-btn" data-class="talented"
-                        style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;"
-                        onclick="filterByClassification('talented')">
-                        🎯 Talented
-                    </button>
-                </div>
-
-                <!-- Add Button -->
-                <div style="margin-bottom: 1.5rem;">
-                    <button class="btn btn-primary" onclick="openRelationshipModal()">
-                        <i class="ph-bold ph-user-plus"></i> Add Person
-                    </button>
-                </div>
-
-                <!-- Relationships List -->
-                <div id="relationships-list">
-                    <!-- Skeleton loading state -->
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <div class="skeleton-list-item">
-                            <div class="skeleton-avatar lg"></div>
-                            <div class="skeleton-content">
-                                <div class="skeleton-text medium"></div>
-                                <div class="skeleton-text short"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-list-item">
-                            <div class="skeleton-avatar lg"></div>
-                            <div class="skeleton-content">
-                                <div class="skeleton-text medium"></div>
-                                <div class="skeleton-text short"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-list-item">
-                            <div class="skeleton-avatar lg"></div>
-                            <div class="skeleton-content">
-                                <div class="skeleton-text medium"></div>
-                                <div class="skeleton-text short"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Floating Add Button (Mobile) -->
-                <button class="fab" onclick="openRelationshipModal()"
-                    style="background: linear-gradient(135deg, #ec4899, #d946ef);">
-                    <i class="ph-bold ph-user-plus"></i>
-                </button>
-            </main>
-        </div>
-
-        <div id="modal" class="modal">
-            <div class="modal-overlay" onclick="closeModal()"></div>
-            <div class="modal-container">
-                <div class="modal-content" id="modal-content"></div>
+      <div id="header-container"></div>
+      <div class="main-layout">
+        <div id="sidebar-container"></div>
+        <main class="main-content fade-in" id="main-view">
+          <!-- Page Hero -->
+          <div class="page-hero">
+            <div
+              class="page-hero-icon"
+              style="background: linear-gradient(135deg, #ec4899, #d946ef)"
+            >
+              <i class="ph-fill ph-heart-half"></i>
             </div>
-        </div>
+            <h1 class="page-hero-title">Rainy Day People</h1>
+            <p class="page-hero-subtitle">
+              The people in your corner when life gets tough. Nurture these
+              precious connections.
+            </p>
+          </div>
 
-        <div id="footer-container"></div>
+          <!-- Stats -->
+          <div class="rel-stats">
+            <div
+              class="rel-stat-card glass-card"
+              onclick="filterRelationships('all')"
+            >
+              <i
+                class="ph-duotone ph-users"
+                style="color: var(--royal-gold)"
+              ></i>
+              <div class="rel-stat-value" id="stat-total">-</div>
+              <div class="rel-stat-label">Total</div>
+            </div>
+            <div
+              class="rel-stat-card glass-card"
+              onclick="filterRelationships('partner')"
+            >
+              <i class="ph-duotone ph-heart" style="color: #ef4444"></i>
+              <div class="rel-stat-value" id="stat-partners">-</div>
+              <div class="rel-stat-label">Partners</div>
+            </div>
+            <div
+              class="rel-stat-card glass-card"
+              onclick="filterRelationships('friend')"
+            >
+              <i class="ph-duotone ph-hand-heart" style="color: #8b5cf6"></i>
+              <div class="rel-stat-value" id="stat-friends">-</div>
+              <div class="rel-stat-label">Friends</div>
+            </div>
+            <div
+              class="rel-stat-card glass-card"
+              onclick="filterRelationships('favorite')"
+            >
+              <i class="ph-fill ph-star" style="color: #f59e0b"></i>
+              <div class="rel-stat-value" id="stat-favorites">-</div>
+              <div class="rel-stat-label">Favorites</div>
+            </div>
+          </div>
+
+          <!-- Classification Filters -->
+          <div class="classification-filters">
+            <span
+              style="
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                padding: 0.5rem 0;
+              "
+              >By Impact:</span
+            >
+            <button
+              class="classification-btn"
+              data-class="burden_bearer"
+              style="
+                background: rgba(16, 185, 129, 0.15);
+                border-color: rgba(16, 185, 129, 0.3);
+                color: #10b981;
+              "
+              onclick="filterByClassification('burden_bearer')"
+            >
+              🤝 Burden Bearers
+            </button>
+            <button
+              class="classification-btn"
+              data-class="divine_connector"
+              style="
+                background: rgba(139, 92, 246, 0.15);
+                border-color: rgba(139, 92, 246, 0.3);
+                color: #8b5cf6;
+              "
+              onclick="filterByClassification('divine_connector')"
+            >
+              ✨ Divine Connectors
+            </button>
+            <button
+              class="classification-btn"
+              data-class="influential"
+              style="
+                background: rgba(245, 158, 11, 0.15);
+                border-color: rgba(245, 158, 11, 0.3);
+                color: #f59e0b;
+              "
+              onclick="filterByClassification('influential')"
+            >
+              👑 Influential
+            </button>
+            <button
+              class="classification-btn"
+              data-class="talented"
+              style="
+                background: rgba(59, 130, 246, 0.15);
+                border-color: rgba(59, 130, 246, 0.3);
+                color: #3b82f6;
+              "
+              onclick="filterByClassification('talented')"
+            >
+              🎯 Talented
+            </button>
+          </div>
+
+          <!-- Add Button -->
+          <div style="margin-bottom: 1.5rem">
+            <button class="btn btn-primary" onclick="openRelationshipModal()">
+              <i class="ph-bold ph-user-plus"></i> Add Person
+            </button>
+          </div>
+
+          <!-- Relationships List -->
+          <div id="relationships-list">
+            <!-- Skeleton loading state -->
+            <div style="display: flex; flex-direction: column; gap: 0.75rem">
+              <div class="skeleton-list-item">
+                <div class="skeleton-avatar lg"></div>
+                <div class="skeleton-content">
+                  <div class="skeleton-text medium"></div>
+                  <div class="skeleton-text short"></div>
+                </div>
+              </div>
+              <div class="skeleton-list-item">
+                <div class="skeleton-avatar lg"></div>
+                <div class="skeleton-content">
+                  <div class="skeleton-text medium"></div>
+                  <div class="skeleton-text short"></div>
+                </div>
+              </div>
+              <div class="skeleton-list-item">
+                <div class="skeleton-avatar lg"></div>
+                <div class="skeleton-content">
+                  <div class="skeleton-text medium"></div>
+                  <div class="skeleton-text short"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Add Button (Mobile) -->
+          <button
+            class="fab"
+            onclick="openRelationshipModal()"
+            style="background: linear-gradient(135deg, #ec4899, #d946ef)"
+          >
+            <i class="ph-bold ph-user-plus"></i>
+          </button>
+        </main>
+      </div>
+
+      <div id="modal" class="modal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-container">
+          <div class="modal-content" id="modal-content"></div>
+        </div>
+      </div>
+
+      <div id="footer-container"></div>
     </div>
 
     <!-- Scripts -->
@@ -284,93 +367,116 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
-        let relationships = [];
-        let currentFilter = 'all';
-        let currentClassification = null;
-        let editingId = null;
+      let relationships = [];
+      let currentFilter = "all";
+      let currentClassification = null;
+      let editingId = null;
 
-        const classificationBadges = {
-            burden_bearer: { icon: '🤝', label: 'Burden Bearer', color: '#10b981' },
-            divine_connector: { icon: '✨', label: 'Divine Connector', color: '#8b5cf6' },
-            influential: { icon: '👑', label: 'Influential', color: '#f59e0b' },
-            talented: { icon: '🎯', label: 'Talented', color: '#3b82f6' }
-        };
+      const classificationBadges = {
+        burden_bearer: { icon: "🤝", label: "Burden Bearer", color: "#10b981" },
+        divine_connector: {
+          icon: "✨",
+          label: "Divine Connector",
+          color: "#8b5cf6",
+        },
+        influential: { icon: "👑", label: "Influential", color: "#f59e0b" },
+        talented: { icon: "🎯", label: "Talented", color: "#3b82f6" },
+      };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            HeaderComponent.render('header-container', {
-                showBreadcrumb: true,
-                pageTitle: 'Rainy Day People',
-                pageIcon: 'ph-heart-half'
-            });
-            SidebarComponent.render('sidebar-container');
-            FooterComponent.render('footer-container');
-            loadRelationships();
+      document.addEventListener("DOMContentLoaded", () => {
+        HeaderComponent.render("header-container", {
+          showBreadcrumb: true,
+          pageTitle: "Rainy Day People",
+          pageIcon: "ph-heart-half",
         });
+        SidebarComponent.render("sidebar-container");
+        FooterComponent.render("footer-container");
 
-        async function loadRelationships() {
-            try {
-                if (Auth.isLoggedIn()) {
-                    // Fetch from API
-                    const response = await API.get('/relationships');
-                    relationships = response.relationships || [];
-                } else {
-                    // Load from local storage
-                    const data = Storage.getData();
-                    relationships = data.relationships || [];
-                }
-                updateStats();
-                renderRelationships();
-            } catch (error) {
-                console.error('Load relationships error:', error);
-                // Fallback to local storage
-                const data = Storage.getData();
-                relationships = data.relationships || [];
-                updateStats();
-                renderRelationships();
-            }
+        // Apply role theme (King/Queen)
+        if (typeof UI !== 'undefined' && UI.initTheme) {
+            UI.initTheme();
         }
 
-        function updateStats() {
-            document.getElementById('stat-total').textContent = relationships.length;
-            document.getElementById('stat-partners').textContent = relationships.filter(r => r.purpose === 'partner').length;
-            document.getElementById('stat-friends').textContent = relationships.filter(r => r.purpose === 'friend').length;
-            document.getElementById('stat-favorites').textContent = relationships.filter(r => r.isFavorite).length;
+        loadRelationships();
+      });
+
+      async function loadRelationships() {
+        try {
+          if (Auth.isLoggedIn()) {
+            // Fetch from API
+            const response = await API.get("/relationships");
+            relationships = response.relationships || [];
+          } else {
+            // Load from local storage
+            const data = Storage.getData();
+            relationships = data.relationships || [];
+          }
+          updateStats();
+          renderRelationships();
+        } catch (error) {
+          console.error("Load relationships error:", error);
+          // Fallback to local storage
+          const data = Storage.getData();
+          relationships = data.relationships || [];
+          updateStats();
+          renderRelationships();
+        }
+      }
+
+      function updateStats() {
+        document.getElementById("stat-total").textContent =
+          relationships.length;
+        document.getElementById("stat-partners").textContent =
+          relationships.filter((r) => r.purpose === "partner").length;
+        document.getElementById("stat-friends").textContent =
+          relationships.filter((r) => r.purpose === "friend").length;
+        document.getElementById("stat-favorites").textContent =
+          relationships.filter((r) => r.isFavorite).length;
+      }
+
+      function filterRelationships(filter) {
+        currentFilter = filter;
+        currentClassification = null;
+        document
+          .querySelectorAll(".classification-btn")
+          .forEach((b) => b.classList.remove("active"));
+        renderRelationships();
+      }
+
+      function filterByClassification(classification) {
+        currentFilter = "all";
+        currentClassification =
+          classification === currentClassification ? null : classification;
+        document.querySelectorAll(".classification-btn").forEach((b) => {
+          b.classList.toggle(
+            "active",
+            b.dataset.class === currentClassification
+          );
+        });
+        renderRelationships();
+      }
+
+      function renderRelationships() {
+        const container = document.getElementById("relationships-list");
+        let filtered = [...relationships];
+
+        // Apply filters
+        if (currentFilter === "favorite") {
+          filtered = filtered.filter((r) => r.isFavorite);
+        } else if (currentFilter !== "all") {
+          filtered = filtered.filter((r) => r.purpose === currentFilter);
+        }
+        if (currentClassification) {
+          filtered = filtered.filter(
+            (r) => r.classification === currentClassification
+          );
         }
 
-        function filterRelationships(filter) {
-            currentFilter = filter;
-            currentClassification = null;
-            document.querySelectorAll('.classification-btn').forEach(b => b.classList.remove('active'));
-            renderRelationships();
-        }
-
-        function filterByClassification(classification) {
-            currentFilter = 'all';
-            currentClassification = classification === currentClassification ? null : classification;
-            document.querySelectorAll('.classification-btn').forEach(b => {
-                b.classList.toggle('active', b.dataset.class === currentClassification);
-            });
-            renderRelationships();
-        }
-
-        function renderRelationships() {
-            const container = document.getElementById('relationships-list');
-            let filtered = [...relationships];
-
-            // Apply filters
-            if (currentFilter === 'favorite') {
-                filtered = filtered.filter(r => r.isFavorite);
-            } else if (currentFilter !== 'all') {
-                filtered = filtered.filter(r => r.purpose === currentFilter);
-            }
-            if (currentClassification) {
-                filtered = filtered.filter(r => r.classification === currentClassification);
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
+        if (filtered.length === 0) {
+          container.innerHTML = `
                     <div class="empty-state glass-card">
                         <i class="ph-duotone ph-users-three"></i>
                         <h3>No People Yet</h3>
@@ -380,53 +486,90 @@
                         </button>
                     </div>
                 `;
-                return;
-            }
-
-            container.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    ${filtered.map(rel => renderRelationshipCard(rel)).join('')}
-                </div>
-            `;
+          return;
         }
 
-        function renderRelationshipCard(rel) {
-            const genderColor = rel.gender === 'male' ? '#3b82f6' : rel.gender === 'female' ? '#ec4899' : '#8b5cf6';
-            const classInfo = rel.classification ? classificationBadges[rel.classification] : null;
+        container.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    ${filtered
+                      .map((rel) => renderRelationshipCard(rel))
+                      .join("")}
+                </div>
+            `;
+      }
 
-            return `
-                <div class="rel-card glass-card" onclick="viewRelationship('${rel.id}')">
+      function renderRelationshipCard(rel) {
+        const genderColor =
+          rel.gender === "male"
+            ? "#60a5fa"
+            : rel.gender === "female"
+            ? "#ec4899"
+            : "#8b5cf6";
+        const classInfo = rel.classification
+          ? classificationBadges[rel.classification]
+          : null;
+
+        return `
+                <div class="rel-card glass-card" onclick="viewRelationship('${
+                  rel.id
+                }')">
                     <div class="rel-avatar" style="background: linear-gradient(135deg, ${genderColor}33, ${genderColor}11);">
-                        <span style="color: ${genderColor};">${rel.name.charAt(0).toUpperCase()}</span>
+                        <span style="color: ${genderColor};">${rel.name
+          .charAt(0)
+          .toUpperCase()}</span>
                     </div>
                     <div class="rel-info">
                         <h4 class="rel-name">
                             ${Utils.sanitize(rel.name)}
-                            ${rel.isFavorite ? '<i class="ph-fill ph-star" style="color: #f59e0b; font-size: 0.875rem;"></i>' : ''}
+                            ${
+                              rel.isFavorite
+                                ? '<i class="ph-fill ph-star" style="color: #f59e0b; font-size: 0.875rem;"></i>'
+                                : ""
+                            }
                         </h4>
-                        <p class="rel-purpose">${rel.purpose === 'other' ? rel.customPurpose : rel.purpose.replace('_', ' ')}</p>
-                        ${classInfo ? `
+                        <p class="rel-purpose">${
+                          rel.purpose === "other"
+                            ? rel.customPurpose
+                            : rel.purpose.replace("_", " ")
+                        }</p>
+                        ${
+                          classInfo
+                            ? `
                             <span class="rel-classification-badge" style="background: ${classInfo.color}20; border: 1px solid ${classInfo.color}40; color: ${classInfo.color};">
                                 ${classInfo.icon} ${classInfo.label}
                             </span>
-                        ` : ''}
+                        `
+                            : ""
+                        }
                     </div>
-                    <button class="icon-btn" onclick="event.stopPropagation(); toggleFavorite('${rel.id}')" title="${rel.isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
-                        <i class="ph-${rel.isFavorite ? 'fill' : 'bold'} ph-star" style="color: ${rel.isFavorite ? '#f59e0b' : 'inherit'};"></i>
+                    <button class="icon-btn" onclick="event.stopPropagation(); toggleFavorite('${
+                      rel.id
+                    }')" title="${
+          rel.isFavorite ? "Remove from favorites" : "Add to favorites"
+        }">
+                        <i class="ph-${
+                          rel.isFavorite ? "fill" : "bold"
+                        } ph-star" style="color: ${
+          rel.isFavorite ? "#f59e0b" : "inherit"
+        };"></i>
                     </button>
                 </div>
             `;
-        }
+      }
 
-        function openRelationshipModal(relationshipId = null) {
-            editingId = relationshipId;
-            const rel = relationshipId ? relationships.find(r => r.id === relationshipId) : null;
+      function openRelationshipModal(relationshipId = null) {
+        editingId = relationshipId;
+        const rel = relationshipId
+          ? relationships.find((r) => r.id === relationshipId)
+          : null;
 
-            document.getElementById('modal-content').innerHTML = `
+        document.getElementById("modal-content").innerHTML = `
                 <div class="modal-header">
                     <h2 class="modal-title">
-                        <i class="ph-duotone ph-${rel ? 'pencil-simple' : 'user-plus'}" style="color: #ec4899;"></i>
-                        ${rel ? 'Edit Person' : 'Add a Rainy Day Person'}
+                        <i class="ph-duotone ph-${
+                          rel ? "pencil-simple" : "user-plus"
+                        }" style="color: #ec4899;"></i>
+                        ${rel ? "Edit Person" : "Add a Rainy Day Person"}
                     </h2>
                     <button class="modal-close" onclick="closeModal()">
                         <i class="ph-bold ph-x"></i>
@@ -437,31 +580,71 @@
                         <div class="form-group">
                             <label class="form-label">Name *</label>
                             <input type="text" id="rel-name" class="form-input" required
-                                   placeholder="Their name" value="${rel ? Utils.sanitize(rel.name) : ''}">
+                                   placeholder="Their name" value="${
+                                     rel ? Utils.sanitize(rel.name) : ""
+                                   }">
                         </div>
                         <div class="grid grid-2 gap-4">
                             <div class="form-group">
                                 <label class="form-label">Gender *</label>
                                 <select id="rel-gender" class="form-select" required>
                                     <option value="">Select...</option>
-                                    <option value="male" ${rel?.gender === 'male' ? 'selected' : ''}>Male</option>
-                                    <option value="female" ${rel?.gender === 'female' ? 'selected' : ''}>Female</option>
-                                    <option value="other" ${rel?.gender === 'other' ? 'selected' : ''}>Other</option>
+                                    <option value="male" ${
+                                      rel?.gender === "male" ? "selected" : ""
+                                    }>Male</option>
+                                    <option value="female" ${
+                                      rel?.gender === "female" ? "selected" : ""
+                                    }>Female</option>
+                                    <option value="other" ${
+                                      rel?.gender === "other" ? "selected" : ""
+                                    }>Other</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Relationship *</label>
                                 <select id="rel-purpose" class="form-select" required>
                                     <option value="">Select...</option>
-                                    <option value="partner" ${rel?.purpose === 'partner' ? 'selected' : ''}>Partner</option>
-                                    <option value="child" ${rel?.purpose === 'child' ? 'selected' : ''}>Child</option>
-                                    <option value="parent" ${rel?.purpose === 'parent' ? 'selected' : ''}>Parent</option>
-                                    <option value="sibling" ${rel?.purpose === 'sibling' ? 'selected' : ''}>Sibling</option>
-                                    <option value="friend" ${rel?.purpose === 'friend' ? 'selected' : ''}>Friend</option>
-                                    <option value="colleague" ${rel?.purpose === 'colleague' ? 'selected' : ''}>Colleague</option>
-                                    <option value="mentor" ${rel?.purpose === 'mentor' ? 'selected' : ''}>Mentor</option>
-                                    <option value="business_partner" ${rel?.purpose === 'business_partner' ? 'selected' : ''}>Business Partner</option>
-                                    <option value="other" ${rel?.purpose === 'other' ? 'selected' : ''}>Other</option>
+                                    <option value="partner" ${
+                                      rel?.purpose === "partner"
+                                        ? "selected"
+                                        : ""
+                                    }>Partner</option>
+                                    <option value="child" ${
+                                      rel?.purpose === "child" ? "selected" : ""
+                                    }>Child</option>
+                                    <option value="parent" ${
+                                      rel?.purpose === "parent"
+                                        ? "selected"
+                                        : ""
+                                    }>Parent</option>
+                                    <option value="sibling" ${
+                                      rel?.purpose === "sibling"
+                                        ? "selected"
+                                        : ""
+                                    }>Sibling</option>
+                                    <option value="friend" ${
+                                      rel?.purpose === "friend"
+                                        ? "selected"
+                                        : ""
+                                    }>Friend</option>
+                                    <option value="colleague" ${
+                                      rel?.purpose === "colleague"
+                                        ? "selected"
+                                        : ""
+                                    }>Colleague</option>
+                                    <option value="mentor" ${
+                                      rel?.purpose === "mentor"
+                                        ? "selected"
+                                        : ""
+                                    }>Mentor</option>
+                                    <option value="business_partner" ${
+                                      rel?.purpose === "business_partner"
+                                        ? "selected"
+                                        : ""
+                                    }>Business Partner</option>
+                                    <option value="other" ${
+                                      rel?.purpose === "other" ? "selected" : ""
+                                    }>Other</option>
                                 </select>
                             </div>
                         </div>
@@ -472,133 +655,183 @@
                             </label>
                             <select id="rel-classification" class="form-select">
                                 <option value="">None selected...</option>
-                                <option value="burden_bearer" ${rel?.classification === 'burden_bearer' ? 'selected' : ''}>🤝 Burden Bearer</option>
-                                <option value="divine_connector" ${rel?.classification === 'divine_connector' ? 'selected' : ''}>✨ Divine Connector</option>
-                                <option value="influential" ${rel?.classification === 'influential' ? 'selected' : ''}>👑 Influential</option>
-                                <option value="talented" ${rel?.classification === 'talented' ? 'selected' : ''}>🎯 Talented</option>
+                                <option value="burden_bearer" ${
+                                  rel?.classification === "burden_bearer"
+                                    ? "selected"
+                                    : ""
+                                }>🤝 Burden Bearer</option>
+                                <option value="divine_connector" ${
+                                  rel?.classification === "divine_connector"
+                                    ? "selected"
+                                    : ""
+                                }>✨ Divine Connector</option>
+                                <option value="influential" ${
+                                  rel?.classification === "influential"
+                                    ? "selected"
+                                    : ""
+                                }>👑 Influential</option>
+                                <option value="talented" ${
+                                  rel?.classification === "talented"
+                                    ? "selected"
+                                    : ""
+                                }>🎯 Talented</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">What have they done for you?</label>
                             <textarea id="rel-what" class="form-textarea" rows="3" 
-                                      placeholder="Describe how they've supported you...">${rel?.whatTheyDid ? Utils.sanitize(rel.whatTheyDid) : ''}</textarea>
+                                      placeholder="Describe how they've supported you...">${
+                                        rel?.whatTheyDid
+                                          ? Utils.sanitize(rel.whatTheyDid)
+                                          : ""
+                                      }</textarea>
                         </div>
                         <div class="grid grid-2 gap-4">
                             <div class="form-group">
                                 <label class="form-label">Contact (Optional)</label>
                                 <input type="text" id="rel-contact" class="form-input" placeholder="Phone or email"
-                                       value="${rel?.contactInfo ? Utils.sanitize(rel.contactInfo) : ''}">
+                                       value="${
+                                         rel?.contactInfo
+                                           ? Utils.sanitize(rel.contactInfo)
+                                           : ""
+                                       }">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Birthday (Optional)</label>
                                 <input type="date" id="rel-birthday" class="form-input"
-                                       value="${rel?.birthday ? rel.birthday.split('T')[0] : ''}">
+                                       value="${
+                                         rel?.birthday
+                                           ? rel.birthday.split("T")[0]
+                                           : ""
+                                       }">
                             </div>
                         </div>
                         <label style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
-                            <input type="checkbox" id="rel-favorite" style="width: 1.25rem; height: 1.25rem;" ${rel?.isFavorite ? 'checked' : ''}>
+                            <input type="checkbox" id="rel-favorite" style="width: 1.25rem; height: 1.25rem;" ${
+                              rel?.isFavorite ? "checked" : ""
+                            }>
                             <span style="display: flex; align-items: center; gap: 0.5rem;">
                                 <i class="ph-fill ph-star" style="color: #f59e0b;"></i>
                                 Mark as Favorite
                             </span>
                         </label>
                         <button type="submit" class="btn btn-primary btn-lg btn-block" style="background: linear-gradient(135deg, #ec4899, #d946ef);">
-                            <i class="ph-bold ph-${rel ? 'floppy-disk' : 'user-plus'}"></i>
-                            ${rel ? 'Update Person' : 'Add to My People'}
+                            <i class="ph-bold ph-${
+                              rel ? "floppy-disk" : "user-plus"
+                            }"></i>
+                            ${rel ? "Update Person" : "Add to My People"}
                         </button>
                     </form>
                 </div>
             `;
-            document.getElementById('modal').classList.add('active');
+        document.getElementById("modal").classList.add("active");
+      }
+
+      async function saveRelationship(event) {
+        event.preventDefault();
+
+        const relData = {
+          name: document.getElementById("rel-name").value.trim(),
+          gender: document.getElementById("rel-gender").value,
+          purpose: document.getElementById("rel-purpose").value,
+          classification:
+            document.getElementById("rel-classification").value || null,
+          whatTheyDid: document.getElementById("rel-what").value.trim(),
+          contactInfo: document.getElementById("rel-contact").value.trim(),
+          birthday: document.getElementById("rel-birthday").value || null,
+          isFavorite: document.getElementById("rel-favorite").checked,
+        };
+
+        if (!relData.name || !relData.gender || !relData.purpose) {
+          Utils.showToast("Please fill in required fields", "danger");
+          return;
         }
 
-        async function saveRelationship(event) {
-            event.preventDefault();
-
-            const relData = {
-                name: document.getElementById('rel-name').value.trim(),
-                gender: document.getElementById('rel-gender').value,
-                purpose: document.getElementById('rel-purpose').value,
-                classification: document.getElementById('rel-classification').value || null,
-                whatTheyDid: document.getElementById('rel-what').value.trim(),
-                contactInfo: document.getElementById('rel-contact').value.trim(),
-                birthday: document.getElementById('rel-birthday').value || null,
-                isFavorite: document.getElementById('rel-favorite').checked
-            };
-
-            if (!relData.name || !relData.gender || !relData.purpose) {
-                Utils.showToast('Please fill in required fields', 'danger');
-                return;
+        try {
+          if (Auth.isLoggedIn()) {
+            // Save to API
+            if (editingId) {
+              await API.put(`/relationships/${editingId}`, relData);
+            } else {
+              await API.post("/relationships", relData);
             }
+          } else {
+            // Save to local storage
+            const data = Storage.getData();
+            if (!data.relationships) data.relationships = [];
 
-            try {
-                if (Auth.isLoggedIn()) {
-                    // Save to API
-                    if (editingId) {
-                        await API.put(`/relationships/${editingId}`, relData);
-                    } else {
-                        await API.post('/relationships', relData);
-                    }
-                } else {
-                    // Save to local storage
-                    const data = Storage.getData();
-                    if (!data.relationships) data.relationships = [];
-
-                    if (editingId) {
-                        const index = data.relationships.findIndex(r => r.id === editingId);
-                        if (index !== -1) {
-                            data.relationships[index] = { ...data.relationships[index], ...relData };
-                        }
-                    } else {
-                        data.relationships.push({
-                            id: Utils.generateId(),
-                            ...relData,
-                            createdAt: new Date().toISOString()
-                        });
-                    }
-                    Storage.saveData(data);
-                }
-
-                Utils.showToast(editingId ? 'Person updated!' : 'Person added! 💜', 'gold');
-                closeModal();
-                loadRelationships();
-            } catch (error) {
-                Utils.showToast(error.message || 'Failed to save', 'danger');
+            if (editingId) {
+              const index = data.relationships.findIndex(
+                (r) => r.id === editingId
+              );
+              if (index !== -1) {
+                data.relationships[index] = {
+                  ...data.relationships[index],
+                  ...relData,
+                };
+              }
+            } else {
+              data.relationships.push({
+                id: Utils.generateId(),
+                ...relData,
+                createdAt: new Date().toISOString(),
+              });
             }
+            Storage.saveData(data);
+          }
+
+          Utils.showToast(
+            editingId ? "Person updated!" : "Person added! 💜",
+            "gold"
+          );
+          closeModal();
+          loadRelationships();
+        } catch (error) {
+          Utils.showToast(error.message || "Failed to save", "danger");
         }
+      }
 
-        async function toggleFavorite(id) {
-            const rel = relationships.find(r => r.id === id);
-            if (!rel) return;
+      async function toggleFavorite(id) {
+        const rel = relationships.find((r) => r.id === id);
+        if (!rel) return;
 
-            rel.isFavorite = !rel.isFavorite;
+        rel.isFavorite = !rel.isFavorite;
 
-            try {
-                if (Auth.isLoggedIn()) {
-                    await API.put(`/relationships/${id}`, { isFavorite: rel.isFavorite });
-                } else {
-                    const data = Storage.getData();
-                    const index = data.relationships.findIndex(r => r.id === id);
-                    if (index !== -1) {
-                        data.relationships[index].isFavorite = rel.isFavorite;
-                        Storage.saveData(data);
-                    }
-                }
-                updateStats();
-                renderRelationships();
-            } catch (error) {
-                console.error('Toggle favorite error:', error);
+        try {
+          if (Auth.isLoggedIn()) {
+            await API.put(`/relationships/${id}`, {
+              isFavorite: rel.isFavorite,
+            });
+          } else {
+            const data = Storage.getData();
+            const index = data.relationships.findIndex((r) => r.id === id);
+            if (index !== -1) {
+              data.relationships[index].isFavorite = rel.isFavorite;
+              Storage.saveData(data);
             }
+          }
+          updateStats();
+          renderRelationships();
+        } catch (error) {
+          console.error("Toggle favorite error:", error);
         }
+      }
 
-        function viewRelationship(id) {
-            const rel = relationships.find(r => r.id === id);
-            if (!rel) return;
+      function viewRelationship(id) {
+        const rel = relationships.find((r) => r.id === id);
+        if (!rel) return;
 
-            const genderColor = rel.gender === 'male' ? '#3b82f6' : rel.gender === 'female' ? '#ec4899' : '#8b5cf6';
-            const classInfo = rel.classification ? classificationBadges[rel.classification] : null;
+        const genderColor =
+          rel.gender === "male"
+            ? "#60a5fa"
+            : rel.gender === "female"
+            ? "#ec4899"
+            : "#8b5cf6";
+        const classInfo = rel.classification
+          ? classificationBadges[rel.classification]
+          : null;
 
-            document.getElementById('modal-content').innerHTML = `
+        document.getElementById("modal-content").innerHTML = `
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="ph-duotone ph-user-circle" style="color: ${genderColor};"></i>
@@ -611,77 +844,109 @@
                 <div class="modal-body">
                     <div style="text-align: center; margin-bottom: 1.5rem;">
                         <div class="rel-avatar" style="width: 5rem; height: 5rem; font-size: 2rem; margin: 0 auto 1rem; background: linear-gradient(135deg, ${genderColor}33, ${genderColor}11);">
-                            <span style="color: ${genderColor};">${rel.name.charAt(0).toUpperCase()}</span>
+                            <span style="color: ${genderColor};">${rel.name
+          .charAt(0)
+          .toUpperCase()}</span>
                         </div>
-                        <p style="color: var(--text-muted); text-transform: capitalize;">${rel.purpose === 'other' ? rel.customPurpose : rel.purpose.replace('_', ' ')}</p>
-                        ${classInfo ? `
+                        <p style="color: var(--text-muted); text-transform: capitalize;">${
+                          rel.purpose === "other"
+                            ? rel.customPurpose
+                            : rel.purpose.replace("_", " ")
+                        }</p>
+                        ${
+                          classInfo
+                            ? `
                             <span class="rel-classification-badge" style="background: ${classInfo.color}20; border: 1px solid ${classInfo.color}40; color: ${classInfo.color};">
                                 ${classInfo.icon} ${classInfo.label}
                             </span>
-                        ` : ''}
+                        `
+                            : ""
+                        }
                     </div>
-                    ${rel.whatTheyDid ? `
+                    ${
+                      rel.whatTheyDid
+                        ? `
                         <div class="glass-card p-4 mb-4" style="background: rgba(15, 23, 42, 0.5);">
                             <h4 style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">What they've done for you:</h4>
-                            <p style="color: white; font-style: italic;">"${Utils.sanitize(rel.whatTheyDid)}"</p>
+                            <p style="color: white; font-style: italic;">"${Utils.sanitize(
+                              rel.whatTheyDid
+                            )}"</p>
                         </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                     <div class="grid grid-2 gap-4 mb-4">
-                        ${rel.contactInfo ? `
+                        ${
+                          rel.contactInfo
+                            ? `
                             <div class="glass-card p-3" style="text-align: center;">
                                 <i class="ph-duotone ph-phone" style="color: #10b981; font-size: 1.5rem;"></i>
                                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Contact</p>
-                                <p style="color: white; font-size: 0.875rem;">${Utils.sanitize(rel.contactInfo)}</p>
+                                <p style="color: white; font-size: 0.875rem;">${Utils.sanitize(
+                                  rel.contactInfo
+                                )}</p>
                             </div>
-                        ` : ''}
-                        ${rel.birthday ? `
+                        `
+                            : ""
+                        }
+                        ${
+                          rel.birthday
+                            ? `
                             <div class="glass-card p-3" style="text-align: center;">
                                 <i class="ph-duotone ph-cake" style="color: #f59e0b; font-size: 1.5rem;"></i>
                                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Birthday</p>
-                                <p style="color: white; font-size: 0.875rem;">${new Date(rel.birthday).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                <p style="color: white; font-size: 0.875rem;">${new Date(
+                                  rel.birthday
+                                ).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                })}</p>
                             </div>
-                        ` : ''}
+                        `
+                            : ""
+                        }
                     </div>
                     <div class="grid grid-2 gap-4">
-                        <button class="btn btn-outline btn-block" onclick="openRelationshipModal('${rel.id}')">
+                        <button class="btn btn-outline btn-block" onclick="openRelationshipModal('${
+                          rel.id
+                        }')">
                             <i class="ph-bold ph-pencil-simple"></i> Edit
                         </button>
-                        <button class="btn btn-outline btn-block danger" onclick="deleteRelationship('${rel.id}')">
+                        <button class="btn btn-outline btn-block danger" onclick="deleteRelationship('${
+                          rel.id
+                        }')">
                             <i class="ph-bold ph-trash"></i> Delete
                         </button>
                     </div>
                 </div>
             `;
-            document.getElementById('modal').classList.add('active');
+        document.getElementById("modal").classList.add("active");
+      }
+
+      async function deleteRelationship(id) {
+        if (!confirm("Are you sure you want to remove this person?")) return;
+
+        try {
+          if (Auth.isLoggedIn()) {
+            await API.delete(`/relationships/${id}`);
+          } else {
+            const data = Storage.getData();
+            data.relationships = data.relationships.filter((r) => r.id !== id);
+            Storage.saveData(data);
+          }
+
+          Utils.showToast("Person removed", "info");
+          closeModal();
+          loadRelationships();
+        } catch (error) {
+          Utils.showToast(error.message || "Failed to delete", "danger");
         }
+      }
 
-        async function deleteRelationship(id) {
-            if (!confirm('Are you sure you want to remove this person?')) return;
-
-            try {
-                if (Auth.isLoggedIn()) {
-                    await API.delete(`/relationships/${id}`);
-                } else {
-                    const data = Storage.getData();
-                    data.relationships = data.relationships.filter(r => r.id !== id);
-                    Storage.saveData(data);
-                }
-
-                Utils.showToast('Person removed', 'info');
-                closeModal();
-                loadRelationships();
-            } catch (error) {
-                Utils.showToast(error.message || 'Failed to delete', 'danger');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-            editingId = null;
-        }
+      function closeModal() {
+        document.getElementById("modal").classList.remove("active");
+        editingId = null;
+      }
     </script>
-</body>
-
+  </body>
 </html>
-
-

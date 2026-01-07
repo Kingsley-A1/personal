@@ -53,8 +53,12 @@
     <style>
         :root {
             --royal-gold: #D4AF37;
+            --royal-gold-05: rgba(212, 175, 55, 0.05);
             --royal-gold-10: rgba(212, 175, 55, 0.1);
+            --royal-gold-15: rgba(212, 175, 55, 0.15);
             --royal-gold-20: rgba(212, 175, 55, 0.2);
+            --royal-gold-30: rgba(212, 175, 55, 0.3);
+            --royal-accent: #C49B2F;
             --royal-dark: #0B0F19;
             --royal-darker: #060810;
             --indigo: #6366f1;
@@ -67,16 +71,16 @@
         /* Queen Theme Variables */
         body.queen-theme {
             --royal-gold: #b76e79;
+            --royal-gold-05: rgba(183, 110, 121, 0.05);
             --royal-gold-10: rgba(183, 110, 121, 0.1);
+            --royal-gold-15: rgba(183, 110, 121, 0.15);
             --royal-gold-20: rgba(183, 110, 121, 0.2);
+            --royal-gold-30: rgba(183, 110, 121, 0.3);
+            --royal-accent: #9a525c;
             --royal-darker: #1a0a18;
         }
 
-        /* Dynamic theming for auth elements */
-        body.queen-theme .auth-logo {
-            background: linear-gradient(135deg, #b76e79 0%, #9a525c 100%);
-        }
-
+        /* Queen Theme specific overrides for elements that can't use CSS variables */
         body.queen-theme .gradient-text {
             background: linear-gradient(135deg, #b76e79 0%, #c5828c 50%, #b76e79 100%);
             background-size: 200% auto;
@@ -86,29 +90,10 @@
         }
 
         body.queen-theme .auth-tab.active {
-            background: #b76e79;
-        }
-
-        body.queen-theme .auth-btn {
-            background: linear-gradient(135deg, #b76e79, #9a525c);
-        }
-
-        body.queen-theme .auth-btn:hover {
-            box-shadow: 0 8px 24px rgba(183, 110, 121, 0.3);
-        }
-
-        body.queen-theme .persona-btn:last-child:hover {
-            border-color: #b76e79;
-            background: rgba(183, 110, 121, 0.1);
-        }
-
-        body.queen-theme .returning-welcome {
-            background: linear-gradient(135deg, rgba(183, 110, 121, 0.15), rgba(183, 110, 121, 0.05));
-            border-color: rgba(183, 110, 121, 0.3);
+            background: var(--royal-gold);
         }
 
         body.queen-theme .returning-welcome .welcome-avatar {
-            background: linear-gradient(135deg, #b76e79, #9a525c);
             color: white;
         }
 
@@ -117,7 +102,7 @@
         }
 
         body.queen-theme .skip-link a:hover {
-            color: #b76e79;
+            color: var(--royal-gold);
         }
 
         body.queen-theme .back-btn:hover {
@@ -139,7 +124,7 @@
             justify-content: center;
             padding: 1rem;
             background-image:
-                radial-gradient(circle at 30% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 30% 20%, var(--royal-gold-05) 0%, transparent 50%),
                 radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
         }
 
@@ -156,13 +141,13 @@
         .auth-logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--royal-gold) 0%, #C49B2F 100%);
+            background: linear-gradient(135deg, var(--royal-gold) 0%, var(--royal-accent) 100%);
             border-radius: 1.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 32px var(--royal-gold-30);
         }
 
         .auth-logo i {
@@ -331,7 +316,7 @@
         .form-input:focus {
             outline: none;
             border-color: var(--royal-gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 0 3px var(--royal-gold-15);
         }
 
         .form-input::placeholder {
@@ -374,7 +359,7 @@
         .auth-btn {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, var(--royal-gold), #C49B2F);
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
             border: none;
             border-radius: 0.75rem;
             font-family: var(--font-sans);
@@ -392,7 +377,7 @@
 
         .auth-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 24px var(--royal-gold-30);
         }
 
         .auth-btn:disabled {
@@ -586,7 +571,7 @@
 
         .persona-btn:first-child:hover {
             border-color: var(--royal-gold);
-            background: rgba(212, 175, 55, 0.08);
+            background: var(--royal-gold-10);
         }
 
         .persona-btn:last-child:hover {
@@ -605,7 +590,7 @@
         }
 
         .persona-icon.king {
-            background: linear-gradient(135deg, var(--royal-gold) 0%, #C49B2F 100%);
+            background: linear-gradient(135deg, var(--royal-gold) 0%, var(--royal-accent) 100%);
             color: var(--royal-dark);
         }
 
@@ -669,8 +654,8 @@
             justify-content: center;
             gap: 0.75rem;
             padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: linear-gradient(135deg, var(--royal-gold-15), var(--royal-gold-05));
+            border: 1px solid var(--royal-gold-30);
             border-radius: 1rem;
             margin-bottom: 1.5rem;
             animation: welcomeFadeIn 0.6s ease-out;
@@ -680,7 +665,7 @@
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--royal-gold), #C49B2F);
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
             display: flex;
             align-items: center;
             justify-content: center;

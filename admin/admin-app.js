@@ -46,7 +46,9 @@ const AdminApp = {
     getAdminUser() {
         const userStr = localStorage.getItem('reign_user');
         if (!userStr) {
-            // For demo, create a default super admin
+            // ⚠️ DEV ONLY: Auto-create demo admin for development
+            // TODO: Remove this in production - require proper authentication
+            console.warn('[DEV] Creating demo admin - this should not happen in production');
             const demoAdmin = {
                 id: 'admin-1',
                 name: 'Super Admin',
@@ -1060,8 +1062,15 @@ const AdminApp = {
         }
     },
 
-    // Mock data generators
+    // ============================================
+    // DEVELOPMENT MOCK DATA
+    // ⚠️ WARNING: These functions provide fallback data for development/demo only.
+    // In production, API should always be available.
+    // TODO: Add production check to prevent mock data exposure
+    // ============================================
+    
     getMockStats() {
+        console.warn('[DEV] Using mock stats - API unavailable');
         return {
             totalUsers: 1247,
             newUsersToday: 23,
@@ -1074,6 +1083,7 @@ const AdminApp = {
     },
 
     getMockUsers() {
+        console.warn('[DEV] Using mock users - API unavailable');
         return [
             {
                 id: '1',
@@ -1215,6 +1225,7 @@ const AdminApp = {
     },
 
     getMockActivity() {
+        console.warn('[DEV] Using mock activity - API unavailable');
         return [
             { icon: 'ph-bold ph-user-plus', text: 'New user registered: sarah@email.com', time: '5 mins ago' },
             { icon: 'ph-bold ph-check-circle', text: 'John Doe completed 5 tasks', time: '12 mins ago' },
@@ -1224,6 +1235,7 @@ const AdminApp = {
     },
 
     getMockAuditLog() {
+        console.warn('[DEV] Using mock audit log - API unavailable');
         return [
             { icon: 'ph-bold ph-user-switch', text: 'Admin impersonated user: john@example.com', time: '10 mins ago', user: 'Super Admin', type: 'info' },
             { icon: 'ph-bold ph-prohibit', text: 'User suspended: spam@bot.com', time: '1 hour ago', user: 'Moderator', type: 'danger' },

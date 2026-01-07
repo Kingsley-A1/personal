@@ -13,6 +13,12 @@ const authRoutes = require('../routes/auth');
 const adminRoutes = require('../routes/admin');
 const db = require('../lib/database');
 
+// Test utilities
+const testUtils = {
+    generateTestEmail: () => `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}@test.com`,
+    sleep: (ms) => new Promise(resolve => setTimeout(resolve, ms))
+};
+
 // Create test app
 const app = express();
 app.use(express.json());
@@ -31,7 +37,7 @@ describe('Admin Routes', () => {
         }
 
         // Create a regular user
-        const userEmail = global.testUtils.generateTestEmail();
+        const userEmail = testUtils.generateTestEmail();
         const userRes = await request(app)
             .post('/api/auth/register')
             .send({

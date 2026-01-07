@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="About REIGN - The King's Journal for ruling your day with purpose">
+    <meta name="description" content="About REIGN - Your Royal Journal for ruling your day with purpose">
     <title>About | REIGN</title>
 
     <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#0B0F19">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
 
@@ -27,6 +27,7 @@
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/mobile.css">
 
     <style>
         .about-hero {
@@ -38,13 +39,13 @@
         .about-hero-crown {
             width: 6rem;
             height: 6rem;
-            background: linear-gradient(135deg, var(--royal-gold), #B8860B);
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 50px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 50px var(--royal-gold-40);
             animation: pulse-glow 3s ease-in-out infinite;
         }
 
@@ -52,11 +53,11 @@
 
             0%,
             100% {
-                box-shadow: 0 10px 50px rgba(212, 175, 55, 0.4);
+                box-shadow: 0 10px 50px var(--royal-gold-40);
             }
 
             50% {
-                box-shadow: 0 10px 60px rgba(212, 175, 55, 0.6);
+                box-shadow: 0 10px 60px var(--royal-gold-50);
             }
         }
 
@@ -90,8 +91,8 @@
         }
 
         .vision-section {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(184, 134, 11, 0.02));
-            border: 2px solid rgba(212, 175, 55, 0.2);
+            background: linear-gradient(135deg, var(--royal-gold-10), var(--royal-gold-05));
+            border: 2px solid var(--royal-gold-20);
             border-radius: 1.5rem;
             padding: 2.5rem;
             margin-bottom: 2rem;
@@ -359,9 +360,9 @@
                 <!-- Vision -->
                 <div class="vision-section">
                     <h2><i class="ph-fill ph-eye"></i> Our Vision</h2>
-                    <p>We believe that every person has the potential for greatness. REIGN exists to help you unlock
+                    <p id="vision-text">We believe that every person has the potential for greatness. REIGN exists to help you unlock
                         that potential through intentional daily planning, continuous learning, meaningful reflection,
-                        and nurturing the relationships that matter most. Every king needs a system to rule
+                        and nurturing the relationships that matter most. Every ruler needs a system to reign
                         effectively—this is yours.</p>
                 </div>
 
@@ -472,6 +473,7 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -482,10 +484,13 @@
             });
             SidebarComponent.render('sidebar-container');
             FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
         });
     </script>
 </body>
 
 </html>
-
-

@@ -26,12 +26,29 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
     <link rel="stylesheet" href="../css/enhancements.css">
+    <link rel="stylesheet" href="../css/mobile.css">
     <link rel="stylesheet" href="../css/profile.css">
 
     <!-- PWA -->
     <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0B0F19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reign-pi.vercel.app/app/profile.html">
+    <meta property="og:title" content="Profile | REIGN">
+    <meta property="og:description"
+        content="Manage your REIGN profile, update your information, and customize your royal experience.">
+    <meta property="og:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Profile | REIGN">
+    <meta name="twitter:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
 </head>
 
 <body>
@@ -64,6 +81,7 @@
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/header.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
     <script src="../js/components/loading.js"></script>
     <script src="../js/profile-view.js"></script>
 
@@ -85,6 +103,11 @@
             }
             if (typeof FooterComponent !== 'undefined') {
                 FooterComponent.render('footer-container');
+            }
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
             }
 
             // Load user data

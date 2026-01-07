@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description"
+        content="REIGN Documentation - Learn how to use every feature of your royal productivity platform">
+    <title>Help & Docs | REIGN</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reign-pi.vercel.app/app/docs.html">
+    <meta property="og:title" content="Help & Docs | REIGN">
+    <meta property="og:description" content="Learn how to master your royal productivity platform.">
+    <meta property="og:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+
+    <style>
+        /* Documentation Styles */
+        .docs-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Search Bar */
+        .docs-search {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .docs-search-input {
+            width: 100%;
+            padding: 1rem 1.25rem 1rem 3.5rem;
+            background: var(--glass-bg);
+            border: 2px solid var(--royal-gold-30);
+            border-radius: 1rem;
+            color: white;
+            font-size: 1rem;
+            font-family: var(--font-sans);
+            transition: all 0.3s ease;
+        }
+
+        .docs-search-input:focus {
+            outline: none;
+            border-color: var(--royal-gold);
+            box-shadow: 0 0 20px var(--royal-gold-20);
+        }
+
+        .docs-search-input::placeholder {
+            color: #64748b;
+        }
+
+        .docs-search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .docs-search-input:focus+.docs-search-icon {
+            color: var(--royal-gold);
+        }
+
+        .docs-search-clear {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: none;
+            transition: color 0.3s ease;
+        }
+
+        .docs-search-clear:hover {
+            color: var(--danger);
+        }
+
+        .docs-search-clear.visible {
+            display: block;
+        }
+
+        /* Category Filters */
+        .docs-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .docs-filter {
+            padding: 0.625rem 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .docs-filter:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--royal-gold-50);
+            color: white;
+        }
+
+        .docs-filter.active {
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
+            color: var(--royal-dark);
+            border-color: var(--royal-gold);
+            border-color: transparent;
+            font-weight: 600;
+        }
+
+        .docs-filter i {
+            font-size: 1rem;
+        }
+
+        /* Results Count */
+        .docs-results {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* Doc Cards Grid */
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Doc Card */
+        .doc-card {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--cat-color, var(--royal-gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--royal-gold);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px var(--royal-gold-10);
+        }
+        
+        /* Hot/Popular Article Indicator */
+        .doc-card.hot::after {
+            content: '🔥';
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-size: 1rem;
+            animation: flicker 1.5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .doc-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .doc-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: rgba(var(--cat-color-rgb, 212, 175, 55), 0.15);
+            color: var(--cat-color, var(--royal-gold));
+        }
+
+        .doc-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .doc-card-title mark {
+            background: var(--royal-gold-30);
+            color: white;
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        .doc-card-desc {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .doc-card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .doc-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .doc-tag {
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.375rem;
+            font-size: 0.6875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .doc-card-time {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .doc-card-arrow {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            color: var(--royal-gold);
+            font-size: 1.25rem;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .doc-card:hover .doc-card-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Empty State */
+        .docs-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+        }
+
+        .docs-empty i {
+            font-size: 4rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .docs-empty h3 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-empty p {
+            color: #94a3b8;
+        }
+
+        /* Doc Detail Modal */
+        .doc-detail {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Center modal on desktop */
+        @media (min-width: 768px) {
+            #modal .modal-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 2rem;
+            }
+            
+            #modal .modal-content {
+                max-width: 700px;
+                width: 100%;
+                max-height: 85vh;
+                overflow-y: auto;
+                border-radius: 1rem;
+            }
+        }
+
+        .doc-detail-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .doc-detail-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            flex-shrink: 0;
+        }
+
+        .doc-detail-content h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .doc-detail-content p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .doc-detail-body {
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: 0.9375rem;
+        }
+
+        .doc-detail-body h3 {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        .doc-detail-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .doc-detail-body ul {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .doc-detail-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .doc-detail-body strong {
+            color: var(--royal-gold);
+        }
+
+        .doc-detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Quick Start Banner */
+        .quick-start-banner {
+            background: linear-gradient(135deg, var(--royal-gold-15), var(--royal-gold-05));
+            border: 1px solid var(--royal-gold-30);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .quick-start-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--royal-dark);
+            flex-shrink: 0;
+        }
+
+        .quick-start-content h3 {
+            font-family: var(--font-serif);
+            font-size: 1.125rem;
+            color: var(--royal-gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .quick-start-content p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-start-content a {
+            color: var(--royal-gold);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .quick-start-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-start-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .docs-filters {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div id="header-container"></div>
+        <div class="main-layout">
+            <div id="sidebar-container"></div>
+            <main class="main-content fade-in" id="main-view">
+                <!-- Page Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i class="ph-fill ph-book-open"></i>
+                    </div>
+                    <h1 class="page-hero-title">Help & Documentation</h1>
+                    <p class="page-hero-subtitle">Learn how to use every feature of REIGN to rule your day.</p>
+                </div>
+
+                <div class="docs-container">
+                    <!-- Quick Start Banner -->
+                    <div class="quick-start-banner">
+                        <div class="quick-start-icon">
+                            <i class="ph-fill ph-rocket"></i>
+                        </div>
+                        <div class="quick-start-content">
+                            <h3>New to REIGN?</h3>
+                            <p>Start with our quick guide to understand the basics and set up your royal journey.</p>
+                            <a href="#" onclick="openDoc('welcome'); return false;">
+                                Start the Quick Tour <i class="ph-bold ph-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="docs-search">
+                        <input type="text" class="docs-search-input" id="search-input"
+                            placeholder="Search documentation..." oninput="filterDocs()">
+                        <i class="ph-bold ph-magnifying-glass docs-search-icon"></i>
+                        <button class="docs-search-clear" id="search-clear" onclick="clearSearch()">
+                            <i class="ph-bold ph-x"></i>
+                        </button>
+                    </div>
+
+                    <!-- Category Filters -->
+                    <div class="docs-filters">
+                        <button class="docs-filter active" data-category="all" onclick="setFilter('all')">
+                            <i class="ph-bold ph-squares-four"></i> All
+                        </button>
+                        <button class="docs-filter" data-category="getting-started"
+                            onclick="setFilter('getting-started')">
+                            <i class="ph-bold ph-rocket"></i> Getting Started
+                        </button>
+                        <button class="docs-filter" data-category="daily" onclick="setFilter('daily')">
+                            <i class="ph-bold ph-sun"></i> Daily Rituals
+                        </button>
+                        <button class="docs-filter" data-category="goals" onclick="setFilter('goals')">
+                            <i class="ph-bold ph-target"></i> Goals & Planning
+                        </button>
+                        <button class="docs-filter" data-category="learning" onclick="setFilter('learning')">
+                            <i class="ph-bold ph-graduation-cap"></i> Learning & Ideas
+                        </button>
+                        <button class="docs-filter" data-category="reflection" onclick="setFilter('reflection')">
+                            <i class="ph-bold ph-heart"></i> Reflection & Insights
+                        </button>
+                        <button class="docs-filter" data-category="data" onclick="setFilter('data')">
+                            <i class="ph-bold ph-cloud"></i> Data & Sync
+                        </button>
+                    </div>
+
+                    <!-- Results Count -->
+                    <div class="docs-results">
+                        <span id="results-count">Showing all articles</span>
+                    </div>
+
+                    <!-- Docs Grid -->
+                    <div class="docs-grid" id="docs-grid">
+                        <!-- Cards rendered dynamically -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-overlay" onclick="closeModal()"></div>
+            <div class="modal-container">
+                <div class="modal-content" id="modal-content"></div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/core.js"></script>
+    <script src="../js/components/header.js"></script>
+    <script src="../js/components/sidebar.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
+
+    <script>
+        // ==========================================
+        // DOCUMENTATION DATA
+        // ==========================================
+        const docs = [
+            // Getting Started
+            {
+                id: 'welcome',
+                title: 'Welcome to REIGN',
+                desc: 'Your journey to ruling your day begins here. Learn the core philosophy and features.',
+                category: 'getting-started',
+                icon: 'ph-crown',
+                color: 'var(--royal-gold)',
+                tags: ['overview', 'beginner', 'introduction'],
+                time: '5 min',
+                hot: true,
+                content: `
+                    <h3>Welcome, Royalty!</h3>
+                    <p>REIGN is your personal productivity command center, designed to help you plan, execute, and reflect on your days with intention and excellence. Built for those who demand more from themselves.</p>
+                    
+                    <h3>Core Philosophy</h3>
+                    <p>REIGN is built on three foundational pillars that transform ordinary days into extraordinary victories:</p>
+                    <ul>
+                        <li><strong>Plan with Purpose</strong> - Morning Protocol sets your daily intentions and priorities</li>
+                        <li><strong>Execute with Focus</strong> - Track tasks, learning sessions, and goals throughout the day</li>
+                        <li><strong>Reflect with Wisdom</strong> - Evening Report helps you extract lessons and celebrate wins</li>
+                    </ul>
+                    
+                    <h3>Your First Week Roadmap</h3>
+                    <ul>
+                        <li><strong>Day 1:</strong> Choose your role (King or Queen) in Settings, complete Morning Protocol</li>
+                        <li><strong>Day 2:</strong> Set your first weekly goal in Royal Ambitions</li>
+                        <li><strong>Day 3:</strong> Try the Focus Chamber for a Pomodoro session</li>
+                        <li><strong>Day 4:</strong> Log your first entry in The Good in Today</li>
+                        <li><strong>Day 5:</strong> Add someone to your Rainy Day People</li>
+                        <li><strong>Day 6:</strong> Complete an Evening Report reviewing your week</li>
+                        <li><strong>Day 7:</strong> Do your first Weekly Review and set new goals</li>
+                    </ul>
+                    
+                    <h3>Quick Tips for Success</h3>
+                    <ul>
+                        <li>Consistency beats intensity - show up daily, even for 5 minutes</li>
+                        <li>Sync your data to access REIGN from any device</li>
+                        <li>Use keyboard shortcuts: <kbd>M</kbd> for Morning, <kbd>E</kbd> for Evening</li>
+                        <li>Install REIGN as a PWA for the best mobile experience</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'roles',
+                title: 'Choosing Your Role',
+                desc: 'King or Queen? Customize your experience with role-appropriate styling and language.',
+                category: 'getting-started',
+                icon: 'ph-user-switch',
+                color: '#ec4899',
+                tags: ['settings', 'personalization', 'theme'],
+                time: '2 min',
+                content: `
+                    <h3>King or Queen?</h3>
+                    <p>REIGN adapts to your identity. Choose the role that resonates with you and watch the entire app transform.</p>
+                    
+                    <h3>King Theme</h3>
+                    <ul>
+                        <li>Classic royal gold accents (#D4AF37)</li>
+                        <li>"King" terminology throughout the app</li>
+                        <li>Bold, commanding design elements</li>
+                        <li>Dark navy and gold color palette</li>
+                    </ul>
+                    
+                    <h3>Queen Theme</h3>
+                    <ul>
+                        <li>Elegant rose gold accents (#b76e79)</li>
+                        <li>"Queen" terminology throughout the app</li>
+                        <li>Refined, graceful design touches</li>
+                        <li>Deep burgundy and rose color palette</li>
+                    </ul>
+                    
+                    <h3>How to Change Your Role</h3>
+                    <ol>
+                        <li>Navigate to <strong>Settings</strong> from the sidebar</li>
+                        <li>Find the <strong>Role</strong> section at the top</li>
+                        <li>Select King or Queen</li>
+                        <li>The app will refresh with your new theme instantly</li>
+                    </ol>
+                    
+                    <h3>Role Persists Everywhere</h3>
+                    <p>Your role choice syncs to the cloud, so whether you're on mobile or desktop, your preference follows you.</p>
+                `
+            },
+            {
+                id: 'navigation',
+                title: 'Navigating REIGN',
+                desc: 'Master the sidebar, dashboard, and mobile navigation to move efficiently.',
+                category: 'getting-started',
+                icon: 'ph-compass',
+                color: '#3b82f6',
+                tags: ['navigation', 'ui', 'mobile'],
+                time: '3 min',
+                content: `
+                    <h3>The Sidebar</h3>
+                    <p>Your main navigation hub, organized into logical sections for quick access:</p>
+                    <ul>
+                        <li><strong>Main</strong> - The Throne (Dashboard), Morning Protocol, Evening Report</li>
+                        <li><strong>Growth</strong> - Focus Chamber, Learning Forge, Today's Idea, Daily Lessons</li>
+                        <li><strong>Reflection</strong> - The Good in Today, Journal Archive, Rainy Day People</li>
+                        <li><strong>Planning</strong> - Royal Ambitions (Goals), Weekly Review, Royal Calendar</li>
+                        <li><strong>System</strong> - Profile, Settings, Notifications, Help & Docs</li>
+                    </ul>
+                    
+                    <h3>Collapsible Sidebar</h3>
+                    <p>On desktop, click the arrow at the top of the sidebar to collapse it into icon-only mode for more screen space. Your preference is saved automatically.</p>
+                    
+                    <h3>Mobile Navigation</h3>
+                    <p>On mobile devices:</p>
+                    <ul>
+                        <li>Tap the hamburger menu (☰) to open the sidebar</li>
+                        <li>Swipe right from the left edge to open</li>
+                        <li>Tap outside or swipe left to close</li>
+                    </ul>
+                    
+                    <h3>The Dashboard (The Throne)</h3>
+                    <p>Your command center showing:</p>
+                    <ul>
+                        <li>Personalized greeting based on time of day</li>
+                        <li>Daily inspirational quote</li>
+                        <li>Today's task progress</li>
+                        <li>Quick navigation cards to all features</li>
+                        <li>Current streak and statistics</li>
+                    </ul>
+                    
+                    <h3>Keyboard Shortcuts</h3>
+                    <p>Power users can navigate faster:</p>
+                    <ul>
+                        <li><kbd>G</kbd> then <kbd>D</kbd> - Go to Dashboard</li>
+                        <li><kbd>G</kbd> then <kbd>M</kbd> - Go to Morning Protocol</li>
+                        <li><kbd>G</kbd> then <kbd>E</kbd> - Go to Evening Report</li>
+                        <li><kbd>?</kbd> - Show all keyboard shortcuts</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'account',
+                title: 'Creating Your Account',
+                desc: 'Sign up, sync your data, and access REIGN from any device.',
+                category: 'getting-started',
+                icon: 'ph-user-plus',
+                color: '#10b981',
+                tags: ['account', 'registration', 'sync'],
+                time: '3 min',
+                content: `
+                    <h3>Why Create an Account?</h3>
+                    <p>While REIGN works offline without an account, signing up unlocks:</p>
+                    <ul>
+                        <li><strong>Cloud Sync</strong> - Access your data from any device</li>
+                        <li><strong>Automatic Backup</strong> - Never lose your entries</li>
+                        <li><strong>Cross-Device Support</strong> - Start on phone, continue on desktop</li>
+                        <li><strong>Profile Customization</strong> - Avatar and personal settings</li>
+                    </ul>
+                    
+                    <h3>How to Sign Up</h3>
+                    <ol>
+                        <li>Click "Sync Your Data" in the sidebar</li>
+                        <li>Choose "Create Account"</li>
+                        <li>Enter your name, email, and password</li>
+                        <li>Click "Join the Kingdom"</li>
+                    </ol>
+                    
+                    <h3>Password Requirements</h3>
+                    <ul>
+                        <li>Minimum 6 characters</li>
+                        <li>Mix of letters and numbers recommended</li>
+                        <li>Special characters for extra security</li>
+                    </ul>
+                    
+                    <h3>Login Options</h3>
+                    <ul>
+                        <li><strong>Email & Password</strong> - Standard login</li>
+                        <li><strong>Remember Me</strong> - Stay logged in for 10 days</li>
+                        <li><strong>Forgot Password</strong> - Reset via email link</li>
+                    </ul>
+                    
+                    <h3>Data Privacy</h3>
+                    <p>Your data belongs to you. We never sell your information or use it for advertising. See our Privacy & Security section for details.</p>
+                `
+            },
+            {
+                id: 'pwa',
+                title: 'Installing REIGN (PWA)',
+                desc: 'Install REIGN on your device for the best experience and offline access.',
+                category: 'getting-started',
+                icon: 'ph-device-mobile',
+                color: '#8b5cf6',
+                tags: ['install', 'pwa', 'mobile', 'offline'],
+                time: '2 min',
+                content: `
+                    <h3>What is a PWA?</h3>
+                    <p>REIGN is a Progressive Web App (PWA). This means you can install it on your device like a native app, with:</p>
+                    <ul>
+                        <li>Home screen icon</li>
+                        <li>Full-screen experience (no browser chrome)</li>
+                        <li>Offline functionality</li>
+                        <li>Faster loading times</li>
+                    </ul>
+                    
+                    <h3>Installing on iOS (iPhone/iPad)</h3>
+                    <ol>
+                        <li>Open REIGN in Safari</li>
+                        <li>Tap the Share button (square with arrow)</li>
+                        <li>Scroll down and tap "Add to Home Screen"</li>
+                        <li>Name it "REIGN" and tap "Add"</li>
+                    </ol>
+                    
+                    <h3>Installing on Android</h3>
+                    <ol>
+                        <li>Open REIGN in Chrome</li>
+                        <li>Look for the "Install" banner at the bottom</li>
+                        <li>Or tap the three-dot menu → "Install app"</li>
+                        <li>Confirm installation</li>
+                    </ol>
+                    
+                    <h3>Installing on Desktop</h3>
+                    <ol>
+                        <li>Open REIGN in Chrome or Edge</li>
+                        <li>Click the install icon in the address bar</li>
+                        <li>Or use Menu → "Install REIGN"</li>
+                    </ol>
+                    
+                    <h3>Offline Mode</h3>
+                    <p>Once installed, REIGN works offline! Your data saves locally and syncs when you're back online.</p>
+                `
+            },
+
+            // Daily Rituals
+            {
+                id: 'morning',
+                title: 'Morning Protocol',
+                desc: 'Start your day with intention. Plan tasks, set priorities, and prepare for victory.',
+                category: 'daily',
+                icon: 'ph-sun-horizon',
+                color: '#f59e0b',
+                tags: ['tasks', 'planning', 'routine', 'morning'],
+                time: '5 min',
+                hot: true,
+                content: `
+                    <h3>The Power of Mornings</h3>
+                    <p>Research shows that how you start your day determines how you'll finish it. Morning Protocol helps you plan with intention and set yourself up for success.</p>
+                    
+                    <h3>The Morning Protocol Flow</h3>
+                    <ol>
+                        <li><strong>Set Your Session Name</strong> - Give today a theme (e.g., "Deep Work Day", "Launch Sprint")</li>
+                        <li><strong>Add Your Tasks</strong> - List 3-5 must-do items for the day</li>
+                        <li><strong>Prioritize</strong> - Mark high-priority items that must get done</li>
+                        <li><strong>Link to Goals</strong> - Connect tasks to weekly goals for alignment</li>
+                    </ol>
+                    
+                    <h3>Adding Tasks</h3>
+                    <ul>
+                        <li>Tap the <strong>+ Add Task</strong> button</li>
+                        <li>Enter a clear, actionable task title</li>
+                        <li>Set priority: High (🔴), Medium (🟡), or Low (⚪)</li>
+                        <li>Add estimated time for better planning</li>
+                        <li>Optionally link to a weekly goal for tracking</li>
+                    </ul>
+                    
+                    <h3>Task Priority Guide</h3>
+                    <ul>
+                        <li><strong>High Priority</strong> - Must complete today, failure is not an option (red accent)</li>
+                        <li><strong>Medium Priority</strong> - Should complete if possible, important but flexible (gold accent)</li>
+                        <li><strong>Low Priority</strong> - Nice to have, can be moved to tomorrow (gray accent)</li>
+                    </ul>
+                    
+                    <h3>Task Actions</h3>
+                    <ul>
+                        <li><strong>Complete</strong> - Check off when done</li>
+                        <li><strong>Edit</strong> - Modify task details</li>
+                        <li><strong>Delete</strong> - Remove if no longer needed</li>
+                        <li><strong>Reorder</strong> - Drag to prioritize visually</li>
+                    </ul>
+                    
+                    <h3>Pro Tips for Morning Protocol</h3>
+                    <ul>
+                        <li>Do your Morning Protocol the night before for a head start</li>
+                        <li>Limit to 3-5 tasks for realistic planning (quality over quantity)</li>
+                        <li>Put your hardest task first ("Eat the frog" principle)</li>
+                        <li>Block time for each task in your calendar</li>
+                        <li>Include at least one task linked to a weekly goal</li>
+                    </ul>
+                    
+                    <h3>Viewing Past Mornings</h3>
+                    <p>Access previous Morning Protocols in the Journal Archive to review your planning patterns and improve over time.</p>
+                `
+            },
+            {
+                id: 'evening',
+                title: 'Evening Report',
+                desc: 'Reflect on your victories and learnings. Close out the day with wisdom.',
+                category: 'daily',
+                icon: 'ph-moon-stars',
+                color: '#6366f1',
+                tags: ['reflection', 'review', 'routine', 'evening'],
+                time: '4 min',
+                content: `
+                    <h3>End with Reflection</h3>
+                    <p>The Evening Report transforms your day's experiences into wisdom for tomorrow. This is where growth happens—in the pause between action and rest.</p>
+                    
+                    <h3>What to Capture</h3>
+                    <ul>
+                        <li><strong>Today's Wins</strong> - What went well? What are you proud of?</li>
+                        <li><strong>Challenges Faced</strong> - What was difficult? What got in your way?</li>
+                        <li><strong>Lessons Learned</strong> - What insight did you gain?</li>
+                        <li><strong>Tomorrow's Focus</strong> - What's the #1 priority for tomorrow?</li>
+                        <li><strong>Overall Mood</strong> - Rate your day (1-5 stars)</li>
+                    </ul>
+                    
+                    <h3>The Science Behind It</h3>
+                    <p>Evening reflection has been proven to:</p>
+                    <ul>
+                        <li>Improve memory consolidation during sleep</li>
+                        <li>Reduce anxiety by processing the day's events</li>
+                        <li>Build self-awareness over time</li>
+                        <li>Create a sense of closure before rest</li>
+                    </ul>
+                    
+                    <h3>Review Your Tasks</h3>
+                    <p>The Evening Report shows your Morning Protocol tasks. Mark any remaining tasks as complete, abandoned, or carry them forward to tomorrow.</p>
+                    
+                    <h3>Best Time to Reflect</h3>
+                    <p>Aim for 30 minutes before bed. This gives your mind time to process but not so long that you forget the day's details.</p>
+                    
+                    <h3>Mood Tracking Over Time</h3>
+                    <p>Your daily mood ratings build a pattern visible in Analytics. Spot trends, identify what days are typically hard, and optimize your schedule.</p>
+                `
+            },
+            {
+                id: 'focus',
+                title: 'Focus Chamber (Pomodoro)',
+                desc: 'Deep work sessions with the Pomodoro technique. Build your focus muscle.',
+                category: 'daily',
+                icon: 'ph-timer',
+                color: '#ef4444',
+                tags: ['focus', 'pomodoro', 'productivity', 'deep-work'],
+                time: '4 min',
+                content: `
+                    <h3>The Pomodoro Technique</h3>
+                    <p>Developed by Francesco Cirillo, the Pomodoro Technique uses focused work intervals (traditionally 25 minutes) followed by short breaks to maximize productivity while preventing burnout.</p>
+                    
+                    <h3>How It Works</h3>
+                    <ol>
+                        <li>Choose your focus duration (default: 25 minutes)</li>
+                        <li>Select what you're working on (task or learning)</li>
+                        <li>Click Start to begin the session</li>
+                        <li>Stay fully focused until the timer ends</li>
+                        <li>Take a short break (5 minutes)</li>
+                        <li>After 4 pomodoros, take a longer break (15-30 minutes)</li>
+                    </ol>
+                    
+                    <h3>Focus Chamber Features</h3>
+                    <ul>
+                        <li><strong>Visual Timer</strong> - Clear countdown with progress ring</li>
+                        <li><strong>Session Linking</strong> - Connect to goals or learning courses</li>
+                        <li><strong>Distraction Log</strong> - Record what pulls you away</li>
+                        <li><strong>Session History</strong> - Track your focus over time</li>
+                        <li><strong>Sound Notifications</strong> - Audio cue when timer ends</li>
+                    </ul>
+                    
+                    <h3>Linking Sessions</h3>
+                    <p>Connect your focus session to:</p>
+                    <ul>
+                        <li>A <strong>Weekly Goal</strong> - Time spent counts toward goal progress</li>
+                        <li>A <strong>Learning Course</strong> - Track study time automatically</li>
+                        <li>A <strong>Morning Task</strong> - Deep work on today's priorities</li>
+                    </ul>
+                    
+                    <h3>Distraction Logging</h3>
+                    <p>When you get distracted during a session:</p>
+                    <ol>
+                        <li>Tap the "Log Distraction" button</li>
+                        <li>Note what pulled you away</li>
+                        <li>Return to your work</li>
+                    </ol>
+                    <p>Reviewing distractions helps you understand and eliminate them over time.</p>
+                    
+                    <h3>Recommended Durations</h3>
+                    <ul>
+                        <li><strong>25 minutes</strong> - Standard, great for most tasks</li>
+                        <li><strong>45 minutes</strong> - Deep creative work, writing, coding</li>
+                        <li><strong>15 minutes</strong> - Quick tasks, email, admin work</li>
+                        <li><strong>50 minutes</strong> - Extended sessions for flow state</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'tasks',
+                title: 'Task Management',
+                desc: 'Master your daily tasks with priorities, statuses, and goal alignment.',
+                category: 'daily',
+                icon: 'ph-check-square',
+                color: '#14b8a6',
+                tags: ['tasks', 'todo', 'productivity'],
+                time: '3 min',
+                content: `
+                    <h3>Task Lifecycle</h3>
+                    <p>Every task in REIGN follows a clear lifecycle:</p>
+                    <ol>
+                        <li><strong>Created</strong> - Added in Morning Protocol</li>
+                        <li><strong>In Progress</strong> - Currently being worked on</li>
+                        <li><strong>Completed</strong> - Successfully finished</li>
+                        <li><strong>Abandoned</strong> - Decided not to do (and that's okay)</li>
+                        <li><strong>Carried Forward</strong> - Moved to tomorrow</li>
+                    </ol>
+                    
+                    <h3>Task Properties</h3>
+                    <ul>
+                        <li><strong>Title</strong> - Clear, actionable description</li>
+                        <li><strong>Priority</strong> - High, Medium, or Low</li>
+                        <li><strong>Estimated Time</strong> - How long you think it'll take</li>
+                        <li><strong>Linked Goal</strong> - Optional connection to weekly goal</li>
+                        <li><strong>Notes</strong> - Additional context or subtasks</li>
+                    </ul>
+                    
+                    <h3>Writing Good Tasks</h3>
+                    <ul>
+                        <li>Start with a verb: "Write", "Call", "Review", "Build"</li>
+                        <li>Be specific: "Review Q1 budget" not just "Budget"</li>
+                        <li>Make it completable: You should know when it's done</li>
+                        <li>Keep it single-focus: One task = one outcome</li>
+                    </ul>
+                    
+                    <h3>Task Analytics</h3>
+                    <p>View your task completion trends in Analytics to understand your productivity patterns.</p>
+                `
+            },
+
+            // Goals
+            {
+                id: 'goals-overview',
+                title: 'Royal Ambitions: Goal System',
+                desc: 'Set yearly visions, monthly milestones, and weekly targets. Build your legacy.',
+                category: 'goals',
+                icon: 'ph-target',
+                color: '#10b981',
+                tags: ['goals', 'planning', 'strategy', 'ambitions'],
+                time: '6 min',
+                content: `
+                    <h3>The REIGN Goal Hierarchy</h3>
+                    <p>REIGN uses a cascading goal structure that connects your big vision to daily action:</p>
+                    <ul>
+                        <li><strong>Yearly Vision</strong> - Your big picture aspirations for the year</li>
+                        <li><strong>Monthly Milestones</strong> - Stepping stones toward yearly goals</li>
+                        <li><strong>Weekly Targets</strong> - Actionable, measurable goals for this week</li>
+                        <li><strong>Daily Tasks</strong> - Morning Protocol tasks linked to weekly targets</li>
+                    </ul>
+                    
+                    <h3>The 7 Life Categories</h3>
+                    <p>Balance your life by setting goals across all dimensions:</p>
+                    <ul>
+                        <li>🏋️ <strong>Health</strong> - Physical fitness, nutrition, sleep, energy</li>
+                        <li>💼 <strong>Career</strong> - Professional growth, skills, promotions</li>
+                        <li>💰 <strong>Finance</strong> - Savings, investments, debt, income</li>
+                        <li>❤️ <strong>Relationships</strong> - Family, friends, romantic partner</li>
+                        <li>🧠 <strong>Personal Growth</strong> - Learning, habits, mindset</li>
+                        <li>🎨 <strong>Passion & Fun</strong> - Hobbies, creativity, joy</li>
+                        <li>✝️ <strong>Spiritual</strong> - Faith, purpose, inner peace</li>
+                    </ul>
+                    
+                    <h3>Creating Goals</h3>
+                    <ol>
+                        <li>Go to <strong>Royal Ambitions</strong> in the sidebar</li>
+                        <li>Choose the time horizon (Yearly, Monthly, Weekly)</li>
+                        <li>Click <strong>+ Add Goal</strong></li>
+                        <li>Select a category from the 7 life areas</li>
+                        <li>Write a clear, specific goal</li>
+                        <li>Set a target date if applicable</li>
+                        <li>For weekly goals, link to monthly/yearly goals</li>
+                    </ol>
+                    
+                    <h3>SMART Goals in REIGN</h3>
+                    <ul>
+                        <li><strong>Specific</strong> - Clear and well-defined</li>
+                        <li><strong>Measurable</strong> - Track progress percentage</li>
+                        <li><strong>Achievable</strong> - Realistic given your resources</li>
+                        <li><strong>Relevant</strong> - Aligned to your values and vision</li>
+                        <li><strong>Time-bound</strong> - Has a deadline</li>
+                    </ul>
+                    
+                    <h3>Progress Tracking</h3>
+                    <ul>
+                        <li>Update progress manually with the slider (0-100%)</li>
+                        <li>Watch progress rings fill as you advance</li>
+                        <li>Goals auto-complete at 100% progress</li>
+                        <li>View category distribution in Analytics</li>
+                    </ul>
+                    
+                    <h3>Goal Statuses</h3>
+                    <ul>
+                        <li><strong>Active</strong> - Currently working on</li>
+                        <li><strong>Completed</strong> - Successfully achieved</li>
+                        <li><strong>Abandoned</strong> - Decided not to pursue</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'weekly-review',
+                title: 'Weekly Review',
+                desc: 'Assess your week, celebrate wins, learn from challenges, and plan ahead.',
+                category: 'goals',
+                icon: 'ph-calendar-check',
+                color: '#8b5cf6',
+                tags: ['review', 'reflection', 'weekly', 'planning'],
+                time: '5 min',
+                content: `
+                    <h3>Why Weekly Reviews Matter</h3>
+                    <p>Without regular review, goals drift and lessons are lost. The Weekly Review is your reset button—keeping you on track and growing.</p>
+                    
+                    <h3>The Weekly Review Process</h3>
+                    <ol>
+                        <li><strong>Review Past Week</strong> - What did you accomplish?</li>
+                        <li><strong>Assess Goals</strong> - Update progress on all weekly goals</li>
+                        <li><strong>Celebrate Wins</strong> - Acknowledge what went well</li>
+                        <li><strong>Analyze Challenges</strong> - What blocked you?</li>
+                        <li><strong>Extract Lessons</strong> - What did you learn?</li>
+                        <li><strong>Set Next Week</strong> - Create new weekly goals</li>
+                    </ol>
+                    
+                    <h3>Weekly Review Sections</h3>
+                    <ul>
+                        <li><strong>Goals Completed</strong> - How many targets did you hit?</li>
+                        <li><strong>Goals In Progress</strong> - What's still being worked on?</li>
+                        <li><strong>Biggest Win</strong> - Your proudest accomplishment</li>
+                        <li><strong>Biggest Challenge</strong> - What was hardest?</li>
+                        <li><strong>Key Lesson</strong> - One insight to carry forward</li>
+                        <li><strong>Next Week Focus</strong> - Top 3 priorities</li>
+                        <li><strong>Week Rating</strong> - Overall satisfaction (1-5)</li>
+                    </ul>
+                    
+                    <h3>Best Time for Weekly Review</h3>
+                    <p>Choose a consistent time:</p>
+                    <ul>
+                        <li><strong>Sunday Evening</strong> - Close the week, prepare for Monday</li>
+                        <li><strong>Monday Morning</strong> - Fresh start energy</li>
+                        <li><strong>Friday Afternoon</strong> - End the work week strong</li>
+                    </ul>
+                    
+                    <h3>Monthly Reviews</h3>
+                    <p>At the end of each month, REIGN prompts you to do a deeper Monthly Review covering the entire month's progress across all categories.</p>
+                `
+            },
+            {
+                id: 'goal-linking',
+                title: 'Linking Tasks to Goals',
+                desc: 'Connect your daily actions to weekly goals for aligned productivity.',
+                category: 'goals',
+                icon: 'ph-link',
+                color: '#06b6d4',
+                tags: ['goals', 'tasks', 'alignment', 'productivity'],
+                time: '2 min',
+                content: `
+                    <h3>Why Link Tasks to Goals?</h3>
+                    <p>When your daily tasks connect to weekly goals, you ensure every day contributes to your bigger vision. No more busy work that doesn't move the needle.</p>
+                    
+                    <h3>How to Link</h3>
+                    <ol>
+                        <li>Create a task in Morning Protocol</li>
+                        <li>Click the "Link to Goal" dropdown</li>
+                        <li>Select an active weekly goal</li>
+                        <li>The task now shows the goal badge</li>
+                    </ol>
+                    
+                    <h3>Benefits of Linking</h3>
+                    <ul>
+                        <li>See which goals are getting attention</li>
+                        <li>Identify neglected goal categories</li>
+                        <li>Feel daily progress toward big goals</li>
+                        <li>Better prioritization decisions</li>
+                    </ul>
+                    
+                    <h3>Goal Progress Updates</h3>
+                    <p>Completing linked tasks doesn't auto-update goal progress. Manually update your goal progress during Evening Report or Weekly Review for accurate tracking.</p>
+                `
+            },
+
+            // Learning
+            {
+                id: 'learning',
+                title: 'Learning Forge',
+                desc: 'Track courses, build learning streaks, and grow continuously.',
+                category: 'learning',
+                icon: 'ph-graduation-cap',
+                color: '#3b82f6',
+                tags: ['courses', 'learning', 'growth', 'education'],
+                time: '5 min',
+                content: `
+                    <h3>The Learning Forge Philosophy</h3>
+                    <p>Continuous learning is the key to growth. Learning Forge helps you stay consistent with your educational goals and build lasting habits.</p>
+                    
+                    <h3>Adding Courses</h3>
+                    <ol>
+                        <li>Go to <strong>Learning Forge</strong> in the sidebar</li>
+                        <li>Click <strong>+ Add Course</strong></li>
+                        <li>Enter course title (e.g., "Python Masterclass")</li>
+                        <li>Add the source (Udemy, YouTube, Book, etc.)</li>
+                        <li>Set total lessons or modules</li>
+                        <li>Optionally add a URL link</li>
+                    </ol>
+                    
+                    <h3>Course Properties</h3>
+                    <ul>
+                        <li><strong>Title</strong> - Course name</li>
+                        <li><strong>Source</strong> - Where you're learning (Udemy, Coursera, YouTube, Book)</li>
+                        <li><strong>Total Lessons</strong> - Number of modules/chapters</li>
+                        <li><strong>Completed Lessons</strong> - Your progress</li>
+                        <li><strong>Category</strong> - Topic area for organization</li>
+                        <li><strong>URL</strong> - Quick access link</li>
+                        <li><strong>Notes</strong> - Key takeaways</li>
+                    </ul>
+                    
+                    <h3>Learning Streaks 🔥</h3>
+                    <p>The streak system rewards consistency:</p>
+                    <ul>
+                        <li>Log at least 15 minutes of learning daily</li>
+                        <li>Your streak increases each consecutive day</li>
+                        <li>Miss a day and the streak resets</li>
+                        <li>View your streak in the header and on Learning Forge</li>
+                    </ul>
+                    
+                    <h3>Logging Learning Time</h3>
+                    <p>Two ways to log learning:</p>
+                    <ul>
+                        <li><strong>Focus Chamber</strong> - Link a session to a course for automatic tracking</li>
+                        <li><strong>Manual Log</strong> - Enter time directly on the course card</li>
+                    </ul>
+                    
+                    <h3>Learning Heatmap</h3>
+                    <p>The heatmap shows your learning activity over time, similar to GitHub's contribution graph. Darker squares = more learning that day.</p>
+                    
+                    <h3>Course Completion</h3>
+                    <p>When you complete all lessons, the course moves to "Completed" status. Celebrate your achievement! 🎉</p>
+                `
+            },
+            {
+                id: 'ideas',
+                title: "Today's Idea",
+                desc: 'Capture those lightning-bolt moments before they disappear.',
+                category: 'learning',
+                icon: 'ph-lightbulb',
+                color: '#eab308',
+                tags: ['ideas', 'creativity', 'capture'],
+                time: '2 min',
+                content: `
+                    <h3>Capture Ideas Instantly</h3>
+                    <p>Great ideas strike at unexpected moments. Today's Idea gives you a quick-capture space so nothing slips away.</p>
+                    
+                    <h3>What to Capture</h3>
+                    <ul>
+                        <li>Business ideas</li>
+                        <li>Creative concepts</li>
+                        <li>Solutions to problems</li>
+                        <li>Random inspirations</li>
+                        <li>Things to research later</li>
+                        <li>Conversation starters</li>
+                    </ul>
+                    
+                    <h3>Idea Properties</h3>
+                    <ul>
+                        <li><strong>Title</strong> - Quick description</li>
+                        <li><strong>Description</strong> - Expand on the thought</li>
+                        <li><strong>Category</strong> - Organize by type</li>
+                        <li><strong>Priority</strong> - How valuable is this?</li>
+                    </ul>
+                    
+                    <h3>Reviewing Ideas</h3>
+                    <p>During Weekly Review, go through your ideas and decide:</p>
+                    <ul>
+                        <li>Turn into a goal or project</li>
+                        <li>Save for later</li>
+                        <li>Discard if no longer relevant</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'lessons-page',
+                title: 'Daily Lessons',
+                desc: 'Capture wisdom and insights as you live. Build your personal knowledge base.',
+                category: 'learning',
+                icon: 'ph-book-open-text',
+                color: '#f59e0b',
+                tags: ['wisdom', 'learning', 'insights', 'journal'],
+                time: '3 min',
+                content: `
+                    <h3>Capture Wisdom Daily</h3>
+                    <p>Every day teaches us something. Daily Lessons helps you capture and remember those insights before they fade.</p>
+                    
+                    <h3>Types of Lessons</h3>
+                    <ul>
+                        <li><strong>Life Lessons</strong> - Insights from experiences</li>
+                        <li><strong>Professional Insights</strong> - Work-related learnings</li>
+                        <li><strong>Relationship Wisdom</strong> - What you learned about people</li>
+                        <li><strong>Personal Realizations</strong> - Self-knowledge</li>
+                        <li><strong>Technical Knowledge</strong> - Skills and how-tos</li>
+                        <li><strong>Book/Content Notes</strong> - From what you read/watch</li>
+                    </ul>
+                    
+                    <h3>Writing Good Lessons</h3>
+                    <ul>
+                        <li>Be specific about the context</li>
+                        <li>Include what you'd do differently</li>
+                        <li>Note the emotional impact</li>
+                        <li>Add tags for easy finding later</li>
+                    </ul>
+                    
+                    <h3>Review Regularly</h3>
+                    <p>Periodically review past lessons to:</p>
+                    <ul>
+                        <li>Reinforce the learning</li>
+                        <li>Spot patterns in your life</li>
+                        <li>Remember old wisdom when needed</li>
+                    </ul>
+                `
+            },
+
+            // Reflection
+            {
+                id: 'dailygood',
+                title: 'The Good in Today',
+                desc: 'Gratitude practice to shift your perspective and build positivity.',
+                category: 'reflection',
+                icon: 'ph-heart',
+                color: '#ec4899',
+                tags: ['gratitude', 'mindfulness', 'positivity', 'mental-health'],
+                time: '3 min',
+                content: `
+                    <h3>The Science of Gratitude</h3>
+                    <p>Research consistently shows that gratitude practices:</p>
+                    <ul>
+                        <li>Improve mental health and reduce depression</li>
+                        <li>Strengthen relationships and empathy</li>
+                        <li>Increase overall life satisfaction</li>
+                        <li>Improve sleep quality</li>
+                        <li>Reduce stress and anxiety</li>
+                    </ul>
+                    
+                    <h3>How to Use The Good in Today</h3>
+                    <ol>
+                        <li>Open The Good in Today from the sidebar</li>
+                        <li>Write 1-3 good things from today</li>
+                        <li>Be specific (not "family" but "mom's phone call")</li>
+                        <li>Include small moments too</li>
+                        <li>Save your entry</li>
+                    </ol>
+                    
+                    <h3>What Counts as "Good"?</h3>
+                    <p>Anything that made you smile, feel grateful, or brought joy:</p>
+                    <ul>
+                        <li>A kind word from someone</li>
+                        <li>A beautiful sunset</li>
+                        <li>Coffee that tasted perfect</li>
+                        <li>A task completed successfully</li>
+                        <li>A moment of peace</li>
+                        <li>Something you learned</li>
+                        <li>Your health or safety</li>
+                    </ul>
+                    
+                    <h3>Daily Practice Tips</h3>
+                    <ul>
+                        <li>Do it at the same time each day (consistency builds habits)</li>
+                        <li>Combine with Evening Report for one ritual</li>
+                        <li>Look for new things each day (avoid repetition)</li>
+                        <li>On hard days, find even the smallest good</li>
+                    </ul>
+                    
+                    <h3>Reviewing Past Gratitude</h3>
+                    <p>Browse your gratitude history in the Journal Archive. On tough days, reading past entries reminds you of life's good moments.</p>
+                `
+            },
+            {
+                id: 'relationships',
+                title: 'Rainy Day People',
+                desc: 'Honor the people who hold your hand on rainy days.',
+                category: 'reflection',
+                icon: 'ph-heart-half',
+                color: '#f43f5e',
+                tags: ['relationships', 'people', 'gratitude', 'connections'],
+                time: '4 min',
+                content: `
+                    <h3>Who Are Your Rainy Day People?</h3>
+                    <p>These are the people who show up when life gets hard. The ones who carry your burdens, connect you to purpose, influence your growth, and bring unique gifts to your life.</p>
+                    
+                    <h3>The Four Classifications</h3>
+                    <ul>
+                        <li><strong>🏋️ Burden Bearers</strong> - They carry your load when life gets heavy</li>
+                        <li><strong>🔗 Divine Connectors</strong> - They connect you to purpose, faith, or destiny</li>
+                        <li><strong>🌟 Influencers</strong> - They shape your decisions and growth</li>
+                        <li><strong>✨ Talented</strong> - They bring unique gifts and abilities to your life</li>
+                    </ul>
+                    
+                    <h3>Adding People</h3>
+                    <ol>
+                        <li>Go to <strong>Rainy Day People</strong></li>
+                        <li>Click <strong>+ Add Person</strong></li>
+                        <li>Enter their name and relationship type</li>
+                        <li>Select their classification</li>
+                        <li>Write what they've done for you</li>
+                        <li>Optionally add photo, birthday, contact info</li>
+                    </ol>
+                    
+                    <h3>Relationship Types</h3>
+                    <ul>
+                        <li>Partner, Child, Parent, Sibling</li>
+                        <li>Friend, Colleague, Mentor</li>
+                        <li>Business Partner</li>
+                        <li>Other</li>
+                    </ul>
+                    
+                    <h3>Why Track Relationships?</h3>
+                    <ul>
+                        <li>Never forget who helped you along the way</li>
+                        <li>Remember birthdays and important dates</li>
+                        <li>Maintain gratitude for your support network</li>
+                        <li>Identify who to reach out to in different needs</li>
+                    </ul>
+                    
+                    <h3>Favorites</h3>
+                    <p>Mark your closest people as favorites. They appear at the top for quick access.</p>
+                `
+            },
+            {
+                id: 'archive',
+                title: 'Journal Archive',
+                desc: 'Browse your past entries and see your journey over time.',
+                category: 'reflection',
+                icon: 'ph-book-bookmark',
+                color: '#8b5cf6',
+                tags: ['history', 'archive', 'journal', 'browse'],
+                time: '2 min',
+                content: `
+                    <h3>Your Personal History</h3>
+                    <p>The Journal Archive is your time machine—browse past Morning Protocols, Evening Reports, Gratitude entries, and more.</p>
+                    
+                    <h3>What's Archived</h3>
+                    <ul>
+                        <li>Morning Protocol entries (tasks, intentions)</li>
+                        <li>Evening Reports (reflections, mood)</li>
+                        <li>The Good in Today entries</li>
+                        <li>Daily Lessons</li>
+                        <li>Ideas captured</li>
+                    </ul>
+                    
+                    <h3>Browsing the Archive</h3>
+                    <ul>
+                        <li>Navigate by date using the calendar</li>
+                        <li>Click any day to view that day's entries</li>
+                        <li>Days with entries are highlighted</li>
+                        <li>Filter by entry type</li>
+                    </ul>
+                    
+                    <h3>Why Review Your Archive?</h3>
+                    <ul>
+                        <li>See how far you've come</li>
+                        <li>Identify recurring patterns</li>
+                        <li>Remember lessons you've learned</li>
+                        <li>Celebrate your consistency</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'analytics',
+                title: 'Analytics & Insights',
+                desc: 'View your progress charts, trends, and patterns over time.',
+                category: 'reflection',
+                icon: 'ph-chart-line-up',
+                color: '#a855f7',
+                tags: ['analytics', 'charts', 'progress', 'data'],
+                time: '3 min',
+                content: `
+                    <h3>Data-Driven Self-Improvement</h3>
+                    <p>Analytics transforms your daily logging into actionable insights. See patterns you'd never notice otherwise.</p>
+                    
+                    <h3>Available Charts</h3>
+                    <ul>
+                        <li><strong>Task Completion Rate</strong> - Daily/weekly task completion %</li>
+                        <li><strong>Mood Trends</strong> - Your emotional patterns over time</li>
+                        <li><strong>Goal Progress</strong> - Category-by-category advancement</li>
+                        <li><strong>Learning Heatmap</strong> - Consistency visualization</li>
+                        <li><strong>Streak History</strong> - Your longest runs</li>
+                    </ul>
+                    
+                    <h3>Key Metrics</h3>
+                    <ul>
+                        <li><strong>Total Days Logged</strong> - How many days you've used REIGN</li>
+                        <li><strong>Current Streak</strong> - Consecutive days active</li>
+                        <li><strong>Average Mood</strong> - Your typical emotional state</li>
+                        <li><strong>Completion Rate</strong> - % of tasks you finish</li>
+                    </ul>
+                    
+                    <h3>Using Insights</h3>
+                    <p>Look for patterns:</p>
+                    <ul>
+                        <li>Which days are you most productive?</li>
+                        <li>What affects your mood?</li>
+                        <li>Which goal categories need attention?</li>
+                        <li>When do you skip logging?</li>
+                    </ul>
+                `
+            },
+
+            // Data & Sync
+            {
+                id: 'sync',
+                title: 'Cloud Sync',
+                desc: 'Keep your data synchronized across all devices automatically.',
+                category: 'data',
+                icon: 'ph-cloud',
+                color: '#06b6d4',
+                tags: ['sync', 'backup', 'devices', 'cloud'],
+                time: '4 min',
+                content: `
+                    <h3>Automatic Cloud Sync</h3>
+                    <p>When logged in, your data automatically syncs to the cloud within seconds of any change. Access your journal from any device, anywhere.</p>
+                    
+                    <h3>How Sync Works</h3>
+                    <ol>
+                        <li>Create an account or log in</li>
+                        <li>Data syncs automatically on every change</li>
+                        <li>Open REIGN on another device—data downloads</li>
+                        <li>Conflicts are detected and handled</li>
+                    </ol>
+                    
+                    <h3>Sync Indicators</h3>
+                    <ul>
+                        <li><strong>☁️ Syncing</strong> - Data is uploading</li>
+                        <li><strong>✅ Synced</strong> - All data is current</li>
+                        <li><strong>⚠️ Conflict</strong> - Manual resolution needed</li>
+                        <li><strong>📴 Offline</strong> - Will sync when online</li>
+                    </ul>
+                    
+                    <h3>Conflict Resolution</h3>
+                    <p>If you edit on two devices before syncing, REIGN detects the conflict and asks which version to keep. The newer version wins by default.</p>
+                    
+                    <h3>Offline First</h3>
+                    <p>REIGN works offline! Your data saves locally and syncs when you're back online. Never lose an entry due to connection issues.</p>
+                    
+                    <h3>Manual Sync</h3>
+                    <p>Force a sync anytime by clicking "Sync Your Data" in the sidebar. Useful if you want to ensure everything is uploaded before switching devices.</p>
+                    
+                    <h3>Sync Troubleshooting</h3>
+                    <ul>
+                        <li><strong>Not syncing?</strong> Check if you're logged in</li>
+                        <li><strong>Data missing?</strong> Try refreshing the page</li>
+                        <li><strong>Conflict loop?</strong> Pick one device as "master" and sync from there</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'privacy',
+                title: 'Privacy & Security',
+                desc: 'Your data is yours. Understand how we protect your information.',
+                category: 'data',
+                icon: 'ph-shield-check',
+                color: '#10b981',
+                tags: ['privacy', 'security', 'data', 'protection'],
+                time: '3 min',
+                content: `
+                    <h3>Your Data, Your Control</h3>
+                    <p>REIGN respects your privacy. Your journal entries, goals, and personal reflections belong to you—not us.</p>
+                    
+                    <h3>What We Store</h3>
+                    <ul>
+                        <li>Your tasks, goals, and reflections</li>
+                        <li>App settings and preferences</li>
+                        <li>Account information (email, name)</li>
+                        <li>Sync timestamps</li>
+                    </ul>
+                    
+                    <h3>What We DON'T Do</h3>
+                    <ul>
+                        <li>❌ Sell your data to third parties</li>
+                        <li>❌ Use your content for advertising</li>
+                        <li>❌ Share personal information</li>
+                        <li>❌ Train AI on your journal entries</li>
+                        <li>❌ Access your data without your permission</li>
+                    </ul>
+                    
+                    <h3>Security Measures</h3>
+                    <ul>
+                        <li><strong>HTTPS Everywhere</strong> - All data encrypted in transit</li>
+                        <li><strong>Password Hashing</strong> - bcrypt with 12 rounds</li>
+                        <li><strong>JWT Tokens</strong> - Secure session management</li>
+                        <li><strong>Rate Limiting</strong> - Protection against attacks</li>
+                    </ul>
+                    
+                    <h3>Account Security Tips</h3>
+                    <ul>
+                        <li>Use a strong, unique password</li>
+                        <li>Don't share your login credentials</li>
+                        <li>Log out on shared devices</li>
+                        <li>Use "Remember Me" only on personal devices</li>
+                    </ul>
+                    
+                    <h3>Deleting Your Data</h3>
+                    <p>You can delete your account and all associated data from Settings → Account → Delete Account. This action is permanent and cannot be undone.</p>
+                `
+            },
+            {
+                id: 'local-storage',
+                title: 'Local Storage & Offline',
+                desc: 'Understand how REIGN stores data locally and works offline.',
+                category: 'data',
+                icon: 'ph-hard-drives',
+                color: '#64748b',
+                tags: ['storage', 'offline', 'local', 'backup'],
+                time: '3 min',
+                content: `
+                    <h3>Local-First Architecture</h3>
+                    <p>REIGN stores all your data locally in your browser first. This means:</p>
+                    <ul>
+                        <li>Instant saves (no waiting for network)</li>
+                        <li>Works completely offline</li>
+                        <li>Your data is always accessible</li>
+                        <li>Faster performance</li>
+                    </ul>
+                    
+                    <h3>Where Data Lives</h3>
+                    <ul>
+                        <li><strong>Browser LocalStorage</strong> - Primary local storage</li>
+                        <li><strong>Service Worker Cache</strong> - App files for offline use</li>
+                        <li><strong>Cloud Database</strong> - Synced backup (if logged in)</li>
+                    </ul>
+                    
+                    <h3>Storage Limits</h3>
+                    <p>Browsers typically allow 5-10MB in LocalStorage. REIGN is efficient with storage, but years of entries may approach limits. If storage fills:</p>
+                    <ul>
+                        <li>Export your data (Settings → Export)</li>
+                        <li>Clear old cached data</li>
+                        <li>Ensure cloud sync is active for backup</li>
+                    </ul>
+                    
+                    <h3>Clearing Browser Data</h3>
+                    <p>⚠️ If you clear your browser data/cookies, your local REIGN data will be deleted. Always keep cloud sync active or export regularly as backup.</p>
+                    
+                    <h3>Multiple Browsers</h3>
+                    <p>Each browser has its own LocalStorage. To access the same data across browsers, log in to sync with the cloud.</p>
+                `
+            },
+            {
+                id: 'export-import',
+                title: 'Export & Backup',
+                desc: 'Download your data for backup or transfer to another device.',
+                category: 'data',
+                icon: 'ph-download',
+                color: '#f59e0b',
+                tags: ['export', 'backup', 'download', 'data'],
+                time: '2 min',
+                content: `
+                    <h3>Exporting Your Data</h3>
+                    <p>Download a complete backup of all your REIGN data:</p>
+                    <ol>
+                        <li>Go to <strong>Settings</strong></li>
+                        <li>Scroll to <strong>Data Management</strong></li>
+                        <li>Click <strong>Export Data</strong></li>
+                        <li>A JSON file will download</li>
+                    </ol>
+                    
+                    <h3>What's Included</h3>
+                    <ul>
+                        <li>All journal entries (Morning/Evening)</li>
+                        <li>Goals and progress</li>
+                        <li>Gratitude entries</li>
+                        <li>Daily lessons and ideas</li>
+                        <li>Relationships</li>
+                        <li>Learning courses</li>
+                        <li>Settings and preferences</li>
+                    </ul>
+                    
+                    <h3>Backup Schedule</h3>
+                    <p>Recommended backup frequency:</p>
+                    <ul>
+                        <li><strong>Weekly</strong> - If not using cloud sync</li>
+                        <li><strong>Monthly</strong> - If using cloud sync (extra safety)</li>
+                        <li><strong>Before major changes</strong> - Device switch, browser clear</li>
+                    </ul>
+                    
+                    <h3>Importing Data</h3>
+                    <p>To restore from a backup:</p>
+                    <ol>
+                        <li>Go to Settings → Data Management</li>
+                        <li>Click Import Data</li>
+                        <li>Select your backup JSON file</li>
+                        <li>Confirm the import</li>
+                    </ol>
+                    <p>⚠️ Importing replaces all current data!</p>
+                `
+            },
+            {
+                id: 'troubleshooting',
+                title: 'Troubleshooting',
+                desc: 'Common issues and how to fix them.',
+                category: 'data',
+                icon: 'ph-wrench',
+                color: '#ef4444',
+                tags: ['help', 'issues', 'bugs', 'support'],
+                time: '4 min',
+                content: `
+                    <h3>Common Issues & Solutions</h3>
+                    
+                    <h3>App Not Loading</h3>
+                    <ul>
+                        <li>Clear browser cache and refresh</li>
+                        <li>Try a hard refresh (Ctrl+Shift+R / Cmd+Shift+R)</li>
+                        <li>Disable browser extensions temporarily</li>
+                        <li>Try a different browser</li>
+                    </ul>
+                    
+                    <h3>Data Not Syncing</h3>
+                    <ul>
+                        <li>Check if you're logged in</li>
+                        <li>Verify internet connection</li>
+                        <li>Click "Sync Your Data" manually</li>
+                        <li>Log out and log back in</li>
+                    </ul>
+                    
+                    <h3>Lost Data</h3>
+                    <ul>
+                        <li>Check if you're on the same browser/device</li>
+                        <li>Log in if using cloud sync</li>
+                        <li>Check for exported backup files</li>
+                        <li>Contact support as last resort</li>
+                    </ul>
+                    
+                    <h3>PWA Not Working</h3>
+                    <ul>
+                        <li>Ensure you're on HTTPS</li>
+                        <li>Clear service worker (DevTools → Application)</li>
+                        <li>Reinstall the PWA</li>
+                    </ul>
+                    
+                    <h3>Slow Performance</h3>
+                    <ul>
+                        <li>Clear browser cache</li>
+                        <li>Reduce data history if very large</li>
+                        <li>Disable browser extensions</li>
+                        <li>Use the installed PWA version</li>
+                    </ul>
+                    
+                    <h3>Getting Help</h3>
+                    <p>If issues persist:</p>
+                    <ul>
+                        <li>Use the Feedback button to report issues</li>
+                        <li>Include what you were doing when the issue occurred</li>
+                        <li>Note your browser and device type</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'keyboard-shortcuts',
+                title: 'Keyboard Shortcuts',
+                desc: 'Navigate REIGN faster with keyboard shortcuts.',
+                category: 'data',
+                icon: 'ph-keyboard',
+                color: '#6366f1',
+                tags: ['keyboard', 'shortcuts', 'productivity', 'power-user'],
+                time: '2 min',
+                content: `
+                    <h3>Navigation Shortcuts</h3>
+                    <ul>
+                        <li><kbd>G</kbd> + <kbd>D</kbd> - Go to Dashboard</li>
+                        <li><kbd>G</kbd> + <kbd>M</kbd> - Go to Morning Protocol</li>
+                        <li><kbd>G</kbd> + <kbd>E</kbd> - Go to Evening Report</li>
+                        <li><kbd>G</kbd> + <kbd>G</kbd> - Go to Goals</li>
+                        <li><kbd>G</kbd> + <kbd>L</kbd> - Go to Learning</li>
+                        <li><kbd>G</kbd> + <kbd>S</kbd> - Go to Settings</li>
+                    </ul>
+                    
+                    <h3>Action Shortcuts</h3>
+                    <ul>
+                        <li><kbd>N</kbd> - New task/entry (context-aware)</li>
+                        <li><kbd>Esc</kbd> - Close modal/dialog</li>
+                        <li><kbd>/</kbd> - Focus search (on docs)</li>
+                        <li><kbd>?</kbd> - Show shortcut help</li>
+                    </ul>
+                    
+                    <h3>Modal Shortcuts</h3>
+                    <ul>
+                        <li><kbd>Enter</kbd> - Submit form</li>
+                        <li><kbd>Esc</kbd> - Cancel/close</li>
+                        <li><kbd>Tab</kbd> - Next field</li>
+                    </ul>
+                    
+                    <h3>Focus Chamber</h3>
+                    <ul>
+                        <li><kbd>Space</kbd> - Start/pause timer</li>
+                        <li><kbd>R</kbd> - Reset timer</li>
+                        <li><kbd>D</kbd> - Log distraction</li>
+                    </ul>
+                `
+            }
+        ];
+
+        // ==========================================
+        // STATE
+        // ==========================================
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            HeaderComponent.render('header-container', {
+                showBreadcrumb: true,
+                pageTitle: 'Help & Docs',
+                pageIcon: 'ph-book-open'
+            });
+            SidebarComponent.render('sidebar-container');
+            FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
+
+            renderDocs();
+        });
+
+        // ==========================================
+        // FILTERING
+        // ==========================================
+        function setFilter(category) {
+            currentFilter = category;
+
+            // Update filter button states
+            document.querySelectorAll('.docs-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+
+            renderDocs();
+        }
+
+        function filterDocs() {
+            searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+
+            // Show/hide clear button
+            document.getElementById('search-clear').classList.toggle('visible', searchQuery.length > 0);
+
+            renderDocs();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            searchQuery = '';
+            document.getElementById('search-clear').classList.remove('visible');
+            renderDocs();
+        }
+
+        // ==========================================
+        // RENDERING
+        // ==========================================
+        function renderDocs() {
+            const container = document.getElementById('docs-grid');
+
+            // Filter docs
+            let filtered = docs.filter(doc => {
+                const matchesCategory = currentFilter === 'all' || doc.category === currentFilter;
+                const matchesSearch = !searchQuery ||
+                    doc.title.toLowerCase().includes(searchQuery) ||
+                    doc.desc.toLowerCase().includes(searchQuery) ||
+                    doc.tags.some(tag => tag.toLowerCase().includes(searchQuery));
+
+                return matchesCategory && matchesSearch;
+            });
+
+            // Update results count
+            const countText = filtered.length === docs.length
+                ? 'Showing all articles'
+                : `Showing ${filtered.length} of ${docs.length} articles`;
+            document.getElementById('results-count').textContent = countText;
+
+            // Render cards
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="docs-empty" style="grid-column: 1 / -1;">
+                        <i class="ph-duotone ph-magnifying-glass"></i>
+                        <h3>No Results Found</h3>
+                        <p>Try a different search term or category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(doc => {
+                // Highlight search matches in title
+                let title = Utils.sanitize(doc.title);
+                if (searchQuery) {
+                    const regex = new RegExp(`(${searchQuery})`, 'gi');
+                    title = title.replace(regex, '<mark>$1</mark>');
+                }
+                
+                // Add hot class for popular articles
+                const hotClass = doc.hot ? ' hot' : '';
+
+                return `
+                    <div class="doc-card${hotClass}" 
+                         style="--cat-color: ${doc.color};"
+                         onclick="openDoc('${doc.id}')">
+                        <div class="doc-card-icon" style="background: ${doc.color}20; color: ${doc.color};">
+                            <i class="ph-duotone ${doc.icon}"></i>
+                        </div>
+                        <h3 class="doc-card-title">${title}</h3>
+                        <p class="doc-card-desc">${Utils.sanitize(doc.desc)}</p>
+                        <div class="doc-card-meta">
+                            <div class="doc-card-tags">
+                                ${doc.tags.slice(0, 2).map(tag => `<span class="doc-tag">${tag}</span>`).join('')}
+                            </div>
+                            <span class="doc-card-time">
+                                <i class="ph-bold ph-clock"></i> ${doc.time}
+                            </span>
+                        </div>
+                        <i class="ph-bold ph-arrow-right doc-card-arrow"></i>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // DOC DETAIL MODAL
+        // ==========================================
+        function openDoc(docId) {
+            const doc = docs.find(d => d.id === docId);
+            if (!doc) return;
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="modal-header" style="display: flex; justify-content: flex-end; padding: 0.5rem 0;">
+                    <button class="modal-close" onclick="closeModal()" aria-label="Close" style="position: relative; top: 0; right: 0;">
+                        <i class="ph-bold ph-x"></i>
+                        <span class="close-text">Close</span>
+                    </button>
+                </div>
+                <div class="doc-detail">
+                    <div class="doc-detail-header">
+                        <div class="doc-detail-icon" style="background: ${doc.color}20; color: ${doc.color};">
+                            <i class="ph-duotone ${doc.icon}"></i>
+                        </div>
+                        <div class="doc-detail-content">
+                            <h2>${Utils.sanitize(doc.title)}</h2>
+                            <p>${Utils.sanitize(doc.desc)}</p>
+                        </div>
+                    </div>
+                    <div class="doc-detail-body">
+                        ${doc.content}
+                    </div>
+                    <div class="doc-detail-actions">
+                        <button class="btn btn-outline btn-block" onclick="closeModal()">
+                            <i class="ph-bold ph-arrow-left"></i> Back to Docs
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

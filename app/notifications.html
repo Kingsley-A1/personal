@@ -8,7 +8,7 @@
     <title>Notifications | REIGN</title>
 
     <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#0B0F19">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
 
@@ -27,6 +27,8 @@
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/enhancements.css">
+    <link rel="stylesheet" href="../css/mobile.css">
 
     <style>
         .notification-card {
@@ -49,7 +51,7 @@
 
         .notification-card.unread {
             border-left: 3px solid var(--royal-gold);
-            background: rgba(212, 175, 55, 0.05);
+            background: var(--royal-gold-05);
         }
 
         .notification-icon {
@@ -144,6 +146,7 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
         let notifications = [];
@@ -166,6 +169,12 @@
             });
             SidebarComponent.render('sidebar-container');
             FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
+
             generateNotifications();
             renderNotifications();
         });
@@ -334,5 +343,3 @@
 </body>
 
 </html>
-
-

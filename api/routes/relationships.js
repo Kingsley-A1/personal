@@ -113,6 +113,45 @@ router.get('/', auth.authMiddleware, async (req, res) => {
 });
 
 // ==========================================
+// GET STATISTICS (must be before /:id route)
+// ==========================================
+
+/**
+ * GET /api/relationships/stats/summary
+ * Get relationship statistics
+ */
+router.get('/stats/summary', auth.authMiddleware, async (req, res) => {
+    try {
+        if (!db.isConfigured()) {
+            return res.status(503).json({ error: 'Database not configured' });
+        }
+
+        const result = await db.query(
+            `SELECT 
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE is_favorite = true) as favorites,
+                COUNT(*) FILTER (WHERE purpose = 'partner') as partners,
+                COUNT(*) FILTER (WHERE purpose = 'child') as children,
+                COUNT(*) FILTER (WHERE purpose = 'parent') as parents,
+                COUNT(*) FILTER (WHERE purpose = 'sibling') as siblings,
+                COUNT(*) FILTER (WHERE purpose = 'colleague') as colleagues,
+                COUNT(*) FILTER (WHERE purpose = 'business_partner') as "businessPartners",
+                COUNT(*) FILTER (WHERE purpose = 'mentor') as mentors,
+                COUNT(*) FILTER (WHERE purpose = 'friend') as friends,
+                COUNT(*) FILTER (WHERE purpose = 'other') as others
+             FROM relationships 
+             WHERE user_id = $1`,
+            [req.user.id]
+        );
+
+        res.json({ stats: result.rows[0] });
+    } catch (error) {
+        console.error('Get stats error:', error);
+        res.status(500).json({ error: 'Failed to get statistics' });
+    }
+});
+
+// ==========================================
 // GET SINGLE RELATIONSHIP
 // ==========================================
 
@@ -397,45 +436,6 @@ router.delete('/:id', auth.authMiddleware, async (req, res) => {
     } catch (error) {
         console.error('Delete relationship error:', error);
         res.status(500).json({ error: 'Failed to delete relationship' });
-    }
-});
-
-// ==========================================
-// GET STATISTICS
-// ==========================================
-
-/**
- * GET /api/relationships/stats
- * Get relationship statistics
- */
-router.get('/stats/summary', auth.authMiddleware, async (req, res) => {
-    try {
-        if (!db.isConfigured()) {
-            return res.status(503).json({ error: 'Database not configured' });
-        }
-
-        const result = await db.query(
-            `SELECT 
-                COUNT(*) as total,
-                COUNT(*) FILTER (WHERE is_favorite = true) as favorites,
-                COUNT(*) FILTER (WHERE purpose = 'partner') as partners,
-                COUNT(*) FILTER (WHERE purpose = 'child') as children,
-                COUNT(*) FILTER (WHERE purpose = 'parent') as parents,
-                COUNT(*) FILTER (WHERE purpose = 'sibling') as siblings,
-                COUNT(*) FILTER (WHERE purpose = 'colleague') as colleagues,
-                COUNT(*) FILTER (WHERE purpose = 'business_partner') as "businessPartners",
-                COUNT(*) FILTER (WHERE purpose = 'mentor') as mentors,
-                COUNT(*) FILTER (WHERE purpose = 'friend') as friends,
-                COUNT(*) FILTER (WHERE purpose = 'other') as others
-             FROM relationships 
-             WHERE user_id = $1`,
-            [req.user.id]
-        );
-
-        res.json({ stats: result.rows[0] });
-    } catch (error) {
-        console.error('Get stats error:', error);
-        res.status(500).json({ error: 'Failed to get statistics' });
     }
 });
 

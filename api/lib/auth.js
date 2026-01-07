@@ -7,14 +7,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('./database');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret-not-for-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY_REMEMBER = '10d';  // 10 days for "Remember Me"
 const TOKEN_EXPIRY_DEFAULT = '1d';    // 1 day default session
 const SALT_ROUNDS = 12;
 
-// Warn if using fallback secret
-if (JWT_SECRET.includes('fallback')) {
-    console.warn('⚠️  WARNING: Using fallback JWT_SECRET - NOT SAFE FOR PRODUCTION!');
+// Fail fast if JWT_SECRET is not configured
+if (!JWT_SECRET) {
+    throw new Error('FATAL: JWT_SECRET environment variable is required. Server cannot start without it.');
 }
 
 // ==========================================

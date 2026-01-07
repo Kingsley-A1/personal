@@ -8,7 +8,7 @@
     <title>Support | REIGN</title>
 
     <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#0B0F19">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
 
@@ -27,27 +27,28 @@
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/mobile.css">
 
     <style>
         .support-hero {
             text-align: center;
             padding: 3rem 1.5rem;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(184, 134, 11, 0.05));
+            background: linear-gradient(135deg, var(--royal-gold-15), var(--royal-gold-05));
             border-radius: 1.5rem;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            border: 1px solid var(--royal-gold-30);
             margin-bottom: 2rem;
         }
 
         .support-hero-icon {
             width: 5rem;
             height: 5rem;
-            background: linear-gradient(135deg, var(--royal-gold), #B8860B);
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 40px var(--royal-gold-30);
         }
 
         .support-hero-icon i {
@@ -252,7 +253,7 @@
 
         .impact-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(212, 175, 55, 0.3);
+            border-color: var(--royal-gold-30);
         }
 
         .impact-card i {
@@ -275,7 +276,7 @@
 
         /* Light Mode */
         [data-theme="light"] .support-hero {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 250, 240, 0.8));
+            background: linear-gradient(135deg, var(--royal-gold-10), rgba(255, 250, 240, 0.8));
         }
 
         [data-theme="light"] .payment-card {
@@ -380,7 +381,7 @@
                         <i class="ph-bold ph-arrow-left"></i> Back to Throne
                     </a>
                     <a href="about.html" class="btn btn-primary btn-block"
-                        style="background: linear-gradient(135deg, var(--royal-gold), #B8860B);">
+                        style="background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));">
                         <i class="ph-bold ph-info"></i> About REIGN
                     </a>
                 </div>
@@ -394,6 +395,7 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -404,6 +406,11 @@
             });
             SidebarComponent.render('sidebar-container');
             FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
         });
 
         function copyAccountNumber() {
@@ -443,5 +450,3 @@
 </body>
 
 </html>
-
-

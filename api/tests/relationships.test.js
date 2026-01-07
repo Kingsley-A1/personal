@@ -11,6 +11,12 @@ const express = require('express');
 const authRoutes = require('../routes/auth');
 const relationshipsRoutes = require('../routes/relationships');
 
+// Test utilities
+const testUtils = {
+    generateTestEmail: () => `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}@test.com`,
+    sleep: (ms) => new Promise(resolve => setTimeout(resolve, ms))
+};
+
 // Create test app
 const app = express();
 app.use(express.json());
@@ -23,7 +29,7 @@ describe('Relationships Routes', () => {
 
     beforeAll(async () => {
         // Create and login user
-        const email = global.testUtils.generateTestEmail();
+        const email = testUtils.generateTestEmail();
         const registerRes = await request(app)
             .post('/api/auth/register')
             .send({
@@ -69,7 +75,8 @@ describe('Relationships Routes', () => {
                 .post('/api/relationships')
                 .send({
                     name: 'Test Contact',
-                    purpose: 'support'
+                    purpose: 'friend',
+                    gender: 'male'
                 });
 
             expect(res.status).toBe(401);
@@ -78,8 +85,9 @@ describe('Relationships Routes', () => {
         test('should create a relationship', async () => {
             const relationshipData = {
                 name: 'John Doe',
-                purpose: 'support',
-                classification: 'friend',
+                purpose: 'friend',
+                gender: 'male',
+                classification: 'burden_bearer',
                 notes: 'A good friend who supports me'
             };
 
@@ -101,23 +109,25 @@ describe('Relationships Routes', () => {
                 .post('/api/relationships')
                 .set('Authorization', `Bearer ${authToken}`)
                 .send({
-                    purpose: 'support'
+                    purpose: 'friend',
+                    gender: 'male'
                 });
 
             expect(res.status).toBe(400);
             expect(res.body.error).toContain('Name');
         });
 
-        test('should require purpose', async () => {
+        test('should require gender', async () => {
             const res = await request(app)
                 .post('/api/relationships')
                 .set('Authorization', `Bearer ${authToken}`)
                 .send({
-                    name: 'Test'
+                    name: 'Test',
+                    purpose: 'friend'
                 });
 
             expect(res.status).toBe(400);
-            expect(res.body.error).toContain('purpose');
+            expect(res.body.error).toContain('gender');
         });
     });
 
@@ -191,11 +201,11 @@ describe('Relationships Routes', () => {
     // FAVORITE TOGGLE TESTS
     // ==========================================
 
-    describe('PUT /api/relationships/:id/favorite', () => {
+    describe('PATCH /api/relationships/:id/favorite', () => {
 
         test('should require authentication', async () => {
             const res = await request(app)
-                .put('/api/relationships/some-id/favorite');
+                .patch('/api/relationships/some-id/favorite');
 
             expect(res.status).toBe(401);
         });
@@ -207,44 +217,42 @@ describe('Relationships Routes', () => {
             }
 
             const res = await request(app)
-                .put(`/api/relationships/${createdRelationshipId}/favorite`)
+                .patch(`/api/relationships/${createdRelationshipId}/favorite`)
                 .set('Authorization', `Bearer ${authToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body.relationship).toBeDefined();
-            expect(res.body.relationship.is_favorite).toBeDefined();
+            expect(res.body.id).toBeDefined();
+            expect(res.body.isFavorite).toBeDefined();
         });
     });
 
     // ==========================================
-    // FILTER TESTS
+    // FILTER TESTS (using query params)
     // ==========================================
 
-    describe('GET /api/relationships/purpose/:purpose', () => {
+    describe('GET /api/relationships with filters', () => {
 
         test('should filter by purpose', async () => {
             const res = await request(app)
-                .get('/api/relationships/purpose/support')
+                .get('/api/relationships?purpose=friend')
                 .set('Authorization', `Bearer ${authToken}`);
 
             expect(res.status).toBe(200);
             expect(res.body.relationships).toBeDefined();
         });
 
-        test('should reject invalid purpose', async () => {
-            const res = await request(app)
-                .get('/api/relationships/purpose/invalid-purpose')
-                .set('Authorization', `Bearer ${authToken}`);
-
-            expect(res.status).toBe(400);
-        });
-    });
-
-    describe('GET /api/relationships/classification/:classification', () => {
-
         test('should filter by classification', async () => {
             const res = await request(app)
-                .get('/api/relationships/classification/friend')
+                .get('/api/relationships?classification=burden_bearer')
+                .set('Authorization', `Bearer ${authToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.relationships).toBeDefined();
+        });
+
+        test('should filter by favorite', async () => {
+            const res = await request(app)
+                .get('/api/relationships?favorite=true')
                 .set('Authorization', `Bearer ${authToken}`);
 
             expect(res.status).toBe(200);
@@ -271,8 +279,8 @@ describe('Relationships Routes', () => {
                 .set('Authorization', `Bearer ${authToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body.total).toBeDefined();
-            expect(res.body.byPurpose).toBeDefined();
+            expect(res.body.stats).toBeDefined();
+            expect(res.body.stats.total).toBeDefined();
         });
     });
 
@@ -300,7 +308,7 @@ describe('Relationships Routes', () => {
                 .set('Authorization', `Bearer ${authToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body.message).toContain('deleted');
+            expect(res.body.message).toContain('removed');
         });
 
         test('should return 404 after deletion', async () => {

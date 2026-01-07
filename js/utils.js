@@ -92,10 +92,16 @@ const Utils = {
      * @param {string} type - 'gold', 'indigo', 'success', 'danger'
      */
     showToast(message, type = 'gold') {
+        const isQueen = document.body.classList.contains('queen-theme');
+        const goldGradient = isQueen 
+            ? 'linear-gradient(to right, #b76e79, #9a525c)' 
+            : 'linear-gradient(to right, #D4AF37, #C5A028)';
+        const goldTextColor = isQueen ? '#1a0a18' : '#0B0F19';
+        
         const colors = {
             gold: {
-                background: 'linear-gradient(to right, #D4AF37, #C5A028)',
-                color: '#0B0F19'
+                background: goldGradient,
+                color: goldTextColor
             },
             indigo: {
                 background: '#4f46e5',

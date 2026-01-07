@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="REIGN Weekly Review - Reflect on progress and plan for growth">
+    <title>Weekly Review | REIGN</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reign-pi.vercel.app/app/reviews.html">
+    <meta property="og:title" content="Weekly Review | REIGN">
+    <meta property="og:description" content="Reflect on your progress and grow stronger each week.">
+    <meta property="og:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Weekly Review | REIGN">
+    <meta name="twitter:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Manrope:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+
+    <style>
+        /* Review Type Toggle */
+        .review-toggle {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.375rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-toggle-btn {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: none;
+            border-radius: 0.5rem;
+            color: #94a3b8;
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .review-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .review-toggle-btn.active {
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
+            color: var(--royal-dark);
+            box-shadow: 0 4px 12px var(--royal-gold-30);
+        }
+
+        /* Period Card */
+        .period-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .period-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .period-info h3 {
+            font-family: var(--font-serif);
+            font-size: 1.125rem;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .period-info p {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        /* Goals Summary */
+        .goals-summary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .goals-summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .goals-summary-title {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .goals-summary-title i {
+            color: var(--royal-gold);
+        }
+
+        .goals-summary-stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .goals-summary-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .goals-summary-stat.completed {
+            color: var(--success);
+        }
+
+        .goals-summary-stat.active {
+            color: var(--info);
+        }
+
+        .goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .goal-review-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+        }
+
+        .goal-review-item i {
+            font-size: 1.25rem;
+        }
+
+        .goal-review-item.completed i {
+            color: var(--success);
+        }
+
+        .goal-review-item.active i {
+            color: #64748b;
+        }
+
+        .goal-review-item span {
+            flex: 1;
+            font-size: 0.875rem;
+        }
+
+        .goal-review-item.completed span {
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+
+        .goal-review-progress {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--royal-gold);
+        }
+
+        /* Review Form */
+        .review-form {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-form-title {
+            font-family: var(--font-serif);
+            font-size: 1.125rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .review-form-title i {
+            color: var(--royal-gold);
+        }
+
+        /* Mood Selector */
+        .mood-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mood-option {
+            flex: 1;
+            padding: 1rem;
+            background: var(--glass-bg);
+            border: 2px solid transparent;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mood-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mood-option.selected {
+            border-color: var(--royal-gold);
+            background: var(--royal-gold-10);
+        }
+
+        .mood-option i {
+            font-size: 2rem;
+        }
+
+        .mood-option span {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Past Reviews */
+        .past-reviews {
+            margin-top: 2rem;
+        }
+
+        .past-reviews-title {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .past-reviews-title i {
+            color: #94a3b8;
+        }
+
+        .review-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .review-card:hover {
+            border-color: var(--royal-gold-30);
+        }
+
+        .review-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-card-date {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .review-card-type {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .review-card-type.weekly {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        .review-card-type.monthly {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+        }
+
+        .review-card-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .review-card-excerpt {
+            font-size: 0.8125rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Sunday Prompt */
+        .sunday-prompt {
+            background: linear-gradient(135deg, var(--royal-gold-20), var(--royal-gold-05));
+            border: 1px solid var(--royal-gold-40);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .sunday-prompt i {
+            font-size: 3rem;
+            color: var(--royal-gold);
+            margin-bottom: 0.75rem;
+        }
+
+        .sunday-prompt h3 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .sunday-prompt p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            .mood-selector {
+                flex-wrap: wrap;
+            }
+
+            .mood-option {
+                flex: 1 1 calc(33.333% - 0.5rem);
+                min-width: calc(33.333% - 0.5rem);
+            }
+
+            .goals-summary-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div id="header-container"></div>
+        <div class="main-layout">
+            <div id="sidebar-container"></div>
+            <main class="main-content fade-in" id="main-view">
+                <!-- Page Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                        <i class="ph-fill ph-calendar-check"></i>
+                    </div>
+                    <h1 class="page-hero-title">Weekly Review</h1>
+                    <p class="page-hero-subtitle">Reflect on your progress and grow stronger each week.</p>
+                </div>
+
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <!-- Review Type Toggle -->
+                    <div class="review-toggle">
+                        <button class="review-toggle-btn active" data-type="weekly"
+                            onclick="switchReviewType('weekly')">
+                            <i class="ph-bold ph-calendar"></i> Weekly
+                        </button>
+                        <button class="review-toggle-btn" data-type="monthly" onclick="switchReviewType('monthly')">
+                            <i class="ph-bold ph-calendar-blank"></i> Monthly
+                        </button>
+                    </div>
+
+                    <!-- Sunday Prompt (shown on Sundays) -->
+                    <div class="sunday-prompt" id="sunday-prompt" style="display: none;">
+                        <i class="ph-duotone ph-crown"></i>
+                        <h3>Time for Your Royal Review</h3>
+                        <p>It's Sunday! Take a moment to reflect on your week and set intentions for the next one.</p>
+                    </div>
+
+                    <!-- Period Info -->
+                    <div class="period-card">
+                        <div class="period-icon">
+                            <i class="ph-fill ph-calendar-check"></i>
+                        </div>
+                        <div class="period-info">
+                            <h3 id="period-title">This Week</h3>
+                            <p id="period-dates">Loading...</p>
+                        </div>
+                    </div>
+
+                    <!-- Goals Summary -->
+                    <div class="goals-summary" id="goals-summary">
+                        <div class="goals-summary-header">
+                            <div class="goals-summary-title">
+                                <i class="ph-fill ph-target"></i>
+                                <span>Goals Progress</span>
+                            </div>
+                            <div class="goals-summary-stats">
+                                <div class="goals-summary-stat completed">
+                                    <i class="ph-bold ph-check-circle"></i>
+                                    <span id="completed-count">0</span> completed
+                                </div>
+                                <div class="goals-summary-stat active">
+                                    <i class="ph-bold ph-hourglass-medium"></i>
+                                    <span id="active-count">0</span> in progress
+                                </div>
+                            </div>
+                        </div>
+                        <div class="goals-list" id="goals-list">
+                            <!-- Goals will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Review Form -->
+                    <form class="review-form" id="review-form" onsubmit="submitReview(event)">
+                        <h3 class="review-form-title">
+                            <i class="ph-duotone ph-pencil-simple"></i>
+                            <span id="form-title">Weekly Reflection</span>
+                        </h3>
+
+                        <!-- Mood Selector -->
+                        <div class="form-group">
+                            <label class="form-label">How are you feeling about this week?</label>
+                            <div class="mood-selector">
+                                <div class="mood-option" data-mood="1" onclick="selectMood(1)">
+                                    <i class="ph-fill ph-smiley-sad" style="color: #ef4444;"></i>
+                                    <span>Rough</span>
+                                </div>
+                                <div class="mood-option" data-mood="2" onclick="selectMood(2)">
+                                    <i class="ph-fill ph-smiley-meh" style="color: #f59e0b;"></i>
+                                    <span>Okay</span>
+                                </div>
+                                <div class="mood-option" data-mood="3" onclick="selectMood(3)">
+                                    <i class="ph-fill ph-smiley" style="color: #84cc16;"></i>
+                                    <span>Good</span>
+                                </div>
+                                <div class="mood-option" data-mood="4" onclick="selectMood(4)">
+                                    <i class="ph-fill ph-smiley-wink" style="color: #22c55e;"></i>
+                                    <span>Great</span>
+                                </div>
+                                <div class="mood-option" data-mood="5" onclick="selectMood(5)">
+                                    <i class="ph-fill ph-crown" style="color: var(--royal-gold);"></i>
+                                    <span>Royal</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="mood-input" value="">
+                        </div>
+
+                        <!-- Reflection Questions -->
+                        <div class="form-group">
+                            <label class="form-label" style="color: #10b981;">
+                                <i class="ph-fill ph-trophy"></i> What were your wins?
+                            </label>
+                            <textarea id="wins-input" class="form-textarea" rows="3" required
+                                placeholder="Celebrate your victories, big and small..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="color: #ef4444;">
+                                <i class="ph-fill ph-warning-octagon"></i> What challenges did you face?
+                            </label>
+                            <textarea id="challenges-input" class="form-textarea" rows="3" required
+                                placeholder="What obstacles stood in your way?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="color: #8b5cf6;">
+                                <i class="ph-fill ph-lightbulb"></i> What lessons did you learn?
+                            </label>
+                            <textarea id="lessons-input" class="form-textarea" rows="3" required
+                                placeholder="What insights will you carry forward?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" style="color: #3b82f6;">
+                                <i class="ph-fill ph-arrow-right"></i> What's your focus for next week?
+                            </label>
+                            <textarea id="next-focus-input" class="form-textarea" rows="3" required
+                                placeholder="What will you prioritize?"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class="ph-bold ph-paper-plane-right"></i> Submit Review
+                        </button>
+                    </form>
+
+                    <!-- Past Reviews -->
+                    <div class="past-reviews" id="past-reviews-section">
+                        <h3 class="past-reviews-title">
+                            <i class="ph-duotone ph-clock-counter-clockwise"></i>
+                            Past Reviews
+                        </h3>
+                        <div id="past-reviews-list">
+                            <!-- Past reviews will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="grid grid-2 gap-4 mt-6">
+                        <a href="goals.html" class="btn btn-outline btn-block">
+                            <i class="ph-bold ph-target"></i> Royal Ambitions
+                        </a>
+                        <a href="../index.html" class="btn btn-primary btn-block">
+                            <i class="ph-bold ph-crown"></i> The Throne
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-overlay" onclick="closeModal()"></div>
+            <div class="modal-container">
+                <div class="modal-content" id="modal-content"></div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/core.js"></script>
+    <script src="../js/components/header.js"></script>
+    <script src="../js/components/sidebar.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
+
+    <script>
+        // ==========================================
+        // STATE
+        // ==========================================
+        let currentReviewType = 'weekly';
+        let selectedMood = null;
+        let goalsData = { weekly: [], monthly: [] };
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            HeaderComponent.render('header-container', {
+                showBreadcrumb: true,
+                pageTitle: 'Weekly Review',
+                pageIcon: 'ph-calendar-check'
+            });
+            SidebarComponent.render('sidebar-container');
+            FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
+
+            loadData();
+            updatePeriodInfo();
+            checkSunday();
+        });
+
+        // ==========================================
+        // DATA LOADING
+        // ==========================================
+        function loadData() {
+            const data = Storage.getData();
+
+            // Load goals
+            if (data.goals) {
+                goalsData = {
+                    weekly: data.goals.weekly || [],
+                    monthly: data.goals.monthly || []
+                };
+            }
+
+            renderGoalsSummary();
+            renderPastReviews();
+        }
+
+        // ==========================================
+        // REVIEW TYPE TOGGLE
+        // ==========================================
+        function switchReviewType(type) {
+            currentReviewType = type;
+
+            // Update toggle buttons
+            document.querySelectorAll('.review-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+
+            // Update period info
+            updatePeriodInfo();
+
+            // Update form title
+            document.getElementById('form-title').textContent =
+                type === 'weekly' ? 'Weekly Reflection' : 'Monthly Reflection';
+
+            // Update page title
+            document.querySelector('.page-hero-title').textContent =
+                type === 'weekly' ? 'Weekly Review' : 'Monthly Review';
+
+            renderGoalsSummary();
+            renderPastReviews();
+        }
+
+        // ==========================================
+        // PERIOD CALCULATIONS
+        // ==========================================
+        function updatePeriodInfo() {
+            const now = new Date();
+            let start, end, title;
+
+            if (currentReviewType === 'weekly') {
+                // Get start of week (Monday)
+                start = new Date(now);
+                const day = start.getDay();
+                const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+                start.setDate(diff);
+                start.setHours(0, 0, 0, 0);
+
+                // Get end of week (Sunday)
+                end = new Date(start);
+                end.setDate(start.getDate() + 6);
+
+                title = 'This Week';
+            } else {
+                // Get start of month
+                start = new Date(now.getFullYear(), now.getMonth(), 1);
+
+                // Get end of month
+                end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+                title = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            }
+
+            const dateFormat = { month: 'short', day: 'numeric' };
+            const startStr = start.toLocaleDateString('en-US', dateFormat);
+            const endStr = end.toLocaleDateString('en-US', dateFormat);
+
+            document.getElementById('period-title').textContent = title;
+            document.getElementById('period-dates').textContent = `${startStr} - ${endStr}`;
+        }
+
+        function getPeriodDates() {
+            const now = new Date();
+            let start, end;
+
+            if (currentReviewType === 'weekly') {
+                start = new Date(now);
+                const day = start.getDay();
+                const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+                start.setDate(diff);
+                start.setHours(0, 0, 0, 0);
+                end = new Date(start);
+                end.setDate(start.getDate() + 6);
+            } else {
+                start = new Date(now.getFullYear(), now.getMonth(), 1);
+                end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            }
+
+            return {
+                start: start.toISOString().split('T')[0],
+                end: end.toISOString().split('T')[0]
+            };
+        }
+
+        // ==========================================
+        // SUNDAY CHECK
+        // ==========================================
+        function checkSunday() {
+            const today = new Date();
+            const isSunday = today.getDay() === 0;
+            document.getElementById('sunday-prompt').style.display = isSunday ? 'block' : 'none';
+        }
+
+        // ==========================================
+        // GOALS SUMMARY
+        // ==========================================
+        function renderGoalsSummary() {
+            const goals = currentReviewType === 'weekly' ? goalsData.weekly : goalsData.monthly;
+            const completed = goals.filter(g => g.status === 'completed');
+            const active = goals.filter(g => g.status === 'active');
+
+            document.getElementById('completed-count').textContent = completed.length;
+            document.getElementById('active-count').textContent = active.length;
+
+            const list = document.getElementById('goals-list');
+
+            if (goals.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 1.5rem; color: #64748b;">
+                        <i class="ph-duotone ph-target" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        <p>No ${currentReviewType} goals set. <a href="goals.html" style="color: var(--royal-gold);">Add some goals</a></p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = goals.map(goal => `
+                <div class="goal-review-item ${goal.status}">
+                    <i class="ph-fill ${goal.status === 'completed' ? 'ph-check-circle' : 'ph-circle'}"></i>
+                    <span>${Utils.sanitize(goal.title)}</span>
+                    <span class="goal-review-progress">${goal.progress || 0}%</span>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // MOOD SELECTOR
+        // ==========================================
+        function selectMood(mood) {
+            selectedMood = mood;
+            document.getElementById('mood-input').value = mood;
+
+            document.querySelectorAll('.mood-option').forEach(opt => {
+                opt.classList.toggle('selected', parseInt(opt.dataset.mood) === mood);
+            });
+        }
+
+        // ==========================================
+        // SUBMIT REVIEW
+        // ==========================================
+        function submitReview(event) {
+            event.preventDefault();
+
+            const mood = parseInt(document.getElementById('mood-input').value);
+            const wins = document.getElementById('wins-input').value.trim();
+            const challenges = document.getElementById('challenges-input').value.trim();
+            const lessons = document.getElementById('lessons-input').value.trim();
+            const nextFocus = document.getElementById('next-focus-input').value.trim();
+
+            if (!mood) {
+                Utils.showToast('Please select how you\'re feeling', 'danger');
+                return;
+            }
+
+            const goals = currentReviewType === 'weekly' ? goalsData.weekly : goalsData.monthly;
+            const completed = goals.filter(g => g.status === 'completed').length;
+            const total = goals.length;
+
+            const periodDates = getPeriodDates();
+
+            const review = {
+                id: Utils.generateId(),
+                reviewType: currentReviewType,
+                periodStart: periodDates.start,
+                periodEnd: periodDates.end,
+                goalsCompleted: completed,
+                goalsTotal: total,
+                wins,
+                challenges,
+                lessons,
+                nextFocus,
+                mood,
+                createdAt: new Date().toISOString()
+            };
+
+            // Save to storage
+            const data = Storage.getData();
+            if (!data.goals) data.goals = {};
+            if (!data.goals.reviews) data.goals.reviews = [];
+            data.goals.reviews.unshift(review);
+            Storage.saveData(data);
+
+            // Sync to cloud
+            syncToCloud();
+
+            Utils.showToast(`${currentReviewType === 'weekly' ? 'Weekly' : 'Monthly'} review submitted! 📝`, 'success');
+
+            // Reset form
+            document.getElementById('review-form').reset();
+            selectedMood = null;
+            document.querySelectorAll('.mood-option').forEach(opt => opt.classList.remove('selected'));
+
+            // Refresh past reviews
+            renderPastReviews();
+        }
+
+        async function syncToCloud() {
+            if (!Auth.isLoggedIn()) return;
+            try {
+                const data = Storage.getData();
+                await API.post('/sync', { appData: data, localTimestamp: data.lastUpdated });
+            } catch (error) {
+                console.error('Sync failed:', error);
+            }
+        }
+
+        // ==========================================
+        // PAST REVIEWS
+        // ==========================================
+        function renderPastReviews() {
+            const data = Storage.getData();
+            const reviews = (data.goals?.reviews || [])
+                .filter(r => r.reviewType === currentReviewType)
+                .slice(0, 10);
+
+            const container = document.getElementById('past-reviews-list');
+
+            if (reviews.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #64748b; background: var(--glass-bg); border-radius: 0.75rem;">
+                        <i class="ph-duotone ph-file-text" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                        <p>No past ${currentReviewType} reviews yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reviews.map(review => {
+                const startDate = new Date(review.periodStart);
+                const endDate = new Date(review.periodEnd);
+                const dateFormat = { month: 'short', day: 'numeric' };
+
+                return `
+                    <div class="review-card" onclick="viewReview('${review.id}')">
+                        <div class="review-card-header">
+                            <span class="review-card-date">
+                                ${startDate.toLocaleDateString('en-US', dateFormat)} - ${endDate.toLocaleDateString('en-US', dateFormat)}
+                            </span>
+                            <span class="review-card-type ${review.reviewType}">${review.reviewType}</span>
+                        </div>
+                        <div class="review-card-stats">
+                            <span>🎯 ${review.goalsCompleted}/${review.goalsTotal} goals</span>
+                            <span>😊 Mood: ${review.mood}/5</span>
+                        </div>
+                        ${review.wins ? `<p class="review-card-excerpt">${Utils.sanitize(review.wins)}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // VIEW REVIEW
+        // ==========================================
+        function viewReview(reviewId) {
+            const data = Storage.getData();
+            const review = data.goals?.reviews?.find(r => r.id === reviewId);
+            if (!review) return;
+
+            const startDate = new Date(review.periodStart);
+            const endDate = new Date(review.periodEnd);
+            const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' };
+
+            const moodLabels = ['', 'Rough', 'Okay', 'Good', 'Great', 'Royal'];
+            const moodIcons = ['', 'ph-smiley-sad', 'ph-smiley-meh', 'ph-smiley', 'ph-smiley-wink', 'ph-crown'];
+            const isQueen = document.body.classList.contains('queen-theme');
+            const royalColor = isQueen ? '#b76e79' : '#D4AF37';
+            const moodColors = ['', '#ef4444', '#f59e0b', '#84cc16', '#22c55e', royalColor];
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        <i class="ph-duotone ph-scroll" style="color: var(--royal-gold);"></i>
+                        Review Details
+                    </h2>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <p style="color: #94a3b8; margin-bottom: 0.5rem;">${review.reviewType.charAt(0).toUpperCase() + review.reviewType.slice(1)} Review</p>
+                        <p style="font-size: 1.125rem; font-weight: 600; color: white;">
+                            ${startDate.toLocaleDateString('en-US', dateFormat)}
+                        </p>
+                        <div style="margin-top: 0.75rem;">
+                            <i class="ph-fill ${moodIcons[review.mood]}" style="font-size: 2.5rem; color: ${moodColors[review.mood]};"></i>
+                            <p style="font-size: 0.875rem; color: ${moodColors[review.mood]}; margin-top: 0.25rem;">${moodLabels[review.mood]}</p>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="text-align: center; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
+                            <p style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${review.goalsCompleted}</p>
+                            <p style="font-size: 0.75rem; color: #94a3b8;">Goals Completed</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.5rem;">
+                            <p style="font-size: 1.5rem; font-weight: 700; color: var(--info);">${review.goalsTotal}</p>
+                            <p style="font-size: 0.75rem; color: #94a3b8;">Total Goals</p>
+                        </div>
+                    </div>
+
+                    ${review.wins ? `
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.75rem; font-weight: 600; color: #10b981; text-transform: uppercase; margin-bottom: 0.5rem;">
+                            <i class="ph-fill ph-trophy"></i> Wins
+                        </p>
+                        <p style="font-size: 0.875rem; color: #e2e8f0; line-height: 1.6;">${Utils.sanitize(review.wins)}</p>
+                    </div>
+                    ` : ''}
+
+                    ${review.challenges ? `
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.75rem; font-weight: 600; color: #ef4444; text-transform: uppercase; margin-bottom: 0.5rem;">
+                            <i class="ph-fill ph-warning-octagon"></i> Challenges
+                        </p>
+                        <p style="font-size: 0.875rem; color: #e2e8f0; line-height: 1.6;">${Utils.sanitize(review.challenges)}</p>
+                    </div>
+                    ` : ''}
+
+                    ${review.lessons ? `
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.75rem; font-weight: 600; color: #8b5cf6; text-transform: uppercase; margin-bottom: 0.5rem;">
+                            <i class="ph-fill ph-lightbulb"></i> Lessons
+                        </p>
+                        <p style="font-size: 0.875rem; color: #e2e8f0; line-height: 1.6;">${Utils.sanitize(review.lessons)}</p>
+                    </div>
+                    ` : ''}
+
+                    ${review.nextFocus ? `
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.75rem; font-weight: 600; color: #3b82f6; text-transform: uppercase; margin-bottom: 0.5rem;">
+                            <i class="ph-fill ph-arrow-right"></i> Next Focus
+                        </p>
+                        <p style="font-size: 0.875rem; color: #e2e8f0; line-height: 1.6;">${Utils.sanitize(review.nextFocus)}</p>
+                    </div>
+                    ` : ''}
+
+                    <button class="btn btn-outline btn-block mt-4" onclick="closeModal()">
+                        <i class="ph-bold ph-x"></i> Close
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

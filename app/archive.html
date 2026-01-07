@@ -8,7 +8,7 @@
     <title>Journal Archive | REIGN</title>
 
     <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#0B0F19">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
 
@@ -27,6 +27,8 @@
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/enhancements.css">
+    <link rel="stylesheet" href="../css/mobile.css">
 
     <style>
         .archive-tabs {
@@ -53,7 +55,7 @@
         }
 
         .archive-tab.active {
-            background: linear-gradient(135deg, var(--royal-gold), #B8860B);
+            background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));
             color: var(--bg-primary);
             border-color: var(--royal-gold);
         }
@@ -135,7 +137,7 @@
             <main class="main-content fade-in" id="main-view">
                 <div class="page-hero">
                     <div class="page-hero-icon"
-                        style="background: linear-gradient(135deg, var(--royal-gold), #B8860B);">
+                        style="background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));">
                         <i class="ph-fill ph-scroll"></i>
                     </div>
                     <h1 class="page-hero-title">The Royal Chronicle</h1>
@@ -203,6 +205,7 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
         let allActivities = [];
@@ -223,6 +226,12 @@
             });
             SidebarComponent.render('sidebar-container');
             FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
+
             loadArchive();
         });
 
@@ -415,5 +424,3 @@
 </body>
 
 </html>
-
-

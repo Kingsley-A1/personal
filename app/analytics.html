@@ -28,10 +28,27 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
     <link rel="stylesheet" href="../css/enhancements.css">
+    <link rel="stylesheet" href="../css/mobile.css">
 
-    <!-- PWA Manifest -->
+    <!-- PWA -->
     <link rel="manifest" href="../manifest.json">
-    <link rel="icon" type="image/png" href="../icons/icon-192.png">
+    <meta name="theme-color" content="#0B0F19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-192.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reign-pi.vercel.app/app/analytics.html">
+    <meta property="og:title" content="Progress | REIGN">
+    <meta property="og:description" content="Track your progress, streaks, and performance metrics on REIGN.">
+    <meta property="og:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Progress | REIGN">
+    <meta name="twitter:image" content="https://reign-pi.vercel.app/icons/og-cover.jpg">
 
     <style>
         /* 2-Column Grid for Cards */
@@ -60,7 +77,7 @@
 
         .chart-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 12px 40px var(--royal-gold-15);
         }
 
         .chart-card h3 {
@@ -112,7 +129,7 @@
             <main class="main-content fade-in" id="main-view">
                 <!-- Page Hero -->
                 <div class="page-hero">
-                    <div class="page-hero-icon" style="background: linear-gradient(135deg, #D4AF37, #b8941f);">
+                    <div class="page-hero-icon" style="background: linear-gradient(135deg, var(--royal-gold), var(--royal-accent));">
                         <i class="ph-fill ph-chart-line-up"></i>
                     </div>
                     <h1 class="page-hero-title">Progress Dashboard</h1>
@@ -309,6 +326,7 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -330,6 +348,11 @@
             });
             SidebarComponent.render('sidebar-container');
             FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
 
             // Load and display analytics
             loadAnalytics();

@@ -11,6 +11,12 @@ const express = require('express');
 const authRoutes = require('../routes/auth');
 const syncRoutes = require('../routes/sync');
 
+// Test utilities
+const testUtils = {
+    generateTestEmail: () => `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}@test.com`,
+    sleep: (ms) => new Promise(resolve => setTimeout(resolve, ms))
+};
+
 // Create test app
 const app = express();
 app.use(express.json());
@@ -22,7 +28,7 @@ describe('Sync Routes', () => {
 
     beforeAll(async () => {
         // Create and login user
-        const email = global.testUtils.generateTestEmail();
+        const email = testUtils.generateTestEmail();
         const registerRes = await request(app)
             .post('/api/auth/register')
             .send({
@@ -148,7 +154,9 @@ describe('Sync Routes', () => {
                 .set('Authorization', `Bearer ${authToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('hasCloudData');
+            // Check for actual response properties
+            expect(res.body).toHaveProperty('database');
+            expect(res.body).toHaveProperty('configured');
         });
     });
 });

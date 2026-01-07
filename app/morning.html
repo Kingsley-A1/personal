@@ -9,7 +9,7 @@
 
     <!-- PWA -->
     <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#0B0F19">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
@@ -44,6 +44,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/enhancements.css">
+    <link rel="stylesheet" href="../css/mobile.css">
 </head>
 
 <body>
@@ -161,6 +163,7 @@
     <script src="../js/components/header.js"></script>
     <script src="../js/components/sidebar.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/components/share-prompt.js"></script>
 
     <script>
         // Page State
@@ -176,6 +179,12 @@
             });
             SidebarComponent.render('sidebar-container');
             FooterComponent.render('footer-container');
+
+            // Apply role theme (King/Queen)
+            if (typeof UI !== 'undefined' && UI.initTheme) {
+                UI.initTheme();
+            }
+
             loadMorningData();
         });
 
@@ -352,6 +361,13 @@
             editingTaskId = taskId;
             const task = taskId ? tasks.find(t => t.id === taskId) : null;
 
+            // Get weekly goals for linking
+            const data = Storage.getData();
+            const weeklyGoals = (data.goals?.weekly || []).filter(g => g.status === 'active');
+            const goalOptions = weeklyGoals.map(g =>
+                `<option value="${g.id}" ${task?.weeklyGoalId === g.id ? 'selected' : ''}>${Utils.sanitize(g.title)}</option>`
+            ).join('');
+
             document.getElementById('modal-content').innerHTML = `
                 <div class="modal-header">
                     <h2 class="modal-title">
@@ -386,6 +402,18 @@
                                        placeholder="1" value="${task?.estimatedTime || ''}">
                             </div>
                         </div>
+                        ${weeklyGoals.length > 0 ? `
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph-bold ph-link" style="color: var(--royal-gold);"></i>
+                                Link to Weekly Goal (Optional)
+                            </label>
+                            <select id="task-goal" class="form-select">
+                                <option value="">No link - standalone task</option>
+                                ${goalOptions}
+                            </select>
+                        </div>
+                        ` : ''}
                         <div class="form-group">
                             <label class="form-label">Notes (Optional)</label>
                             <textarea id="task-notes" class="form-textarea" rows="3"
@@ -415,6 +443,8 @@
             const priority = document.getElementById('task-priority').value;
             const estimatedTime = parseFloat(document.getElementById('task-hours').value) || null;
             const notes = document.getElementById('task-notes').value.trim();
+            const goalSelect = document.getElementById('task-goal');
+            const weeklyGoalId = goalSelect ? goalSelect.value || null : null;
 
             if (!title) {
                 Utils.showToast('Please enter a task title', 'danger');
@@ -429,6 +459,7 @@
                     task.priority = priority;
                     task.estimatedTime = estimatedTime;
                     task.notes = notes;
+                    task.weeklyGoalId = weeklyGoalId;
                     task.updatedAt = new Date().toISOString();
                 }
                 Utils.showToast('Task updated!', 'gold');
@@ -440,6 +471,7 @@
                     priority,
                     estimatedTime,
                     notes,
+                    weeklyGoalId,
                     status: 'pending',
                     createdAt: new Date().toISOString()
                 });
@@ -472,5 +504,3 @@
 </body>
 
 </html>
-
-

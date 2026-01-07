@@ -10,6 +10,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const crypto = require('crypto');
 const authRoutes = require('./routes/auth');
 const syncRoutes = require('./routes/sync');
 const relationshipsRoutes = require('./routes/relationships');
@@ -17,6 +18,9 @@ const adminRoutes = require('./routes/admin');
 const r2 = require('./lib/r2');
 const db = require('./lib/database');
 const auth = require('./lib/auth');
+const logger = require('./lib/logger');
+const pinoHttp = require('pino-http');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -73,6 +77,29 @@ const corsOptions = process.env.NODE_ENV === 'development'
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '2mb' }));
+
+// Request ID middleware for tracing
+app.use((req, res, next) => {
+    req.id = crypto.randomUUID();
+    res.setHeader('X-Request-ID', req.id);
+    next();
+});
+
+// HTTP request logging
+app.use(pinoHttp({
+    logger,
+    genReqId: (req) => req.id,
+    customLogLevel: (req, res, err) => {
+        if (res.statusCode >= 500 || err) return 'error';
+        if (res.statusCode >= 400) return 'warn';
+        return 'info';
+    },
+    // Don't log health checks
+    autoLogging: {
+        ignore: (req) => req.url === '/api/health'
+    }
+}));
+
 app.use(generalLimiter);
 
 // Routes with specific rate limits
@@ -83,6 +110,7 @@ app.use('/api/sync', syncRoutes);
 app.use('/api/relationships', relationshipsRoutes);
 app.use('/api/admin', adminRoutes);  // Admin routes (require auth + admin role)
 app.use('/api/feedback', require('./routes/feedback'));  // Feedback routes
+app.use('/api/goals', require('./routes/goals'));  // Goals routes
 
 // Health check
 app.get('/api/health', async (req, res) => {
@@ -97,18 +125,15 @@ app.get('/api/health', async (req, res) => {
     });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).json({
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-});
+// 404 handler for undefined routes
+app.use(notFoundHandler);
+
+// Global error handling middleware
+app.use(errorHandler);
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-    console.log('SIGTERM received, closing connections...');
+    logger.info('SIGTERM received, closing connections...');
     await db.close();
     process.exit(0);
 });
