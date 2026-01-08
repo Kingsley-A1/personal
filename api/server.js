@@ -18,7 +18,7 @@ const adminRoutes = require('./routes/admin');
 const r2 = require('./lib/r2');
 const db = require('./lib/database');
 const auth = require('./lib/auth');
-const logger = require('./lib/logger');
+const { logger } = require('./lib/logger');
 const pinoHttp = require('pino-http');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
