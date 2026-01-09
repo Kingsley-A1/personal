@@ -1156,8 +1156,18 @@
                             document.getElementById('welcome-avatar').textContent = initials;
                             document.getElementById('returning-welcome').classList.remove('hidden');
 
+                            // Update hero text for returning users - they're already registered!
+                            const heroText = document.getElementById('hero-text');
+                            if (heroText) {
+                                heroText.innerHTML = `
+                                    <span class="hero-line hero-line-1" style="animation: none; opacity: 1; transform: none;">You are</span>
+                                    <span class="hero-line hero-line-2" style="animation: none; opacity: 1; transform: none;">becoming</span>
+                                    <span class="hero-line hero-line-3 gradient-text" style="animation: shimmer 3s linear infinite;">THE BEST IN YOU!</span>
+                                `;
+                            }
+
                             // Skip hero animation for returning users
-                            document.getElementById('hero-text').classList.add('skip-animation');
+                            heroText.classList.add('skip-animation');
                         }
                     } catch (e) {
                         console.log('Could not parse saved user');
@@ -1194,14 +1204,22 @@
             }
 
             function continueWithoutAccount() {
-                // Set to King UI with light theme for guests
+                // Set to King persona for guests (dark theme is default)
                 localStorage.setItem('reign_persona', 'king');
                 localStorage.setItem('reign_guest', 'true');
 
-                // Apply light theme
+                // Ensure dark theme (light theme is removed)
                 const settings = JSON.parse(localStorage.getItem('king-daily-settings') || '{}');
-                settings.theme = 'light';
+                settings.theme = 'dark';
+                settings.role = 'king';
                 localStorage.setItem('king-daily-settings', JSON.stringify(settings));
+
+                // Save role in main data storage as well
+                const data = JSON.parse(localStorage.getItem('king-daily-data') || '{}');
+                data.settings = data.settings || {};
+                data.settings.role = 'king';
+                data.settings.roleConfirmed = true;
+                localStorage.setItem('king-daily-data', JSON.stringify(data));
 
                 window.location.href = 'index.html';
             }
