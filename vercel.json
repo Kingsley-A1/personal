@@ -5,6 +5,27 @@
     "installCommand": null,
     "cleanUrls": true,
     "trailingSlash": false,
+    "routes": [
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/app/(.*)",
+            "dest": "/app/$1.html"
+        },
+        {
+            "src": "/admin/(.*)",
+            "dest": "/admin/$1.html"
+        },
+        {
+            "src": "/pages/(.*)",
+            "dest": "/pages/$1.html"
+        },
+        {
+            "src": "/(queen|auth|recover-password)",
+            "dest": "/$1.html"
+        }
+    ],
     "headers": [
         {
             "source": "/sw.js",
